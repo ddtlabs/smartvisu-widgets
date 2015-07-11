@@ -1,5 +1,10 @@
 ### Media Player (iTunes(r)) and Amplifier Widgets for smartVISU / FHEM
 
+Screenshots:
+
+![](screenshots/amp.png)
+![](screenshots/itunes.png)
+
 Installation hints:
 
 - Copy widget_media.* to your pages folder
@@ -35,7 +40,3 @@ Installation hints:
 	</div>
 </div>
 ```
-- Screenshots:
-
-![](screenshots/amp.png)
-![](screenshots/itunes.png)
