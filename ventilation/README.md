@@ -14,10 +14,10 @@ Installation hints:
 
 - Copy widget_ventilation.html to your pages folder
 
-- vent1 widget needs a fhem dummy (gad) withwith following readings:
+- vent1 widget needs a fhem dummy (gad) with following readings:
   - attr dummy readingList rfEnable rfOn rfOff rfDiff rfStatus timerEnable timerTime timerStatus
 
-- vent2 widget needs a fhem dummy (gad) withwith following readings:
+- vent2 widget needs a fhem dummy (gad) with following readings:
   - attr dummy readingList timerEnable timerTime timerStatus
 
 
