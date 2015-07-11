@@ -1,0 +1,77 @@
+     "sv_HUE.sw" : {
+         "set" : "state",
+         "type" : "item",
+         "device" : "fhem_HUE",
+         "reading" : "state",
+         "converter" : "OnOff"
+      },
+      "sv_HUE.pct" : {
+         "type" : "item",
+         "set" : "pct",
+         "reading" : "pct",
+         "converter" : "Direct",
+         "device" : "fhem_HUE"
+      },
+      "sv_HUE.sat" : {
+         "converter" : "Direct",
+         "reading" : "sat",
+         "device" : "fhem_HUE",
+         "type" : "item",
+         "set" : "sat"
+      },
+      "sv_HUE.rgb_g" : {
+         "converter" : "RGBCombined sv_HUE.rgb_r, sv_HUE.rgb_g, sv_HUE.rgb_b",
+         "reading" : "rgb",
+         "device" : "fhem_HUE",
+         "type" : "item",
+         "set" : "rgb"
+      },
+      "sv_HUE.rgb_r" : {
+         "type" : "item",
+         "set" : "rgb",
+         "reading" : "rgb",
+         "converter" : "RGBCombined sv_HUE.rgb_r, sv_HUE.rgb_g, sv_HUE.rgb_b",
+         "device" : "fhem_HUE"
+      },
+      "sv_HUE.rgb_b" : {
+         "reading" : "rgb",
+         "converter" : "RGBCombined sv_HUE.rgb_r, sv_HUE.rgb_g, sv_HUE.rgb_b",
+         "device" : "fhem_HUE",
+         "type" : "item",
+         "set" : "rgb"
+      },
+      "sv_HUE.alert" : {
+         "converter" : "Direct",
+         "reading" : "alert",
+         "device" : "fhem_HUE",
+         "type" : "item",
+         "set" : "alert"
+      },
+      "sv_HUE.effect" : {
+         "set" : "effect",
+         "type" : "item",
+         "device" : "fhem_HUE",
+         "converter" : "Direct",
+         "reading" : "effect"
+      },
+      "sv_HUE.reachable" : {
+         "converter" : "NumDisplay",
+         "reading" : "reachable",
+         "device" : "fhem_HUE",
+         "type" : "item",
+         "set" : null
+      },
+      "sv_HUE.hue" : {
+         "type" : "item",
+         "set" : "hue",
+         "converter" : "NumDirect",
+         "reading" : "hue",
+         "device" : "fhem_HUE"
+      },
+      "sv_HUE.ct" : {
+         "type" : "item",
+         "set" : "ct",
+         "converter" : "NumDirect",
+         "reading" : "ct",
+         "device" : "fhem_HUE"
+      },

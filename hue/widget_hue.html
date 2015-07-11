@@ -1,0 +1,135 @@
+/**
+* -----------------------------------------------------------------------------
+* @package		Hue Widgets for smartVISU
+* @version		0.2.0
+* @author		dev0 / ddtlabs
+* @copyright	2015
+* @license		GPL [http://www.gnu.de]
+* -----------------------------------------------------------------------------
+*/
+
+
+/**
+* Displays Philips Hue specific sliders and buttons
+*
+* @param id -> unique id for this widget
+* @param gad_name -> will be expanded to all necessary fhem reading (eg. gad_name.sw, gad_name.pct, ...
+* @param step -> slider steps for pct, ct, pct
+* @param cd_rings -> number of colordisc rings
+* @param cd_segments -> number of colordisc segments
+*
+* @info The following SV/FHEM readings will be used:
+* @info gad_name.sw, gad_name.pct, gad_name.rgb_r, gad_name.rgb_g, gad_name.rgb_b, gad_name.ct,
+* @info gad_name.sat, gad_name.hue, gad_name.alert, gad_name.effect, gad_name.reachable
+* @info inspired by Orion [KNX Forum]
+* @author dev0 / ddtlabs
+*
+*/
+{% macro extcolordimmer(id, gad_name, step, cd_rings, cd_segments) %}
+	{% import "basic.html" as basic %}
+	<div class="hue-extcolordimmer">
+		<table width="100%" align="center">
+			<tr>
+				<td width="20%">
+					{{basic.dual(id~'sw', gad_name~'.sw')}}
+				</td>
+				<td width="20%">
+				{{ basic.colordisc(id~'rgb', gad_name~'.rgb_r', gad_name~'.rgb_g', gad_name~'.rgb_b', 0, 100, cd_rings, cd_segments) }}
+				</td>
+				<td width="20%">
+					{{basic.dual(id~'effect', gad_name~'.effect', icon1~'audio_repeat.png', icon0~'audio_repeat.png', 'colorloop', 'none')}}
+				</td>
+				<td width="20%">
+					{{basic.dual(id~'alert', gad_name~'.alert', icon1~'message_attention.png', icon0~'message_attention.png', 'select', 'none')}}
+				</td>
+				<td width="20%">
+					{{basic.symbol(id~'reachable-1', gad_name~'.reachable','',icon1~'it_wifi.png','1')}}
+					{{basic.symbol(id~'reachable-0', gad_name~'.reachable','',icon0~'it_wifi.png','0')}}
+				</td>
+			</tr>
+		</table>
+		<table width="100%" align="center">
+			<tr>
+				<td width="15%" align="left">
+					Helligkeit
+				</td>
+				<td width="85%" vertical-align="top">
+					{{basic.slider(id~'pct', gad_name~'.pct',0,100,step)}}
+				</td>
+			</tr>
+			<tr>
+				<td width="15%" align="left">
+					Temperatur
+				</td>
+				<td width="85%">
+					{{ basic.slider(id~'ct', gad_name~'.ct',154,500,step) }}
+				</td>
+			</tr>
+			<tr>
+				<td width="15%" align="left">
+					Sättigung
+				</td>
+				<td width="85%">
+					{{ basic.slider(id~'sat', gad_name~'.sat',0,254,step) }}
+				</td>
+			</tr>
+			<tr>
+				<td width="15%" align="left">
+					Farbe
+				</td>
+				<td width="85%">
+					{{ basic.slider(id~'hue',gad_name~'.hue',0,65535,500) }}
+				</td>
+			</tr>
+		</table>
+	</div>
+{% endmacro %}
+
+/**
+For compatibility reasons, only. Original macro lct was renamed to extcolordimmer.
+It is depricated and will be removed in future version. Please use extcolordimmer instead.
+*/
+{% macro lct(id, gad_name, step, cd_rings, cd_segments) %}
+	{% import "widget_hue.html" as hue %}
+	{{ hue.extcolordimmer(id, gad_name, step, cd_rings, cd_segments) }}
+{% endmacro %}
+
+
+
+
+
+
+/**
+* Standard dimmer with switching and dimming function
+*
+* @param id -> unique id for this widget
+* @param txt -> displayed gad_name
+* @param gad_name -> will be expanded to all necessary fhem reading (eg. gad_name.sw, gad_name.pct, ...
+* @param step -> slider steps for pct, ct, pct
+* @param cd_rings -> number of colordisc rings
+* @param cd_segments -> number of colordisc segments
+*
+* @info The following SV/FHEM readings will be used:
+* @info gad_name.pct, gad_name.rgb_r, gad_name.rgb_g, gad_name.rgb_b
+*
+* @author dev0 / ddtlabs
+*
+*/
+{% macro colordimmer_small(id, txt, gad_name, step, cd_rings, cd_segments) %}
+	{% import "basic.html" as basic %}
+	<div class="hue-colordimmer">
+		<table width="100%" align="center">
+			<tr>
+				<td width="10%">
+					{{ basic.colordisc(id~'rgb', gad_name~'.rgb_r', gad_name~'.rgb_g', gad_name~'.rgb_b', 0, 100, cd_rings, cd_segments) }}
+				</td>
+				<td>
+					<p>{{ txt|e }}</p>
+					{{basic.slider(id~'pct', gad_name~'.pct',0,100,step)}}
+				</td>
+			</tr>
+		</table>
+	</div>
+{% endmacro %}
+
+

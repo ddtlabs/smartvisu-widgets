@@ -1,0 +1,82 @@
+/* ---  H U E   W I D G E T S   C S S   v0.2.0 ---------------------------------------- */
+
+/* ---  W i d g e t :   E X T C O L O R D I M M E R  ---------------------------------- */
+
+/* Will affect whole <div class="block"> */
+.hue-extcolordimmer {
+	vertical-align: middle;
+/*	height: 215px;  */
+	margin: 0px 0 0px 0;
+}
+
+.hue-extcolordimmer .ui-slider .ui-input-text {
+	display: none !important;
+}
+
+.hue-extcolordimmer .ui-slider-track {
+	margin: 0 15px 0 10px;
+}
+
+.hue-extcolordimmer .ui-slider {
+	margin: 3px 0 11px 0px;
+}
+
+.hue-extcolordimmer .symbol .icon {
+	vertical-align: middle;
+	width: 42px;
+	height: 42px;
+}
+
+.hue-extcolordimmer .rgb span, .hue-extcolordimmer .colordisc span {
+	display: inline-block;
+	vertical-align: middle;
+	margin: 0 7px 0 7px;
+	width: 42px;
+	height: 42px;
+	border: 1px solid #000000;
+	-moz-border-radius: .8em;
+	-webkit-border-radius: .8em;
+	border-radius: .8em;
+}
+
+
+/* --- W i d g e t :   C O L O R D I M M E R  ----------------------------------------- */
+
+.hue-colordimmer {
+	vertical-align: middle;
+	height: 48px;
+	margin: 15px 0 10px 0;
+}
+
+.hue-colordimmer p {
+	border: 0 0 0 0px;
+	text-align: left;
+	margin: 0 0 0 10px;
+	padding: 0;
+}
+
+.hue-colordimmer .ui-slider .ui-input-text {
+	display: none !important;
+}
+
+.hue-colordimmer .ui-slider-track {
+	margin: 0 15px 0 10px;
+}
+
+.hue-colordimmer .ui-slider {
+	margin: 5px 0 0 10px;
+}
+
+.hue-colordimmer .rgb span, .hue-colordimmer .colordisc span {
+	display: inline-block;
+	vertical-align: middle;
+	margin: 0 7px 0 7px;
+	width: 30px;
+	height: 30px;
+	border: 2px solid #fff;
+	background-color: #333;
+	-moz-border-radius: .5em;
+	-webkit-border-radius: .5em;
+	border-radius: .5em;
+}
+
