@@ -9,7 +9,7 @@ Installation hints:
 
 - Copy widget_media.* to your pages folder
 
-- Add CSS code from widget_hue.css to your visu.css or include it any other way
+- Add CSS code from widget_media.css to your visu.css or include it any other way
 
 - Code for your room.html or category.htm:
 
