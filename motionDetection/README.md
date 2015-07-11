@@ -1,4 +1,4 @@
-### Media Player (iTunes(r)) and Amplifier Widgets for smartVISU / FHEM
+### Motion Detection Widget for smartVISU / FHEM
 
 Screenshots:
 
