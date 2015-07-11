@@ -1,0 +1,120 @@
+/**
+ * --- W i d g e t s :   I T U N E S ----------------------------------
+ */
+
+.ddtlabs .itunes {
+	position: relative;
+	padding: 10px 0 10px 0;
+}
+
+.ddtlabs .itunes .vol {
+	width: 55px;
+}
+
+.ddtlabs .itunes .vol .ui-slider {
+	display: inline-block;
+}
+
+.ddtlabs .itunes .ui-slider .ui-input-text {
+	display: none !important;
+}
+
+.ddtlabs .itunes .title {
+	position: absolute;
+	margin-left: 65px;
+	top: 50px;
+	left: 0;
+	right: 0;
+}
+
+.ddtlabs .itunes .control {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
+.ddtlabs .itunes .set {
+	position: absolute;
+	margin-left: 65px;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+
+.ddtlabs .itunes .set .pos {
+	margin: 10px;
+}
+
+/** position slider nach rechts */
+.ddtlabs .itunes .set .pos {
+  margin: 10px;
+  position: relative;
+  left:  7%;
+  width:  89%;
+}
+
+/** disable knop */
+.ddtlabs .itunes .set .pos .ui-slider .ui-slider-handle {
+	display: none;
+}
+
+.ddtlabs .itunes .set .scale {
+	position: relative;
+	height: 15px;
+	top: 2px;
+	background-image: url('../base/pics/scalex_linear.png');
+}
+
+.ddtlabs .itunes .set .ui-slider-track {
+	margin: 0 0 5px 0 !important;
+}
+
+.ddtlabs .itunes .set .ui-controlgroup-horizontal {
+	margin: 10px 10px 0 10px;
+}
+
+
+
+
+
+/**
+ * --- W i d g e t s :   A M P ----------------------------------
+ */
+
+
+
+.ddtlabs .amp {
+}
+
+.ddtlabs .amp .set {
+}
+
+.ddtlabs .amp .set .control {
+}
+
+.ddtlabs .amp .set .vol {
+	margin: 20px 0 0 0 ;
+}
+.ddtlabs .amp .set .vol .ui-slider {
+	display: inline-block;
+	width: 100%;
+}
+
+.ddtlabs .amp .set .vol .ui-slider-track {
+	margin: 0 15px 0 10px;
+}
+
+.ddtlabs .amp .set .vol .ui-slider .ui-input-text {
+	display: none !important;
+}
+
+.ddtlabs .amp .set .vol .scale {
+	margin: 0 8px 0 8px;
+	position: relative;
+	height: 15px;
+	top: 2px;
+	background-image: url('../base/pics/scalex_linear.png');
+}
+
+
+

@@ -1,0 +1,140 @@
+/**
+* iTunes(r) Media Player Widget for use with FHEM / 33_itunes.pm
+*
+* @param id:       unique id for this widget
+* @param gad:      gad name
+* @param speakers: 2D array of speaker names / icons. eg: [['airplay1','scene_livingroom.svg'],['airplay2','scene_cooking.svg'],['airplay3','scene_sleeping.svg']]
+* @param playlist: show button for playlist, 0/1: default 0, optional
+* @param pos:      show slider, 0/1: default 1, optional
+* @param mute:     show button for mute, 0/1: default 1, optional
+* @author dev0
+*/
+
+{% macro itunes(id, gad, speakers, playlist, pos, mute) %}
+	{% import "basic.html" as basic %}
+	{% set uid = uid(page, id) %}
+
+<div class="ddtlabs">
+	<div id="{{ uid }}" class="itunes">
+
+		<div class="vol">
+			<img class="slider-bottomup-scale" src="pages/base/pics/scale_buttomup.png">
+			{{ basic.slider(id~'-vol', gad~'.vol', 0, 100, 5, 'bottomup') }}
+		</div>
+
+		<div class="control">
+			{{ basic.dual(id~'-presents', gad~'.presents', 'control_on_off.svg', 'control_on_off.svg', 'appeared', 'disappeared') }}
+
+			{% if mute|default(1) == 1 %}
+			{{ basic.button(id~'-mute', gad~'.mute', 'Mute', 'audio_volume_mute.svg', 1) }}
+			{% endif %}
+
+			{{ basic.multistate(id~'-repeatm', gad~'.repeat', ['0', '1', '2'], ['audio_repeat.svg', 'audio_repeat_song.svg', 'audio_repeat.svg'], 'mini') }}
+			{{ basic.dual(id~'-shuffle', gad~'.shuffle', 'audio_shuffle.svg', 'audio_shuffle.svg', 1, '') }}
+
+			{% if playlist|default(1) == 0 %}
+			{{ basic.button(id~'-playlist', gad~'.playlist', 'Playlist 1', 'audio_playlist.svg', '318797') }}
+			{% endif %}
+
+									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			{% for speaker in speakers %}
+			{{ basic.dual(id~speaker[0]~'-btn', gad~speaker[0], speaker[1], speaker[1], speaker[0]~' on', speaker[0]~' off') }}
+			{% endfor %}
+		</div>
+
+		<div class="title">{{ basic.value(id~'-artist', gad~'.artist') }} &nbsp;-&nbsp;
+			{{ basic.value(id~'-title', gad~'.title') }} &nbsp;({{ basic.value(id~'-duration', gad~'.duration') }}) <br>
+			{{ basic.value(id~'-album', gad~'.album') }}
+		</div>
+
+		<div class="set">
+			{% if pos|default(1) == 1 %}
+				<div class="pos">
+					<div class="scale">&nbsp;</div>
+					{{ basic.slider(id~'-pos', gad~'.pos', 0, 100, 1) }}
+				</div>
+			{% endif %}
+
+			<div data-role="controlgroup" data-type="horizontal">
+       			{{ basic.button(id~'-prev', gad~'.prev', 'previous', 'control_arrow_left.svg', 1) }}
+				{{ basic.dual(id~'-play', gad~'.play', 'audio_pause.svg', 'audio_play.svg', 'play', 'pause') }}
+			 	{{ basic.button(id~'-stop', gad~'.stop', 'stop', 'audio_stop.svg', 'stop') }}
+				{{ basic.button(id~'-next', gad~'.next', 'next', 'control_arrow_right.svg', 1) }}
+			</div>
+		</div>
+
+	</div>
+</div>
+{% endmacro %}
+
+
+
+
+/**
+* Amplifier Widget
+*
+* @param id:       unique id for this widget
+* @param gad:      gad name
+* @param speakers: 2D array of inputs / descriptions. eg: [['cbl/sat','SAT'], ['dvd','iTunes'], ['cd','CD'], ['dvr','DVR']]
+* @author dev0
+*/
+
+{% macro amp(id, gad, inputs) %}
+	{% import "basic.html" as basic %}
+	{% set uid = uid(page, id) %}
+<div class="ddtlabs">
+	<div class="amp">
+		<div class="set">
+			<div class="control">
+			<table style="width: 100%"><tr>
+			<tr>
+			<td style="width: 15%;" align="left">
+				{{ basic.dual(id~'-power', gad~'.power', 'control_on_off.svg', 'control_on_off.svg', 'on', 'off', 'mini') }}
+			</td>
+			<td style="width: 70%;" align="center">
+				{% for input in inputs %}
+				{{ basic.button(id~'-'~input[0], gad~'.input', input[1], '', input[0], 'mini') }}
+				{% endfor %}
+			</td>
+
+			<td style="width: 15%;" align="left">
+				{{ basic.value(id~'inptext', gad~'.input', '', '') }}
+
+			</td>
+
+			</tr>
+			</table>
+			</div>
+			<div class="vol">
+			<table style="width: 100%"><tr>
+			<td style="width: 15%;" align="left">
+				{{ basic.dual(id~'_mute', gad~'.mute', 'audio_volume_mute.svg' , 'audio_volume_mid.svg', 'on', 'off', 'mini') }}
+			</td>
+			<td style="width: 85%;">
+				<div class="scale">&nbsp;</div>
+				{{ basic.slider(id~'_vol', gad~'.vol', 0, 100, 1) }}
+			</td>
+			</tr></table>
+			</div>
+
+		</div>
+	</div>
+</div>
+{% endmacro %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
