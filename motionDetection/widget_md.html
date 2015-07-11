@@ -1,0 +1,44 @@
+/**
+* Motion detection control
+*
+* @param id: unique id for this widget
+* @param gad: name of the mdDummy (will be used in 99_myMdUtils.pm functions)
+*/
+{% macro md(id, gad) %}
+	{% import "basic.html" as basic %}
+	{% import "widget_uzsu.html" as uzsu %}
+
+	<table width="98%">
+
+		<tr>
+		<td width="80"></td><td align="left">Einschaltdauer [min]</td></tr>
+		<tr>
+			<td> <span data-role="controlgroup" data-type="horizontal">{{ basic.dual(id~'_mode_active', gad~'_MODE_ACTIVE', 'time_automatic.svg', 'time_manual_mode.svg', 1, 0, 'mini') }}</span></td>
+			<td> {{ basic.slider(id~'_li_ontime', gad~'_LI_ONTIME', 1, 10, 1, '') }} </td>
+		</tr>
+
+		<tr>
+		<td></td>
+		<td align="left">Helligkeit bei Bewegung [tags]</td>
+		</tr>
+
+		<tr>
+		<td>{{ uzsu.uzsu_icon(id~'_mode_night_uzsu', gad~'_MODE_NIGHT.uszu', 'Nachtschaltung', '', 'icons/my/or/time_clock.png', 'icons/my/ws/time_clock.png', 'text') }}</td>
+		<td> {{ basic.slider(id~'_level_day', gad~'_LI_LEVEL_DAY', 0, 100, 1, '') }} </td>
+		</tr>
+
+		<tr align="left">
+		<td></td>
+		<td>Helligkeit bei Bewegung [nachts]</td>
+		</tr>
+
+		<tr>
+		<td> {{ basic.symbol(id~'_state_off', gad~'_STATE', '', 'message_presence.svg', 'off') }} {{ basic.symbol(id~'_state_on', gad~'_STATE', '', 'message_presence_active.svg', 'on', '', 'icon1') }}</td>
+		<td> {{ basic.slider(id~'_level_night', gad~'_LI_LEVEL_NIGHT', 0, 100, 1, '') }} </td>
+		</tr>
+
+	</table>
+
+{% endmacro %}
+
+
