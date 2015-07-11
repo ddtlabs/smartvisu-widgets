@@ -12,7 +12,7 @@ Installation hints:
 
 - Copy widget_md.html to your pages folder
 
-- Copy icons to $smartvisu_root/icons/my/(ws|or)/ (SV 2.8 does not deals with png icons anymore, USZU 3.01 still needs them)
+- Copy icons to $smartvisu_root/icons/my/(ws|or)/ (SV 2.8 does not deal with png icons anymore, USZU 3.01 still needs them)
 
 
 Optional:
