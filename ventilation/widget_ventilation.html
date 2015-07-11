@@ -1,0 +1,106 @@
+/**
+* Ventilation Control
+*
+* @param id: unique id for this widget
+* @param gad: name of the dimmer
+*
+*/
+{% macro vent1(id, gad) %}
+	{% import "basic.html" as basic %}
+
+	<table width="98%">
+
+		<tr>
+		<td width="80"></td><td align="left">Nachlaufzeit (min)</td></tr>
+		<tr>
+			<td> <span data-role="controlgroup" data-type="horizontal">{{ basic.dual(id~'_rfEnable', gad~'.rfEnable', 'time_automatic.svg', 'time_manual_mode.svg', 1, 0, 'mini') }}</span></td>
+			<td> {{ basic.slider(gad~'_TimerTimeX', gad~'.timerTime',  1, 30, 1, '') }} </td>
+		</tr>
+
+		<tr>
+		<td></td>
+		<td align="left">Einschalten bei % rF</td>
+		</tr>
+
+		<tr>
+		<td> <span data-role="controlgroup" data-type="horizontal">{{ basic.dual(id~'_SW1_2', gad~'_SW1_2', '', '', 1, 0, 'mini') }}</span></td>
+		<td> {{ basic.slider(gad~'_rfOnX', gad~'.rfOn',  50, 100, 1, '') }} </td>
+		</tr>
+
+		<tr align="left">
+		<td></td>
+		<td>Ausschalten bei % rF</td>
+		</tr>
+
+		<tr>
+		<td> {{ basic.symbol(id~gad~'sym_status_off', [gad~'_SW1_2',gad~'.rfStatus',gad~'.timerStatus'], '', 'vent_ventilation.svg', '0', 'and') }}
+			 {{ basic.symbol(id~gad~'sym_status_manu', [gad~'_SW1_2.stateRev',gad~'.rfStatus',gad~'.timerStatus'], '', 'vent_ventilation_level_manual_m.svg', '0', 'and', 'icon1') }}
+			 {{ basic.symbol(id~gad~'sym_status_auto_rf', gad~'.rfStatus', '', 'my_vent_ventilation_level_humidity.svg', '1', '', 'icon1') }}
+			 {{ basic.symbol(id~gad~'sym_status_auto_timer', gad~'.timerStatus', '', 'my_vent_ventilation_level_timer.svg', '1', '', 'icon1') }}
+		</td>
+
+		<td> {{ basic.slider(id~'_hum_offX', gad~'.rfOff',  40, 80, 1, '') }} </td>
+		</tr>
+
+	</table>
+
+{% endmacro %}
+
+
+
+/**
+* Ventilation Control
+*
+* @param id: unique id for this widget
+* @param gad: name of the dimmer
+*
+*/
+{% macro vent2(id, gad) %}
+	{% import "basic.html" as basic %}
+
+	<table width="90%" align="center">
+	<tr>
+		<td width="33%">
+			<span data-role="controlgroup" data-type="horizontal">{{ basic.dual(id~'_timerEnable', gad~'.timerEnable', 'time_automatic.svg', 'time_manual_mode.svg', 1, 0, 'mini') }}</span>
+		</td>
+		<td width="33.3%">
+			 <span data-role="controlgroup" data-type="horizontal">{{ basic.dual(id~'_FAN', gad, '', '', 1, 0, 'mini') }}</span>
+		</td>
+		<td width="33%">
+			 {{ basic.symbol(id~gad~'sym_status_off', [gad,gad~'.timerStatus'], '', 'vent_ventilation.svg', '0', 'and') }}
+			 {{ basic.symbol(id~gad~'sym_status_manu_on', [gad~'.stateRev',gad~'.timerStatus'], '', 'vent_ventilation_level_manual_m.svg', '0', 'and', 'icon1') }}
+			 {{ basic.symbol(id~gad~'sym_status_auto_timer_on', gad~'.timerStatus', '', 'vent_ventilation_level_timer.svg', '1', '', 'icon1') }}
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3"  align="left">
+			<hr>
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3"  align="left">
+			Nachlaufzeit (Min)
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3">
+			{{ basic.slider(gad~'_timerTime', gad~'.timerTime',  1, 7, 1, '') }}
+		</td>
+	</tr>
+	<tr><td height="10"></td></tr>
+	<tr>
+		<td colspan="3"  align="left">
+			Einschalten nach (Sek)
+		</td>
+	</tr>
+	<tr>
+		<td colspan="3">
+			{{ basic.slider(gad~'_timerStartAfter', gad~'.timerStartAfter',  30, 210, 1, '') }}
+		</td>
+	</tr>
+
+	</table>
+
+{% endmacro %}
+
+
