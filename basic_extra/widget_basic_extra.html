@@ -1,0 +1,30 @@
+/**
+* A switch with to states displayed as a button (default behavior as SV 2.7)
+*
+* @param unique id for this widget
+* @param a item
+* @param the pic for the 'on' state (optional)
+* @param the pic for the 'off' state (optional)
+* @param value send for the 'on' state (optional, default 1)
+* @param value send for the 'off' state (optional, default 0)
+* @param type: 'micro', 'mini', 'midi' (optional, default: mini)
+* @param color: 'color' for on state e.g. '#f00' for red (optional, default: 'icon1' of design)
+*/
+{% macro dual(id, item, pic_on, pic_off, val_on, val_off, type, color) %}
+	{% set uid = uid(page, id) %}
+
+	<a id="{{ uid(page, id) }}" data-widget="basic_extra.dual" data-item="{{ item }}"
+		data-val-on="{{ val_on|default('1') }}" data-val-off="{{ val_off|default('0') }}"
+		data-pic-on="{{ pic_on|deficon('control_on_off.svg') }}" data-pic-off="{{ pic_off|deficon('control_on_off.svg') }}"
+		class="ui-{{ type|default('mini') }}" data-role="button" data-inline="true" data-iconpos="center">
+
+		<img id="{{ uid }}-off" class="icon" src="{{ pic_off|deficon('control_on_off.svg') }}" />
+		{% if color is empty  %}
+			<img id="{{ uid }}-on" class="icon icon1 hide" src="{{ pic_on|deficon('control_on_off.svg') }}" />
+		{% else %}
+			<img id="{{ uid }}-on" class="icon icon1 hide" style="stroke:{{ color }}; fill:{{ color }};" src="{{ pic_on|deficon('control_on_off.svg') }}" />
+		{% endif %}
+	</a>
+
+{% endmacro %}
+
