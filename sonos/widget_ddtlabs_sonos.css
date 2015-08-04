@@ -1,0 +1,121 @@
+/**
+ * ---  W i d g e t s :  S O N O S  ----------------------------------
+ */
+
+.ddtlabs .sonos {
+}
+
+.sonos td {
+	border: 0px solid;
+	text-align: left;
+}
+
+/** cover imgage itself */
+.ddtlabs .sonos .coverimg {
+	width: 100%;
+	height: 100%;
+	border-radius: 10px;
+	border: 2px solid;
+}
+
+/** td with coverimg */
+.ddtlabs .sonos #cover {
+	width: 190px;
+	height: 190px;
+	vertical-align: top;
+}
+
+/** td with volume slider */
+.ddtlabs .sonos #vol {
+	width:  75px;
+}
+
+/** td spacer */
+.ddtlabs .sonos #spacer {
+	height: 8px;
+}
+
+.ddtlabs .sonos .vol {
+	position: relative;
+	padding: 0px 15px 0px 0px;
+}
+
+.ddtlabs .sonos .vol .ui-slider {
+	display: inline-block;
+}
+
+.ddtlabs .sonos .ui-slider .ui-input-text {
+	display: none !important;
+}
+
+.ddtlabs .sonos .mute,.play {
+	text-align: center;
+}
+
+
+.ddtlabs .sonos .title, .playlist {
+	left: 18px;
+	position: relative;
+}
+
+/**
+.ddtlabs .sonos .selectmenu {
+	display: inline;
+	left: 230px;
+	position: absolute;
+	right: 50px;
+	top: 3px;
+	overflow: hidden;
+}
+*/
+
+.ddtlabs .sonos .playlist .ui-select {
+	display: inline;
+	left: 230px;
+	position: absolute;
+	right: 50px;
+	top: 3px;
+	overflow: hidden;
+}
+
+
+
+.ddtlabs .sonos .pos {
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: 10px;
+}
+
+
+.ddtlabs .sonos .pos .ui-slider-track {
+	margin: 0 0 5px 0 !important;
+	height: 8px;
+}
+
+.ddtlabs .sonos .pos .ui-controlgroup-horizontal {
+	margin: 10px 10px 0 10px;
+}
+
+/** position slider nach rechts */
+.ddtlabs .sonos .pos {
+  margin: 10px;
+  position: relative;
+  left:  2%;
+  width:  93%;
+}
+
+/** disable knop */
+.ddtlabs .sonos .pos .ui-slider .ui-slider-handle {
+	display: none;
+}
+
+.ddtlabs .sonos .pos .scale {
+	position: relative;
+	height: 15px;
+	top: 2px;
+	background-image: url('../base/pics/scalex_linear.png');
+}
+
+
+
