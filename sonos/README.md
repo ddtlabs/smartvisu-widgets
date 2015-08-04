@@ -1,4 +1,4 @@
-### Motion Detection Widget for smartVISU / FHEM
+### Sonos Widget for smartVISU / FHEM
 
 Screenshots:
 
