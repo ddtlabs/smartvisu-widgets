@@ -63,7 +63,7 @@ You can use any smartVISU compatible svg icon. Some icons are included that disp
 {% macro player(id, gad, neighbors, radiolist_header, radiolist_items, playlist_header, playlist_items) %}
 ```
 
-**Example widget call** for your rooms_*.html or category_*.html:
+**Example widget call** for two players (eg. for rooms_*.html or category_*.html):
 ```
 <div class="block" style="width: 100%;">
 	<div class="set-1" data-role="collapsible-set" data-theme="c" data-content-theme="a" data-mini="true">
@@ -72,6 +72,27 @@ You can use any smartVISU compatible svg icon. Some icons are included that disp
 		<table width="100%"><tr><td>
 
 			{{ ddtlabs_sonos.player('sonos_studio', 'Sonos_Studio', ['Sonos_Sleepingroom', 'Sonos_Livingroom'],
+			'Radio:',[
+			['1LIVE','1LIVE - Das junge Radio des WDR. 103.7 (Euro-Hits)'],
+			['Rock Ant.','ROCK ANTENNE Classic Perlen (Classic Rock)']
+			],
+			'Playlists:', [
+			['Rock','Rock'],
+			['New Soul','NewSoul']
+			])}}
+
+		</td></tr></table>
+		</div>
+	</div>
+</div>
+
+<div class="block" style="width: 100%;">
+	<div class="set-1" data-role="collapsible-set" data-theme="c" data-content-theme="a" data-mini="true">
+		<div data-role="collapsible" data-collapsed="false" >
+		<h3>Sonos Studio <span class="sonos_header_presence"></span></h3>
+		<table width="100%"><tr><td>
+
+			{{ ddtlabs_sonos.player('sonos_slepingroom', 'Sonos_Sleepingroom', ['Sonos_Studio', 'Sonos_Livingroom'],
 			'Radio:',[
 			['1LIVE','1LIVE - Das junge Radio des WDR. 103.7 (Euro-Hits)'],
 			['Rock Ant.','ROCK ANTENNE Classic Perlen (Classic Rock)']
