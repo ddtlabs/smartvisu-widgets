@@ -130,12 +130,12 @@ svTrackPosition:LastActionResult.*?GetCurrentTrackPosition.* { sv_calcTrackPosPe
 - If 99_fronthemSonosUtils.pm was replaced, then type "reload 99_fronthemSonosUtils" in your FHEM command box / telnet session. Or just restart FHEM.
 
 **Debugging:**
-- Enable at least verbose 4 and have a look at 99_fronthemSonosUtils.pm for disabled Log3 and main:Log3 lines and enable them. reload 99_fronthemSonosUtils
+- Enable at least verbose 4 and have a look at 99_fronthemSonosUtils.pm for disabled Log3 and main::Log3 lines and enable them. reload 99_fronthemSonosUtils
 
 **Uninstall:**
 - Remove additional userReading svTrackPosition from all Sonos players.
-- Delete notifies within FHEM.
-- Call withing FHEM {sv_SonosReadingsDelete()} to delete all addional created readings within Sonos players.
+- Delete both created notifies within FHEM.
+- Call within FHEM {sv_SonosReadingsDelete()} to delete all addional created readings within Sonos players.
 - Delete all copied files.
 - Say quite and sad: bye bye ;-)
 
