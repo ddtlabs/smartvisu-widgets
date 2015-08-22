@@ -18,6 +18,7 @@
   - If you are affected then rename your player(s), please. Otherwise you can try to change regexs in notifies and subs in 99_fronthemSonosUtils.pm.
 
 **Installation advices:**
+
 **FHEM:**
 - Copy 99_fronthemSonosUtils.pm to your FHEM module folder (typically /opt/fhem/FHEM).
 - Check that file has the same permission as all other files in this directory.
