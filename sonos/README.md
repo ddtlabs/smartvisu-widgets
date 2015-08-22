@@ -15,7 +15,7 @@
 - SmartVISU **2.8+** (https://github.com/Martin-Gleiss/smartvisu)
 - Fronthem (https://github.com/herrmannj/fronthem)
 - FHEM Sonos player device names without umlauts or underscores in room name. A underscore between prefix and room name is needed on the other hand.
-  - If you are affected then rename your player(s), please. Otherwise you can try to change regexs in notifies and subs in 99_fronthemSonosUtils.pm.
+ If you are affected then rename your player(s), please. Otherwise you can try to change regexs in notifies and subs in 99_fronthemSonosUtils.pm.
 
 **Installation advices:**
 
