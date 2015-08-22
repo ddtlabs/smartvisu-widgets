@@ -62,7 +62,7 @@ You can use any smartVISU compatible svg icon. Some icons are included that disp
 {% macro player(id, gad, neighbors, radiolist_header, radiolist_items, playlist_header, playlist_items) %}
 ```
 
-- Example widget call for your rooms_*.html or category_*.html:
+**- Example widget call** for your rooms_*.html or category_*.html:
 ```
 <div class="block" style="width: 100%;">
 	<div class="set-1" data-role="collapsible-set" data-theme="c" data-content-theme="a" data-mini="true">

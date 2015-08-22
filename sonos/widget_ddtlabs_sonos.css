@@ -1,0 +1,124 @@
+/**
+ * ---  W i d g e t s :  S O N O S  ----------------------------------
+ */
+
+.ddtlabs .sonos {
+}
+
+.sonos td {
+	border: 0px solid;
+	text-align: left;
+/**	vertical-align: top; */
+}
+
+/** cover imgage itself */
+.ddtlabs .sonos .coverimg {
+	width: 186px;
+	height: 186px;
+	border-radius: 10px;
+	border: 2px solid;
+}
+
+/** td with coverimg */
+.ddtlabs .sonos #cover {
+	width: 186px;
+	vertical-align: top;
+}
+
+/** td with volume slider */
+.ddtlabs .sonos #vol {
+	width:  75px;
+}
+
+/** td spacer */
+.ddtlabs .sonos #spacer {
+	height: 8px;
+}
+
+.ddtlabs .sonos .vol {
+	position: relative;
+	padding: 0px 15px 0px 0px;
+}
+
+.ddtlabs .sonos .vol .ui-slider {
+	display: inline-block;
+}
+
+.ddtlabs .sonos .ui-slider .ui-input-text {
+	display: none !important;
+}
+
+.ddtlabs .sonos .mute,.play {
+	text-align: center;
+}
+
+.ddtlabs .sonos .playlist, .btnright {
+	left: 18px;
+	position: relative;
+}
+
+/** Title itself */
+.ddtlabs .sonos .title {
+	left: 18px;
+	position: relative;
+	vertical-align: top;
+}
+
+/** Title td */
+.ddtlabs .sonos #title {
+	vertical-align: top;
+	height: 21px;
+}
+
+.ddtlabs .sonos .playlist .ui-select {
+	display: table;
+	position: relative;
+	overflow: hidden;
+	min-width: 90px;
+}
+
+.ddtlabs .sonos .playlist .ui-btn-inner {
+	padding: 6px 15px 6px 0;
+}
+.ddtlabs .sonos .playlist .ui-btn-up-a {
+    font-weight: lighter;
+}
+
+.ddtlabs .sonos .pos {
+	left: 2%;
+	right: 0;
+	bottom: 0;
+	top: 0;
+	position: relative;
+	width:  96%;
+}
+
+.ddtlabs .sonos .pos .ui-slider-track {
+	margin: -30px 0 5px 0 !important;
+	height: 8px;
+	opacity: 0.50;
+}
+
+.ddtlabs .sonos .pos .ui-controlgroup-horizontal {
+	margin: 10px 10px 0 10px;
+}
+
+/** disable knop */
+.ddtlabs .sonos .pos .ui-slider .ui-slider-handle {
+	display: none;
+}
+
+.ddtlabs .sonos .pos .scale {
+	position: relative;
+	height: 15px;
+	top: 2px;
+	background-image: url('../base/pics/scalex_linear.png');
+}
+
+.sonos_header_presence svg.fx-icon {
+	height: 17px;
+	width: 17px;
+	vertical-align: text-top;
+}
+
+

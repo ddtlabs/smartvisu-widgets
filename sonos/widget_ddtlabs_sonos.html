@@ -1,0 +1,226 @@
+/**
+* -----------------------------------------------------------------------------
+* @package     smartVISU
+* @author      dev0
+* @copyright   2015
+* @license     GPL [http://www.gnu.de]
+* -----------------------------------------------------------------------------
+*/
+
+/**
+* Sonos(r,c) Multimedia Player
+*
+* @param id: unique id for this widget, no default, mandatory
+* @param gad: gad name, no default, mandatory
+* @param neighbors:	array of other Sonos neighbour speakers. eg: ['Sonos_Studio', 'Sonos_Wohnzimmer'], no default, optional
+* @param radiolist_header: header for radio list
+* @param radiolist_items: 2D array of radio display_name/sonos_favourite_item. eg. [['1LIVE','1LIVE - Das junge Radio des WDR. 103.7 (Euro-Hits)'],['Rock Ant.','ROCK ANTENNE Classic Perlen (Classic Rock)']]
+* @param playlist_header: header for play list
+* @param playlist_items: 2D array of play list display_names/sonos_playlist_item. eg. [['Rock','Rock'],['New Soul','NewSoul']]
+* @author and copyright dev0
+*/
+
+{% macro player(id, gad, neighbors, radiolist_header, radiolist_items, playlist_header, playlist_items) %}
+
+	{% import "basic.html" as basic %}
+	{% import "widget_ddtlabs_sonos.html" as ddtlabs_sonos %}
+
+	{% set uid = uid(page, id) %}
+
+	{% set prefix         = 'mm_' %}
+	{% set gad            = prefix~gad %}
+
+	{% set state          = '.state' %}
+	{% set volume         = '.volume' %}
+	{% set artist         = '.currentArtist' %}
+	{% set title          = '.currentTitle' %}
+	{% set album          = '.currentAlbum' %}
+	{% set trackDuration  = '.currentTrackDuration' %}
+	{% set radioSender    = '.currentSender' %}
+	{% set radioShow      = '.currentSenderCurrent' %}
+	{% set radioInfo      = '.currentSenderInfo' %}
+	{% set mute           = '.Mute' %}
+	{% set repeat         = '.Repeat' %}
+	{% set shuffle        = '.Shuffle' %}
+	{% set playlist       = '.Playlist' %}
+	{% set radiolist      = '.Radiolist' %}
+	{% set loudness       = '.Loudness' %}
+	{% set crossfade      = '.CrossfadeMode' %}
+	{% set addMember      = '.AddMember' %}
+	{% set remMember      = '.RemoveMember' %}
+
+	{% set isInAnyGroup   = '.svIsInAnyGroup' %}      /** Coverter: SonosGroup */
+	{% set hasClient      = '.svHasClient' %}         /** Coverter: SonosGroup */
+	{% set trackPos       = '.svTrackPosition' %}     /** Coverter: SonosTrackPos */
+	{% set coverUrl       = '.currentAlbumArtURL' %}  /** Coverter: SonosAlbumArtURL */
+	{% set play           = '.transportState' %}      /** Coverter: SonosTransportState */
+
+
+<div class="ddtlabs">
+<div id="{{ uid }}" class="sonos">
+
+<table width="100%">
+<tr>
+    <td id="vol" rowspan="5">
+    	<div class="vol">
+			<img class="slider-bottomup-scale" src="pages/base/pics/scale_buttomup.png">
+			{{ basic.slider(id~volume, gad~volume, 0, 100, 1, 'bottomup') }}
+		</div>
+    </td>
+    <td id="cover" rowspan="5">
+	   	{{ ddtlabs_sonos.cover(id~coverUrl, gad~coverUrl) }}
+		<div class="pos">
+		{{ basic.slider(id~trackPos, gad~trackPos, 0, 100, 1) }}
+		</div>
+    </td>
+	<td id="title">
+		<span class="title">
+		{{ basic.value(id~radioSender, gad~radioSender, '', '') }}
+		{{ basic.value(id~artist, gad~artist, '', '') }}
+		</span>
+	</td>
+</tr>
+
+<tr>
+	<td id="title">
+		<span class="title">
+		{{ basic.value(id~radioInfo, gad~radioInfo, '', '') }}
+		{{ basic.value(id~album, gad~album, '', '') }}
+		</span>
+	</td>
+</tr>
+
+<tr>
+	<td id="title">
+		<span class="title">
+		{{ basic.value(id~radioShow, gad~radioShow, '', '') }}
+		{{ basic.value(id~title, gad~title, '', '') }}
+		/** &nbsp;&nbsp;&nbsp; [{{ basic.value(id~trackDuration, gad~trackDuration, '', '') }}] */
+		</span>
+	</td>
+</tr>
+
+<tr>
+	<td>
+		<div class="playlist">
+		{{ ddtlabs_sonos.selectmenu_playlist(id~'playlist', gad~playlist,  playlist_items, '', playlist_header) }}
+		{{ ddtlabs_sonos.selectmenu_radiolist(id~'radiolist', gad~radiolist, radiolist_items, '', radiolist_header) }}
+		</div>
+	</td>
+</tr>
+
+<tr>
+	<td>
+		<div class="btnright">
+			<span data-role="controlgroup" data-type="horizontal">
+   			{{ basic.dual(id~gad~isInAnyGroup, gad~isInAnyGroup, 'my_audio_group_empty.svg', 'my_audio_group_fault.svg', '1', '0', 'mini') }}
+			</span>
+			{% for neighbor in neighbors%}
+				<span data-role="controlgroup" data-type="horizontal">
+				{{ basic.dual(id~addMember~'.'~neighbor, gad~hasClient~'_'~neighbor, 'my_audio_group_'~neighbor~'.svg', 'my_audio_group_'~neighbor~'.svg', '1', '0') }}
+				</span>
+			{% endfor %}
+			<span data-role="controlgroup" data-type="horizontal">
+			/** todo: add function with popup ? */
+			{{ basic.button(id~'config', '', '', 'edit_settings.svg', '1', 'mini') }}
+			</span>
+		</div>
+	</td>
+</tr>
+
+<tr>
+	<td>
+		<div data-role="controlgroup" data-type="horizontal" class="mute">
+		{{ basic.dual(id~mute, gad~mute, 'audio_volume_mute.svg', 'audio_volume_mid.svg', 1, 0, 'mini') }}
+		</div>
+	</td>
+	<td>
+		<div data-role="controlgroup" data-type="horizontal" class="play">
+		{{ basic.button(id~'_prev', gad~state, 'Prev', 'control_arrow_left.svg', 'Previous') }}
+		{{ basic.dual(id~play,   gad~play, 'audio_play.svg', 'audio_play.svg', 'PLAYING', 'STOPPED', '') }}
+		{{ basic.button(id~'_stop', gad~state, 'Stop', 'audio_stop.svg', 'Stop') }}
+		{{ basic.button(id~'_next', gad~state, 'Next', 'control_arrow_right.svg', 'Next') }}
+		</div>
+	</td>
+	<td>
+		<div class="btnright">
+			<span data-role="controlgroup" data-type="horizontal">
+			{{ basic.multistate(id~repeat, gad~repeat, ['0', '1', '2'], ['audio_repeat.svg', 'audio_repeat_song.svg', 'audio_repeat.svg'], 'mini') }}
+			</span>
+			<span data-role="controlgroup" data-type="horizontal">
+			{{ basic.dual(id~shuffle, gad~shuffle, 'audio_shuffle.svg', 'audio_shuffle.svg', 1, '') }}
+			</span>
+			<span data-role="controlgroup" data-type="horizontal">
+   			{{ basic.dual(id~loudness, gad~loudness, 'audio_loudness.svg', 'audio_loudness.svg', 1, 0, 'mini') }}
+			</span>
+			<span data-role="controlgroup" data-type="horizontal">
+   			{{ basic.dual(id~crossfade, gad~crossfade, 'audio_fade.svg', 'audio_fade.svg', 1, 0, 'mini') }}
+			</span>
+		</div>
+	</td>
+</tr>
+
+</table>
+</div>
+</div>
+{% endmacro %}
+
+
+
+/**
+* Display cover/logo
+*
+* @param id: unique id
+* @param src: url to image
+* @param prefix: should be emtpy
+*/
+
+{% macro cover(id, src, prefix) %}
+	<img class="coverimg" id="{{ uid(page, id) }}" data-widget="ddtlabs_sonos.cover" data-item="{{ src }}" src="{{ prefix }}" />
+{% endmacro %}
+
+
+
+/**
+* Selectmenu for Playlists
+*
+* @param id: unique id for this widget
+* @param gad: gad for this widget
+* @param items: array of playlists
+* @param label: lable for this widget
+*/
+
+{% macro selectmenu_playlist(id, gad, items, label, selected) %}
+<a class="ui-btn-inline ui-mini selectmenu">
+	<select name="{{ uid(page, id) }}" id="{{ uid(page, id) }}" data-widget="ddtlabs_sonos.selectmenu" data-item="{{ gad }}" data-native-menu="false" data-placeholder="false" data-mini="true" data-native-menu="false" class="selectmenu" />
+		{% for item in items %}
+			<option value="{{ item[1] }}">{{ item[0] }}</option>
+		{% endfor %}
+		<option selected>{{ selected }}</option>
+	</select>
+</a>
+{% endmacro %}
+
+
+/**
+* Selectmenu for radio lists
+*
+* @param id: unique id for this widget
+* @param gad: gad for this widget
+* @param items: array of playlists
+* @param label: lable for this widget
+*/
+
+{% macro selectmenu_radiolist(id, gad, items, label, selected) %}
+<a class="ui-btn-inline ui-mini selectmenu">
+	<select name="{{ uid(page, id) }}" id="{{ uid(page, id) }}" data-widget="ddtlabs_sonos.selectmenu" data-item="{{ gad }}" data-native-menu="false" data-placeholder="false" data-mini="true" data-native-menu="false" class="selectmenu"/>
+		{% for item in items %}
+			<option value="{{ item[1]|url_encode }}">{{ item[0] }}</option>
+		{% endfor %}
+		<option selected>{{ selected }}</option>
+	</select>
+</a>
+{% endmacro %}
+
+
+
