@@ -1,23 +1,23 @@
 ### Sonos Widget for smartVISU / FHEM
 
-Screenshots:
+**Screenshots:**
 
 ![](screenshots/sonos.png)
 
-Description:
+**Description:**
 - SmartVISU widget to control Sonos(r) speakers with FHEM/Fronthem.
 
-Features:
+**Features:**
 - Control groups, play/radio lists, track position, volume, mute, play, stop, skip, ...
 
-Requirements:
+**Requirements:**
 - Fully functioning FHEM (at least ver 8952) with configured Sonos modules
 - SmartVISU **2.8+** (https://github.com/Martin-Gleiss/smartvisu)
 - Fronthem (https://github.com/herrmannj/fronthem)
 - FHEM Sonos player device names without umlauts or underscores in room name. A underscore between prefix and room name is needed on the other hand.
   - If you are affected then rename your player(s), please. Otherwise you can try to change regexs in notifies and subs in 99_fronthemSonosUtils.pm.
 
-Installation advices:
+**Installation advices:**
 - FHEM:
 - Copy 99_fronthemSonosUtils.pm to your FHEM module folder (typically /opt/fhem/FHEM).
 - Check that file has the same permission as all other files in this directory.
@@ -31,20 +31,20 @@ svTrackPosition:LastActionResult.*?GetCurrentTrackPosition.* { sv_calcTrackPosPe
 ```
 - Do not forget to save.
 
-- smartVISU:
+**- smartVISU:**
 - Copy widget_ddtlabs_sonos.* to your smartVISU pages folder.
 - Copy content of *.css and *.js to your visu.css/visu.js or include it in any other way.
 - Copy sonos_empty.jpg to smartvisu_root/pages/base/pics (typically /var/www/smartvisu/pages/base/pics).
 - Copy icons/.* to smartvisu ws icon folder (typically /var/www/smartvisu/icons/ws).
 - Check that permissions of all copied files are correct.
 
-- Icons:
+**- Icons:**
 - Each Sonos player can build a group with its neighbours. Icons that are used for that purpose must be named in this way: my_audio_group_[playername].svg
 eg. one of your Sonos player is named "Sonos_Livingroom" then your icon for that room must be named "my_audio_group_Sonos_Livingroom.svg"
 You can use any smartVISU compatible svg icon. Some icons are included that display the first character of the room name. The character can simple be changed with a text editor of your choice (last line in svg). Position of this character can be adjusted in x/y lines above.
 - Check that permissions of all copied/created files are correct.
 
-- Widget declaration:
+**- Widget declaration:**
 ```
 /**
 * Sonos(r) Multimedia Player
@@ -89,7 +89,7 @@ You can use any smartVISU compatible svg icon. Some icons are included that disp
 
 - Group / ungroup your players in all possible combinations with FHEM or Sonos Controller while FHEM is running. Dynamic readings will be created.
 
-- Fronthem converter usage:
+**- Fronthem converter usage:**
   - SonosGroup: used for all svHasClient_Sonos_.* and svIsInAnyGroup readings (these FHEM readings will automatically be created at first when Sonos speakers are grouped)
   - SonosAlbumArtURL: used for currentAlbumArtURL reading (inter alia fixing a FHEM Sonos module bug)
   - SonosTrackPos: used for svTrackPosition reading
@@ -98,34 +98,34 @@ You can use any smartVISU compatible svg icon. Some icons are included that disp
   - Direct: used for all other readings
   - Some readings may not be displayed in FHEM Gad Editor because they are on modules setList. Enter them nevertheless.
 
-- Used Sonos player readings:
+**- Used Sonos player readings:**
   - can be found in the beginning of sonos player macro in widget_ddtlabs_sonos.html
   - some additional readings are created dynamically based on Sonos neighbours within Sonos players.
     - eg. svHasClient_Sonos_Livingroom, svHasClient_Sonos_Kitchen, ...
 
-Update notes:
+**Update notes:**
 - If 99_fronthemSonosUtils.pm was replaced, then type "reload 99_fronthemSonosUtils" in your FHEM command box / telnet session. Or just restart FHEM.
 
-Debugging:
+**Debugging:**
 - Enable at least verbose 4 and have a look at 99_fronthemSonosUtils.pm for disabled Log3 and main:Log3 lines and enable them. Reload.
 
-Uninstall:
+**Uninstall:**
 - Remove additional userreading svTrackPosition from all Sonos players.
 - Delete notifies within FHEM.
 - Call withing FHEM {sv_SonosReadingsDelete()} to delete all addional created readings within Sonos players.
 - Delete all copied files.
 - Say quite and sad: bye bye ;-)
 
-Note on using "ddtlabs" in file names and css statements:
+**Note** on using "ddtlabs" in file names and css statements:
 - I decided to use a unique prefix name to be sure to not collide with other widgets.
 
-ToDo:
+**ToDo:**
 - Remove notify which triggers currentTrackPosition continously and replace it with a timerEvent() js function. **Voluntary up, please!**
 - Popup with sliders for treble, bass, balance and other settings.
 - Get radio and play lists from FHEM readings.
 - Dynamic layout in width.
 
-Credits:
+**Credits:**
 - My wife!
 - My wife!
 - My wife!
@@ -137,7 +137,7 @@ Credits:
 - Some group icons are based on icons that are published by creative commons license:
   - Credit goes to: Marek Polakovic from the Noun Project
 
-Have fun.
+**Have fun.**
 
 
 
