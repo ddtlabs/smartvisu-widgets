@@ -114,11 +114,12 @@ svTrackPosition:LastActionResult.*?GetCurrentTrackPosition.* { sv_calcTrackPosPe
 **Fronthem converter usage:**
   - **SonosGroup:** used for all svHasClient_Sonos_.* and svIsInAnyGroup readings (these FHEM readings will automatically be created at first when Sonos speakers are grouped)
   - **SonosAlbumArtURL:** used for currentAlbumArtURL reading (inter alia fixing a FHEM Sonos module bug)
-  - **SonosTrackPos:** used for svTrackPosition reading
+  - **SonosTrackPos:** used for svTrackPosition userReading
   - **SonosTransportState:** used for transportState reading
   - **NumDirect:** used for Volume reading
   - **Direct:** used for all other readings
-  - Some readings may not be displayed in FHEM Gad Editor because they are on modules setList. Enter them nevertheless.
+  - Some readings may not be displayed in FHEM Gad Editor because they are not on Sonos modules internal setList. Enter them nevertheless.
+  - Last part of gad/items names that are displayed in gad editor are the reading names that must be selected for each reading and cmd. I hope that makes this configuration a little bit easier.
 
 **Used Sonos player readings:**
   - can be found in the beginning of sonos player macro in widget_ddtlabs_sonos.html
@@ -129,10 +130,10 @@ svTrackPosition:LastActionResult.*?GetCurrentTrackPosition.* { sv_calcTrackPosPe
 - If 99_fronthemSonosUtils.pm was replaced, then type "reload 99_fronthemSonosUtils" in your FHEM command box / telnet session. Or just restart FHEM.
 
 **Debugging:**
-- Enable at least verbose 4 and have a look at 99_fronthemSonosUtils.pm for disabled Log3 and main:Log3 lines and enable them. Reload.
+- Enable at least verbose 4 and have a look at 99_fronthemSonosUtils.pm for disabled Log3 and main:Log3 lines and enable them. reload 99_fronthemSonosUtils
 
 **Uninstall:**
-- Remove additional userreading svTrackPosition from all Sonos players.
+- Remove additional userReading svTrackPosition from all Sonos players.
 - Delete notifies within FHEM.
 - Call withing FHEM {sv_SonosReadingsDelete()} to delete all addional created readings within Sonos players.
 - Delete all copied files.
@@ -142,7 +143,7 @@ svTrackPosition:LastActionResult.*?GetCurrentTrackPosition.* { sv_calcTrackPosPe
 - I decided to use a unique prefix name to be sure to not collide with other widgets.
 
 **ToDo:**
-- Remove notify which triggers currentTrackPosition continously and replace it with a timerEvent() js function. **Voluntary up, please!**
+- Remove notify which triggers currentTrackPosition continously and replace it with a timerEvent() js function. **Voluntaries up, please!**
 - Popup with sliders for treble, bass, balance and other settings.
 - Get radio and play lists from FHEM readings.
 - Dynamic layout in width.
