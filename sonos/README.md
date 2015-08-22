@@ -41,8 +41,8 @@ svTrackPosition:LastActionResult.*?GetCurrentTrackPosition.* { sv_calcTrackPosPe
 
 **Icons:**
 - Each Sonos player can build a group with its neighbours. Icons that are used for that purpose must be named in this way: my_audio_group_[playername].svg
-eg. one of your Sonos player is named "Sonos_Livingroom" then your icon for that room must be named "my_audio_group_Sonos_Livingroom.svg"
-You can use any smartVISU compatible svg icon. Some icons are included that display the first character of the room name. The character can simple be changed with a text editor of your choice (last line in svg). Position of this character can be adjusted in x/y lines above.
+- eg. one of your Sonos player is named "Sonos_Livingroom" then your icon for that room must be named "my_audio_group_Sonos_Livingroom.svg".
+- You can use any smartVISU compatible svg icon. Some icons are included that display the first character of the room name. The character can simple be changed with a text editor of your choice (last line in svg). Position of this character can be adjusted in x/y lines above.
 - Check that permissions of all copied/created files are correct.
 
 **Widget declaration:**
@@ -92,7 +92,7 @@ You can use any smartVISU compatible svg icon. Some icons are included that disp
 		<h3>Sonos Studio <span class="sonos_header_presence"></span></h3>
 		<table width="100%"><tr><td>
 
-			{{ ddtlabs_sonos.player('sonos_slepingroom', 'Sonos_Sleepingroom', ['Sonos_Studio', 'Sonos_Livingroom'],
+			{{ ddtlabs_sonos.player('sonos_sleepingroom', 'Sonos_Sleepingroom', ['Sonos_Studio', 'Sonos_Livingroom'],
 			'Radio:',[
 			['1LIVE','1LIVE - Das junge Radio des WDR. 103.7 (Euro-Hits)'],
 			['Rock Ant.','ROCK ANTENNE Classic Perlen (Classic Rock)']
