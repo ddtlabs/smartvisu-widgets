@@ -112,12 +112,12 @@ svTrackPosition:LastActionResult.*?GetCurrentTrackPosition.* { sv_calcTrackPosPe
 - Group / ungroup your players in all possible combinations with FHEM or Sonos Controller while FHEM is running. Dynamic readings will be created.
 
 **Fronthem converter usage:**
-  - SonosGroup: used for all svHasClient_Sonos_.* and svIsInAnyGroup readings (these FHEM readings will automatically be created at first when Sonos speakers are grouped)
-  - SonosAlbumArtURL: used for currentAlbumArtURL reading (inter alia fixing a FHEM Sonos module bug)
-  - SonosTrackPos: used for svTrackPosition reading
-  - SonosTransportState: used for transportState reading
-  - NumDirect: used for Volume reading
-  - Direct: used for all other readings
+  - **SonosGroup:** used for all svHasClient_Sonos_.* and svIsInAnyGroup readings (these FHEM readings will automatically be created at first when Sonos speakers are grouped)
+  - **SonosAlbumArtURL:** used for currentAlbumArtURL reading (inter alia fixing a FHEM Sonos module bug)
+  - **SonosTrackPos:** used for svTrackPosition reading
+  - **SonosTransportState:** used for transportState reading
+  - **NumDirect:** used for Volume reading
+  - **Direct:** used for all other readings
   - Some readings may not be displayed in FHEM Gad Editor because they are on modules setList. Enter them nevertheless.
 
 **Used Sonos player readings:**
