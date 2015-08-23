@@ -26,26 +26,28 @@ fronthemSonosUtils_Initialize($$)
 ##########################################################################################
 
 sub sv_setSonosGroupsReadings($$) {
-  my ($device,$EVENT) = @_;
+	my ($device,$EVENT) = @_;
 
-  Log3 undef, 4, "EVENT: " . $EVENT;
+	Log3 undef, 4, "EVENT: " . $EVENT;
 
-  my @evt = split(" ",$EVENT);
-  my ($evtName, $trigger, $room) = @evt;
+	my @evt = split(" ",$EVENT);
+	my ($evtName, $trigger, $room) = @evt;
 
-  my @pre = devspec2array('TYPE=SONOS');
-  my $prefix = shift @pre;
+	my @pre = devspec2array('TYPE=SONOS');
+	my $prefix = shift @pre;
 
-  if ($trigger eq "Gruppenwiedergabe:") {
-    fhem("sleep 0.1; setreading $device svIsInThisGroup ".$prefix."_$room");
-	fhem("sleep 0.1; setreading $device svIsInAnyGroup 1");
-	fhem("sleep 0.1; setreading ".$prefix."_$room svHasClient_"."$device"." 1");
-  }
-  else {
-    fhem("sleep 0.1; setreading $device svIsInThisGroup none");
-	fhem("sleep 0.1; setreading $device svIsInAnyGroup 0");
-    fhem("sleep 0.1; setreading ".$prefix."_[0-9a-zA-Z]+:FILTER=TYPE=SONOSPLAYER svHasClient_"."$device"." 0");
-  }
+	if ($trigger eq "Gruppenwiedergabe:")
+	{
+	    fhem("sleep 0.1; setreading $device svIsInThisGroup ".$prefix."_$room");
+		fhem("sleep 0.1; setreading $device svIsInAnyGroup 1");
+		fhem("sleep 0.1; setreading ".$prefix."_$room svHasClient_"."$device"." 1");
+	}
+	else
+	{
+		fhem("sleep 0.1; setreading $device svIsInThisGroup none");
+		fhem("sleep 0.1; setreading $device svIsInAnyGroup 0");
+		fhem("sleep 0.1; setreading ".$prefix."_[0-9a-zA-Z]+:FILTER=TYPE=SONOSPLAYER svHasClient_"."$device"." 0");
+	}
 }
 
 
@@ -163,7 +165,8 @@ sub sv_SonosReadingsInit() {
 	return "No SONOS device" if $prefix eq "";
 
 	my @d = devspec2array("TYPE=SONOSPLAYER:FILTER=NAME=" . $prefix ."_[0-9a-zA-Z]+");
-	foreach my $sd (@d) {
+	foreach my $sd (@d)
+	{
 		Log3 undef, 1, "notify: setreading ".$prefix."_[A-Za-z0-9] svHasClient_$sd 0";
 		fhem("setreading ".$prefix."_[A-Za-z0-9] svHasClient_$sd 0");
 	}
@@ -247,7 +250,7 @@ sub SonosGroup(@)
 	if ($param->{cmd} eq 'get')
 	{
 		$event = ($reading eq 'state')?main::Value($device):main::ReadingsVal($device, $reading, '');
-    	$param->{cmd} = 'send';
+		$param->{cmd} = 'send';
 	}
 	if ($param->{cmd} eq 'send')
 	{
@@ -258,7 +261,7 @@ sub SonosGroup(@)
 	}
 	elsif ($param->{cmd} eq 'rcv')
 	{
-		main::Log3 undef, 4, "Debug: " . $cName . "gad: " . $gad . " / device: " . $device . " / event: " . $event . " / reading: " . $reading;
+		main::Log3 undef, 4, $cName . "gad: " . $gad . " / device: " . $device . " / reading: " . $reading;
 
 		# catch reading svHasClient.*
 		if ($reading =~ /svHasClient/)
@@ -270,20 +273,20 @@ sub SonosGroup(@)
 				# Add player to group
 				if ($gadval eq "1")
 				{
-					main::Log3 undef, 4, "Debug: " . $cName . "set $device AddMember $reading";
+					main::Log3 undef, 4, $cName . "set $device AddMember $reading";
 					$param->{result} = main::fhem("set $device AddMember $reading");
 				}
 				# Remove player from group
 				elsif ($gadval eq "0")
 				{
-					main::Log3 undef, 4, "Debug: " . $cName . "set $device RemoveMember $reading";
+					main::Log3 undef, 4, $cName . "set $device RemoveMember $reading";
 					$param->{result} = main::fhem("set $device RemoveMember $reading");
 				}
 			}
 			else
 			{
 				# notify sv (refresh button)
-				main::Log3 undef, 4, "Debug: " . $cName . "setreading ".$device." svHasClient_".$reading." 0";
+				main::Log3 undef, 4, $cName . "setreading ".$device." svHasClient_".$reading." 0";
 				main::fhem("setreading ".$device." svHasClient_".$reading." 0");
 			}
 			$param->{result} = $gadval;
@@ -299,13 +302,13 @@ sub SonosGroup(@)
 			if ($gadval eq "0")
 			{
 				# eg set Sonos_Wohnzimmer (reading svIsInThisGroup) RemoveMember (command) Sonos_Studio (the device itself)
-				main::Log3 undef, 4, "Debug: " . $cName . "set " . main::ReadingsVal($device, "svIsInThisGroup", $device) . " RemoveMember " . $device;
+				main::Log3 undef, 4, $cName . "set " . main::ReadingsVal($device, "svIsInThisGroup", $device) . " RemoveMember " . $device;
 				$param->{result} = main::fhem("set " . main::ReadingsVal($device, "svIsInThisGroup", $device) . " RemoveMember " . $device);
 			}
 			# Trigger event for SV to get the correct status, again. (button was pushed in off state, set to off again)
 			elsif ($gadval eq "1")
 			{
-				main::Log3 undef, 4, "Debug: " . $cName . "setreading " . $device . " " . $reading . " 0";
+				main::Log3 undef, 4, $cName . "setreading " . $device . " " . $reading . " 0";
 				$param->{result} = main::fhem("setreading " . $device . " " . $reading . " 0");
 			}
 			$param->{result} = $gadval;
@@ -374,15 +377,14 @@ sub SonosTransportState(@)
 		{
 			$param->{result} = main::fhem("set $device Stop");
 			$param->{results} = [];
-    		{return 'done'}
-
+			return 'done';
 		}
 		# set start via state if reading transportState is PLAYING
 		elsif (($reading eq "transportState") && ($gadval eq "PLAYING"))
 		{
 			$param->{result} = main::fhem("set $device Play");
 			$param->{results} = [];
-    		{return 'done'}
+			return 'done';
 		}
 
 	# other readings...
@@ -472,6 +474,7 @@ sub SonosAlbumArtURL(@)
 	}
 	elsif ($param->{cmd} eq 'rcv')
 	{
+
 		# other readings...
 		main::Log3 undef, 1, $cName . "SonosTransportState converter should only be used for reading currentAlbumArtURL";
 		main::Log3 undef, 1, $cName . "but was used for: set " . $device . " " . $reading . " " . $gadval;
@@ -480,7 +483,7 @@ sub SonosAlbumArtURL(@)
 	}
 	elsif ($param->{cmd} eq '?')
 	{
-    	return 'usage: Sonos';
+		return 'usage: Sonos';
 	}
 	return undef;
 }
@@ -536,7 +539,6 @@ sub SonosTrackPos(@)
 
 			#main::Log3 undef, 3, $cName . "set ".$device." CurrentTrackPosition ".$newposT;
 			main::fhem("set ".$device." CurrentTrackPosition ".$newposT);
-
 			$param->{results} = [];
 			return 'done';
 		}
@@ -549,7 +551,7 @@ sub SonosTrackPos(@)
 	}
 	elsif ($param->{cmd} eq '?')
 	{
-    	return 'usage: Sonos';
+		return 'usage: Sonos';
 	}
 	return undef;
 }
