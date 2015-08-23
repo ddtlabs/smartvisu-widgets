@@ -24,8 +24,12 @@
 - Check that file has the same permission as all other files in this directory.
 - Type "reload 99_fronthemSonosUtils" in your FHEM command box / telnet session. Or just restart FHEM.
 - Define 2 FHEM notifies (replace "Sonos_" by your used prefix, if you named it differently):
-  - define n_sv_sonosGroups notify Sonos_[A-Za-z0-9]+:currentTrackProvider:.\w.* { sv_setSonosGroupsReadings($NAME, $EVENT) }
-  - define n_sv_sonosGetTrackPos notify Sonos_[A-Za-z0-9]+:transportState:.* { sv_SonosGetTrackPos($NAME,$EVTPART1) }
+```
+define n_sv_sonosGroups notify Sonos_[A-Za-z0-9]+:currentTrackProvider:.\w.* { sv_setSonosGroupsReadings($NAME, $EVENT) }
+```
+```
+define n_sv_sonosGetTrackPos notify Sonos_[A-Za-z0-9]+:transportState:.* { sv_SonosGetTrackPos($NAME,$EVTPART1) }
+```
 - Define additional userReading svTrackPosition for each Sonos player, but do not delete the existing readings:
 ```
 svTrackPosition:LastActionResult.*?GetCurrentTrackPosition.* { sv_calcTrackPosPercent($name, ReadingsVal($name, "LastActionResult", "")) }
