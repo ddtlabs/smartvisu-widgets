@@ -82,13 +82,13 @@ sub sv_defineAtTimer($) {
 	my $room = "hidden";
 	my $atSec = "04";
 
-    Log3 undef, 4, "sv_defineAtTimer: defmod ".$atName." at +00:00:" . $atSec . " get ".$device." currentTrackPosition";
-    Log3 undef, 4, "sv_defineAtTimer: defmod ".$atName." at +*00:00:" . $atSec . " get ".$device." currentTrackPosition";
-	# non permanent will be modified to permanent at -> TEMPORARY device -> will not be saved
-    fhem("defmod ".$atName." at +00:00:" . $atSec . " get ".$device." currentTrackPosition");
-    fhem("defmod ".$atName." at +*00:00:" . $atSec . " get ".$device." currentTrackPosition");
-    fhem("attr ".$atName." room ".$room);
- return undef;
+	Log3 undef, 4, "sv_defineAtTimer: defmod ".$atName." at +00:00:" . $atSec . " get ".$device." currentTrackPosition";
+	Log3 undef, 4, "sv_defineAtTimer: defmod ".$atName." at +*00:00:" . $atSec . " get ".$device." currentTrackPosition";
+	# non permanent at will be modified to permanent at -> TEMPORARY device -> will not be saved
+	fhem("defmod ".$atName." at +00:00:" . $atSec . " get ".$device." currentTrackPosition");
+	fhem("defmod ".$atName." at +*00:00:" . $atSec . " get ".$device." currentTrackPosition");
+	fhem("attr ".$atName." room ".$room);
+	return undef;
 }
 
 sub sv_deleteAtTimer($) {
@@ -122,16 +122,16 @@ sub sv_SonosSec2time($) {
 	my $errorsec = $sec;
 	my $min = $sec / 60, $sec %= 60;
 	$sec = "0$sec" if $sec < 10;
-        return "00:0$min:$sec" if $min < 10;
-        return "00:$min:$sec" if $min < 60;
+	return "00:0$min:$sec" if $min < 10;
+	return "00:$min:$sec" if $min < 60;
 
 	my $hr = $min / 60, $min %= 60;
-    $min = "0$min" if $min < 10;
-        return "0$hr:$min:$sec" if $hr < 10;
-        return "$hr:$min:$sec" if $hr < 24;
+	$min = "0$min" if $min < 10;
+	return "0$hr:$min:$sec" if $hr < 10;
+	return "$hr:$min:$sec" if $hr < 24;
 
 	Log3 undef, 1, "Error: more than 86399 secs (>= 1 day) are not allowed by fhem time format for at command. $errorsec secs were converted to 23:59:59 at ";
-        return "23:59:39" if $hr >= 24;
+	return "23:59:39" if $hr >= 24;
 }
 
 
@@ -158,12 +158,12 @@ sub sv_calcTrackPosPercent($$) {
 
 sub sv_SonosReadingsInit() {
 	my @p = devspec2array('TYPE=SONOS');
-	my $prefix = shift @p;
 
+	my $prefix = shift @p;
 	return "No SONOS device" if $prefix eq "";
 
 	my @d = devspec2array("TYPE=SONOSPLAYER:FILTER=NAME=" . $prefix ."_[0-9a-zA-Z]+");
-    foreach my $sd (@d) {
+	foreach my $sd (@d) {
 		Log3 undef, 1, "notify: setreading ".$prefix."_[A-Za-z0-9] svHasClient_$sd 0";
 		fhem("setreading ".$prefix."_[A-Za-z0-9] svHasClient_$sd 0");
 	}
@@ -190,7 +190,8 @@ sub sv_SonosReadingsDelete() {
 	return "No SONOS device" if $prefix eq "";
 
 	my @d = devspec2array("TYPE=SONOSPLAYER:FILTER=NAME=" . $prefix ."_[0-9a-zA-Z]+");
-    foreach my $sd (@d) {
+	foreach my $sd (@d)
+	{
 		Log3 undef, 4, "notify: deletereading ".$prefix."_[A-Za-z0-9] svHasClient_$sd";
 		fhem("deletereading ".$prefix."_[A-Za-z0-9] svHasClient_$sd");
 	}
@@ -228,105 +229,103 @@ use warnings;
 ###############################################################################
 sub SonosGroup(@)
 {
-  my ($param) = @_;
-  my $cmd = $param->{cmd};
-  my $gad = $param->{gad};
-  my $gadval = $param->{gadval};
+	my ($param) = @_;
+	my $cmd = $param->{cmd};
+	my $gad = $param->{gad};
+	my $gadval = $param->{gadval};
 
-  my $device = $param->{device};
-  my $reading = $param->{reading};
-  my $event = $param->{event};
+	my $device = $param->{device};
+	my $reading = $param->{reading};
+	my $event = $param->{event};
 
-  my @args = @{$param->{args}};
-  my $cache = $param->{cache};
+	my @args = @{$param->{args}};
+	my $cache = $param->{cache};
 
 	# who am I ?
 	my $cName = "fronthem converter (SonosGroup): ";
 
-  if ($param->{cmd} eq 'get')
-  {
-    $event = ($reading eq 'state')?main::Value($device):main::ReadingsVal($device, $reading, '');
-    $param->{cmd} = 'send';
-  }
-  if ($param->{cmd} eq 'send')
-  {
-    $param->{gad} = $gad;
+	if ($param->{cmd} eq 'get')
+	{
+		$event = ($reading eq 'state')?main::Value($device):main::ReadingsVal($device, $reading, '');
+    	$param->{cmd} = 'send';
+	}
+	if ($param->{cmd} eq 'send')
+	{
+		$param->{gad} = $gad;
 		$param->{gadval} = $event;
 		$param->{gads} = [];
-    return undef;
-  }
-  elsif ($param->{cmd} eq 'rcv')
-  {
-
-	main::Log3 undef, 4, "Debug: " . $cName . "gad: " . $gad . " / device: " . $device . " / event: " . $event . " / reading: " . $reading;
-
-	# catch reading svHasClient.*
-	if ($reading =~ /svHasClient/)
-	{
-	$reading =~ s/svHasClient_//g;
-
-	# if device is member of a group, do not allow to become master of other device
-	if (main::ReadingsVal($device, "currentTitle", "Gruppenwiedergabe") ne "Gruppenwiedergabe" )
-	{
-		# Add player to group
-		if ($gadval eq "1")
-		{
-			main::Log3 undef, 4, "Debug: " . $cName . "set $device AddMember $reading";
-			$param->{result} = main::fhem("set $device AddMember $reading");
-		}
-		# Remove player from group
-		elsif ($gadval eq "0")
-		{
-			main::Log3 undef, 4, "Debug: " . $cName . "set $device RemoveMember $reading";
-			$param->{result} = main::fhem("set $device RemoveMember $reading");
-		}
+    	return undef;
 	}
-	else 	# and refresh sv button
+	elsif ($param->{cmd} eq 'rcv')
 	{
-		# notify sv
-		main::Log3 undef, 4, "Debug: " . $cName . "setreading ".$device." svHasClient_".$reading." 0";
-		main::fhem("setreading ".$device." svHasClient_".$reading." 0");
-	}
+		main::Log3 undef, 4, "Debug: " . $cName . "gad: " . $gad . " / device: " . $device . " / event: " . $event . " / reading: " . $reading;
 
-	$param->{result} = $gadval;
-	$param->{results} = [];
-	# job is done, no further processing afterwards
-	return 'done';
-	}
+		# catch reading svHasClient.*
+		if ($reading =~ /svHasClient/)
+		{
+			$reading =~ s/svHasClient_//g;
+			# if device is member of a group, do not allow to become master of other device
+			if (main::ReadingsVal($device, "currentTitle", "Gruppenwiedergabe") ne "Gruppenwiedergabe" )
+			{
+				# Add player to group
+				if ($gadval eq "1")
+				{
+					main::Log3 undef, 4, "Debug: " . $cName . "set $device AddMember $reading";
+					$param->{result} = main::fhem("set $device AddMember $reading");
+				}
+				# Remove player from group
+				elsif ($gadval eq "0")
+				{
+					main::Log3 undef, 4, "Debug: " . $cName . "set $device RemoveMember $reading";
+					$param->{result} = main::fhem("set $device RemoveMember $reading");
+				}
+			}
+			else
+			{
+				# notify sv (refresh button)
+				main::Log3 undef, 4, "Debug: " . $cName . "setreading ".$device." svHasClient_".$reading." 0";
+				main::fhem("setreading ".$device." svHasClient_".$reading." 0");
+			}
+			$param->{result} = $gadval;
+			$param->{results} = [];
+			# job is done, no further processing afterwards
+			return 'done';
+		}
 
-	# catch reading svIsInAnyGroup
-	if ($reading eq "svIsInAnyGroup")
-	{
-		# player is going to remove itself from group
-		if ($gadval eq "0")
+		# catch reading svIsInAnyGroup
+		if ($reading eq "svIsInAnyGroup")
 		{
-			# eg set Sonos_Wohnzimmer (reading svIsInThisGroup) RemoveMember (command) Sonos_Studio (the device itself)
-			main::Log3 undef, 4, "Debug: " . $cName . "set " . main::ReadingsVal($device, "svIsInThisGroup", $device) . " RemoveMember " . $device;
-			$param->{result} = main::fhem("set " . main::ReadingsVal($device, "svIsInThisGroup", $device) . " RemoveMember " . $device);
+			# player is going to remove itself from group
+			if ($gadval eq "0")
+			{
+				# eg set Sonos_Wohnzimmer (reading svIsInThisGroup) RemoveMember (command) Sonos_Studio (the device itself)
+				main::Log3 undef, 4, "Debug: " . $cName . "set " . main::ReadingsVal($device, "svIsInThisGroup", $device) . " RemoveMember " . $device;
+				$param->{result} = main::fhem("set " . main::ReadingsVal($device, "svIsInThisGroup", $device) . " RemoveMember " . $device);
+			}
+			# Trigger event for SV to get the correct status, again. (button was pushed in off state, set to off again)
+			elsif ($gadval eq "1")
+			{
+				main::Log3 undef, 4, "Debug: " . $cName . "setreading " . $device . " " . $reading . " 0";
+				$param->{result} = main::fhem("setreading " . $device . " " . $reading . " 0");
+			}
+			$param->{result} = $gadval;
+			$param->{results} = [];
+			# job is done, no further processing afterwards
+	    	return 'done';
 		}
-		# Trigger event for SV to get the correct status, again. (button was pushed in off state, set to off again)
-		elsif ($gadval eq "1")
-		{
-			main::Log3 undef, 4, "Debug: " . $cName . "setreading " . $device . " " . $reading . " 0";
-			$param->{result} = main::fhem("setreading " . $device . " " . $reading . " 0");
-		}
+
+		# other readings...
+		main::Log3 undef, 1, $cName . "SonosGroup converter should only be used for reading svHasClient";
+		main::Log3 undef, 1, $cName . "but was used for: set " . $device . " " . $reading . " " . $gadval;
 		$param->{result} = $gadval;
 		$param->{results} = [];
-		# job is done, no further processing afterwards
-	    return 'done';
+		return undef;
 	}
-	# other readings...
-	main::Log3 undef, 1, $cName . "SonosGroup converter should only be used for reading svHasClient";
-	main::Log3 undef, 1, $cName . "but was used for: set " . $device . " " . $reading . " " . $gadval;
-	$param->{result} = $gadval;
-	$param->{results} = [];
+	elsif ($param->{cmd} eq '?')
+	{
+		return 'usage: Direct';
+  	}
 	return undef;
-  }
-  elsif ($param->{cmd} eq '?')
-  {
-    return 'usage: Direct';
-  }
-  return undef;
 }
 
 
@@ -341,47 +340,45 @@ sub SonosGroup(@)
 ###############################################################################
 sub SonosTransportState(@)
 {
-  my ($param) = @_;
-  my $cmd = $param->{cmd};
-  my $gad = $param->{gad};
-  my $gadval = $param->{gadval};
+	my ($param) = @_;
+	my $cmd = $param->{cmd};
+	my $gad = $param->{gad};
+	my $gadval = $param->{gadval};
 
-  my $device = $param->{device};
-  my $reading = $param->{reading};
-  my $event = $param->{event};
+	my $device = $param->{device};
+	my $reading = $param->{reading};
+	my $event = $param->{event};
 
-  my @args = @{$param->{args}};
-  my $cache = $param->{cache};
+	my @args = @{$param->{args}};
+	my $cache = $param->{cache};
 
 	# who am I ?
 	my $cName = "fronthem converter (SonosTransportState): ";
 
-  if ($param->{cmd} eq 'get')
-  {
-    $event = ($reading eq 'state')?main::Value($device):main::ReadingsVal($device, $reading, '');
-    $param->{cmd} = 'send';
-  }
-  if ($param->{cmd} eq 'send')
-  {
-    $param->{gad} = $gad;
+	if ($param->{cmd} eq 'get')
+	{
+    	$event = ($reading eq 'state')?main::Value($device):main::ReadingsVal($device, $reading, '');
+    	$param->{cmd} = 'send';
+	}
+	if ($param->{cmd} eq 'send')
+	{
+		$param->{gad} = $gad;
 		$param->{gadval} = $event;
 		$param->{gads} = [];
-    return undef;
-  }
-  elsif ($param->{cmd} eq 'rcv')
-  {
-
-	# set stop via state if reading transportState is STOPPED
-	if (($reading eq "transportState") && ($gadval eq "STOPPED"))
+		return undef;
+	}
+	elsif ($param->{cmd} eq 'rcv')
+	{
+		# set stop via state if reading transportState is STOPPED
+		if (($reading eq "transportState") && ($gadval eq "STOPPED"))
 		{
 			$param->{result} = main::fhem("set $device Stop");
 			$param->{results} = [];
     		{return 'done'}
 
 		}
-
-	# set start via state if reading transportState is PLAYING
-	elsif (($reading eq "transportState") && ($gadval eq "PLAYING"))
+		# set start via state if reading transportState is PLAYING
+		elsif (($reading eq "transportState") && ($gadval eq "PLAYING"))
 		{
 			$param->{result} = main::fhem("set $device Play");
 			$param->{results} = [];
@@ -394,12 +391,12 @@ sub SonosTransportState(@)
 	$param->{result} = $gadval;
 	$param->{results} = [];
 	return undef
-  }
-  elsif ($param->{cmd} eq '?')
-  {
-    return 'usage: Sonos';
-  }
-  return undef;
+	}
+	elsif ($param->{cmd} eq '?')
+	{
+	return 'usage: Sonos';
+	}
+	return undef;
 }
 
 
@@ -415,29 +412,29 @@ sub SonosTransportState(@)
 ###############################################################################
 sub SonosAlbumArtURL(@)
 {
-  my ($param) = @_;
-  my $cmd = $param->{cmd};
-  my $gad = $param->{gad};
-  my $gadval = $param->{gadval};
+	my ($param) = @_;
+	my $cmd = $param->{cmd};
+	my $gad = $param->{gad};
+	my $gadval = $param->{gadval};
 
-  my $device = $param->{device};
-  my $reading = $param->{reading};
-  my $event = $param->{event};
+	my $device = $param->{device};
+	my $reading = $param->{reading};
+	my $event = $param->{event};
 
-  my @args = @{$param->{args}};
-  my $cache = $param->{cache};
+	my @args = @{$param->{args}};
+	my $cache = $param->{cache};
 
 	# who am I ?
 	my $cName = "fronthem converter (SonosAlbumArtURL): ";
 
-  if ($param->{cmd} eq 'get')
-  {
-    $event = ($reading eq 'state')?main::Value($device):main::ReadingsVal($device, $reading, '');
-    $param->{cmd} = 'send';
-  }
-  if ($param->{cmd} eq 'send')
-  {
-    $param->{gad} = $gad;
+	if ($param->{cmd} eq 'get')
+	{
+    	$event = ($reading eq 'state')?main::Value($device):main::ReadingsVal($device, $reading, '');
+		$param->{cmd} = 'send';
+	}
+	if ($param->{cmd} eq 'send')
+	{
+    	$param->{gad} = $gad;
 		# replace empty.jpg url (reading currentAlbumArtURL) and Sonos module bugfix
 		if ($reading eq "currentAlbumArtURL")
 		{
@@ -450,10 +447,8 @@ sub SonosAlbumArtURL(@)
 				main::fhem("set " . main::ReadingsVal($device, "svIsInThisGroup", $device) . " RemoveMember " . $device);
 			}
 
-			################################
 			# currentAudio is playing and no (radio)stream and no timmer is running (switched from normalAudio to streamAudio without changing transportState)
 			my $atName1 = "at_" . $device . "_GetTrackPos";
-
 			main::Log3 undef, 4, $cName . "Device: " . $device . " / TransportState: " . main::ReadingsVal($device, "transportState", "") . " / atDev (state/doNotExist): " . main::ReadingsVal($atName1, "state", "doNotExist") . " / currentNormalAudio: " . main::ReadingsVal($device, 'currentNormalAudio','');
 			if ((main::ReadingsVal($device, 'currentNormalAudio','0') eq 1) && (main::ReadingsVal($atName1, "state", "doNotExist") eq "doNotExist") && (main::ReadingsVal($device, "transportState", "STOPPED") eq "PLAYING") )
 			{
@@ -473,21 +468,21 @@ sub SonosAlbumArtURL(@)
 
 		$param->{gadval} = $event;
 		$param->{gads} = [];
-    return undef;
-  }
-  elsif ($param->{cmd} eq 'rcv')
-  {
-	# other readings...
-	main::Log3 undef, 1, $cName . "SonosTransportState converter should only be used for reading currentAlbumArtURL";
-	main::Log3 undef, 1, $cName . "but was used for: set " . $device . " " . $reading . " " . $gadval;
-	$param->{results} = [];
-   	{return undef}
-  }
-  elsif ($param->{cmd} eq '?')
-  {
-    return 'usage: Sonos';
-  }
-  return undef;
+		return undef;
+	}
+	elsif ($param->{cmd} eq 'rcv')
+	{
+		# other readings...
+		main::Log3 undef, 1, $cName . "SonosTransportState converter should only be used for reading currentAlbumArtURL";
+		main::Log3 undef, 1, $cName . "but was used for: set " . $device . " " . $reading . " " . $gadval;
+		$param->{results} = [];
+   		return undef;
+	}
+	elsif ($param->{cmd} eq '?')
+	{
+    	return 'usage: Sonos';
+	}
+	return undef;
 }
 
 
@@ -503,61 +498,60 @@ sub SonosAlbumArtURL(@)
 ###############################################################################
 sub SonosTrackPos(@)
 {
-  my ($param) = @_;
-  my $cmd = $param->{cmd};
-  my $gad = $param->{gad};
-  my $gadval = $param->{gadval};
+	my ($param) = @_;
+	my $cmd = $param->{cmd};
+	my $gad = $param->{gad};
+	my $gadval = $param->{gadval};
 
-  my $device = $param->{device};
-  my $reading = $param->{reading};
-  my $event = $param->{event};
+	my $device = $param->{device};
+	my $reading = $param->{reading};
+	my $event = $param->{event};
 
-  my @args = @{$param->{args}};
-  my $cache = $param->{cache};
+	my @args = @{$param->{args}};
+	my $cache = $param->{cache};
 
 	# who am I ?
 	my $cName = "fronthem converter (SonosTransportState): ";
 
-  if ($param->{cmd} eq 'get')
-  {
-    $event = ($reading eq 'state')?main::Value($device):main::ReadingsVal($device, $reading, '');
-    $param->{cmd} = 'send';
-  }
-  if ($param->{cmd} eq 'send')
-  {
-    $param->{gad} = $gad;
-		# no change for read
+	if ($param->{cmd} eq 'get')
+	{
+		$event = ($reading eq 'state')?main::Value($device):main::ReadingsVal($device, $reading, '');
+	   	$param->{cmd} = 'send';
+	}
+	if ($param->{cmd} eq 'send')
+	{
+		$param->{gad} = $gad;
 		$param->{gadval} = $event;
 		$param->{gads} = [];
-    return undef;
-  }
-  elsif ($param->{cmd} eq 'rcv')
-  {
-	if ($reading eq "svTrackPosition")
-	{
-		my $durationT = main::ReadingsVal($device, 'currentTrackDuration', '0:00:10');
-		my $durationS = main::SONOS_GetTimeSeconds($durationT);
-		my $newposS = $gadval * $durationS / 100 ;
-		my $newposT = main::sv_SonosSec2time($newposS);
-
-		#main::Log3 undef, 3, $cName . "set ".$device." CurrentTrackPosition ".$newposT;
-		main::fhem("set ".$device." CurrentTrackPosition ".$newposT);
-
-		$param->{results} = [];
-   		{return 'done'}
+		return undef;
 	}
+	elsif ($param->{cmd} eq 'rcv')
+	{
+		if ($reading eq "svTrackPosition")
+		{
+			my $durationT = main::ReadingsVal($device, 'currentTrackDuration', '0:00:10');
+			my $durationS = main::SONOS_GetTimeSeconds($durationT);
+			my $newposS = $gadval * $durationS / 100 ;
+			my $newposT = main::sv_SonosSec2time($newposS);
 
-	# other readings...
-	main::Log3 undef, 1, $cName . "SonosTrakPos converter should only be used for reading currentTrackPosition";
-	main::Log3 undef, 1, $cName . "but was used for: set " . $device . " " . $reading . " " . $gadval;
-	$param->{results} = [];
-   	{return undef}
-  }
-  elsif ($param->{cmd} eq '?')
-  {
-    return 'usage: Sonos';
-  }
-  return undef;
+			#main::Log3 undef, 3, $cName . "set ".$device." CurrentTrackPosition ".$newposT;
+			main::fhem("set ".$device." CurrentTrackPosition ".$newposT);
+
+			$param->{results} = [];
+			return 'done';
+		}
+
+		# other readings...
+		main::Log3 undef, 1, $cName . "SonosTrakPos converter should only be used for reading currentTrackPosition";
+		main::Log3 undef, 1, $cName . "but was used for: set " . $device . " " . $reading . " " . $gadval;
+		$param->{results} = [];
+		return undef;
+	}
+	elsif ($param->{cmd} eq '?')
+	{
+    	return 'usage: Sonos';
+	}
+	return undef;
 }
 
 
