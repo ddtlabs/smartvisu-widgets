@@ -1,5 +1,5 @@
 ##############################################
-# $Id: 99_fronthemSonosUtils.pm 63 2015-08-22 08:00:00Z dev0 $
+# $Id: 99_fronthemSonosUtils.pm 75 2015-08-23 07:30:00Z dev0 $
 
 package main;
 use strict;
@@ -86,10 +86,16 @@ sub sv_defineAtTimer($) {
 
 	Log3 undef, 4, "sv_defineAtTimer: defmod ".$atName." at +00:00:" . $atSec . " get ".$device." currentTrackPosition";
 	Log3 undef, 4, "sv_defineAtTimer: defmod ".$atName." at +*00:00:" . $atSec . " get ".$device." currentTrackPosition";
-	# non permanent at will be modified to permanent at -> TEMPORARY device -> will not be saved
-	fhem("defmod ".$atName." at +00:00:" . $atSec . " get ".$device." currentTrackPosition");
-	fhem("defmod ".$atName." at +*00:00:" . $atSec . " get ".$device." currentTrackPosition");
-	fhem("attr ".$atName." room ".$room);
+
+	if (ReadingsVal($atName, "state", "doNotExist") eq "doNotExist")
+	{
+		fhem("defmod -temporary ".$atName." at +*00:00:" . $atSec . " get ".$device." currentTrackPosition");
+		fhem("attr ".$atName." room ".$room);
+	}
+	## non permanent at will be modified to permanent at -> TEMPORARY device -> will not be saved
+	#fhem("defmod ".$atName." at +00:00:" . $atSec . " get ".$device." currentTrackPosition");
+	#fhem("defmod ".$atName." at +*00:00:" . $atSec . " get ".$device." currentTrackPosition");
+	#fhem("attr ".$atName." room ".$room);
 	return undef;
 }
 
@@ -452,7 +458,7 @@ sub SonosAlbumArtURL(@)
 			# currentAudio is playing and no (radio)stream and no timmer is running (switched from normalAudio to streamAudio without changing transportState)
 			my $atName1 = "at_" . $device . "_GetTrackPos";
 			main::Log3 undef, 4, $cName . "Device: " . $device . " / TransportState: " . main::ReadingsVal($device, "transportState", "") . " / atDev (state/doNotExist): " . main::ReadingsVal($atName1, "state", "doNotExist") . " / currentNormalAudio: " . main::ReadingsVal($device, 'currentNormalAudio','');
-			if ((main::ReadingsVal($device, 'currentNormalAudio','0') eq 1) && (main::ReadingsVal($atName1, "state", "doNotExist") eq "doNotExist") && (main::ReadingsVal($device, "transportState", "STOPPED") eq "PLAYING") )
+			if ((main::ReadingsVal($device, 'currentNormalAudio','0') eq 1) && (main::ReadingsVal($atName1, "state", "doNotExist") eq "doNotExist") && (main::ReadingsVal($device, "transportState", "STOPPED") eq "PLAYING")  && (main::ReadingsVal($device, 'currentTrackProvider','') !~ /Gruppenwiedergabe/) )
 			{
 				main::Log3 undef, 4, $cName . "jep, define timer (img change and no timer running)";
 				main::sv_defineAtTimer($device);

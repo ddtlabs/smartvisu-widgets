@@ -11,7 +11,7 @@
 - Control groups, play/radio lists, track position, volume, mute, play, stop, skip, ...
 
 **Requirements:**
-- Fully functioning FHEM (at least ver 8952) with configured Sonos modules
+- Fully functioning FHEM (at least version 9118, 2015-08-23) with configured Sonos modules
 - SmartVISU **2.8+** (https://github.com/Martin-Gleiss/smartvisu)
 - Fronthem (https://github.com/herrmannj/fronthem)
 - FHEM Sonos player device names without umlauts or underscores in room name. A underscore between prefix and room name is needed on the other hand.
@@ -152,7 +152,10 @@ svTrackPosition:LastActionResult.*?GetCurrentTrackPosition.* { sv_calcTrackPosPe
 - Get radio and play lists from FHEM readings.
 - Dynamic layout in width.
 
-**Credits:**
+**Change log:**
+- An at device was created for players that are group slaves at FHEM restart (fixed)
+
+**Credits / Copyrights / Trademarks:**
 - My wife!
 - My wife!
 - My wife!
