@@ -48,6 +48,11 @@
 	{% set crossfade      = '.CrossfadeMode' %}
 	{% set addMember      = '.AddMember' %}
 	{% set remMember      = '.RemoveMember' %}
+	{% set bass           = '.Bass' %}
+	{% set bass           = '.Bass' %}
+	{% set treble         = '.Treble' %}
+	{% set balance        = '.Balance' %}
+	{% set roomName       = '.roomName' %}
 
 	{% set isInAnyGroup   = '.svIsInAnyGroup' %}      /** Coverter: SonosGroup */
 	{% set hasClient      = '.svHasClient' %}         /** Coverter: SonosGroup */
@@ -55,11 +60,10 @@
 	{% set coverUrl       = '.currentAlbumArtURL' %}  /** Coverter: SonosAlbumArtURL */
 	{% set play           = '.transportState' %}      /** Coverter: SonosTransportState */
 
-
 <div class="ddtlabs">
 <div id="{{ uid }}" class="sonos">
 
-<table width="100%">
+<table width="100%" style="min-width: 460px;">
 <tr>
     <td id="vol" rowspan="5">
     	<div class="vol">
@@ -73,8 +77,8 @@
 		{{ basic.slider(id~trackPos, gad~trackPos, 0, 100, 1) }}
 		</div>
     </td>
-	<td id="title">
-		<span class="title">
+	<td id="title-wide">
+		<span class="title title-wide">
 		{{ basic.value(id~radioSender, gad~radioSender, '', '') }}
 		{{ basic.value(id~artist, gad~artist, '', '') }}
 		</span>
@@ -82,8 +86,8 @@
 </tr>
 
 <tr>
-	<td id="title">
-		<span class="title">
+	<td id="title-wide">
+		<span class="title title-wide">
 		{{ basic.value(id~radioInfo, gad~radioInfo, '', '') }}
 		{{ basic.value(id~album, gad~album, '', '') }}
 		</span>
@@ -91,8 +95,8 @@
 </tr>
 
 <tr>
-	<td id="title">
-		<span class="title">
+	<td id="title-wide">
+		<span class="title title-wide">
 		{{ basic.value(id~radioShow, gad~radioShow, '', '') }}
 		{{ basic.value(id~title, gad~title, '', '') }}
 		/** &nbsp;&nbsp;&nbsp; [{{ basic.value(id~trackDuration, gad~trackDuration, '', '') }}] */
@@ -102,29 +106,77 @@
 
 <tr>
 	<td>
-		<div class="playlist">
-		{{ ddtlabs_sonos.selectmenu_playlist(id~'playlist', gad~playlist,  playlist_items, '', playlist_header) }}
-		{{ ddtlabs_sonos.selectmenu_radiolist(id~'radiolist', gad~radiolist, radiolist_items, '', radiolist_header) }}
+		<div class="playlist playlist-wide">
+		<table width="100%"  class="btnright-wide">
+		<tr>
+			<td>
+				{{ ddtlabs_sonos.selectmenu_playlist(id~'playlist', gad~playlist,  playlist_items, '', playlist_header) }}
+			</td><td>
+				{{ ddtlabs_sonos.selectmenu_radiolist(id~'radiolist', gad~radiolist, radiolist_items, '', radiolist_header) }}
+			</td>
+		</tr>
+		</table>
 		</div>
 	</td>
 </tr>
 
 <tr>
 	<td>
-		<div class="btnright">
-			<span data-role="controlgroup" data-type="horizontal">
-   			{{ basic.dual(id~gad~isInAnyGroup, gad~isInAnyGroup, 'my_audio_group_empty.svg', 'my_audio_group_fault.svg', '1', '0', 'mini') }}
-			</span>
+
+		<table width="100%" class="btnright-wide">
+		<tr>
+
+			<td>
+				<span data-role="controlgroup" data-type="horizontal">
+   				{{ basic.dual(id~gad~isInAnyGroup, gad~isInAnyGroup, 'my_audio_group_empty.svg', 'my_audio_group_fault.svg', '1', '0', 'mini') }}
+				</span>
+			</td>
+
 			{% for neighbor in neighbors%}
+			<td>
 				<span data-role="controlgroup" data-type="horizontal">
 				{{ basic.dual(id~addMember~'.'~neighbor, gad~hasClient~'_'~neighbor, 'my_audio_group_'~neighbor~'.svg', 'my_audio_group_'~neighbor~'.svg', '1', '0') }}
 				</span>
+			</td>
 			{% endfor %}
-			<span data-role="controlgroup" data-type="horizontal">
-			/** todo: add function with popup ? */
-			{{ basic.button(id~'config', '', '', 'edit_settings.svg', '1', 'mini') }}
-			</span>
-		</div>
+
+			<td>
+				<span data-role="controlgroup" data-type="horizontal">
+					<a href="#ddtlabs_sonos_popup" data-rel="popup" data-transition="fade" class="ui-mini ui-btn ui-btn-up-a ui-shadow ui-btn-corner-all ui-btn-inline ui-btn-icon-center">
+					<span class="ui-btn-inner">
+					<span class="ui-btn-text">
+						<img data-inline="true" data-iconpos="center" class="icon" src="{{ icon0~'audio_eq.svg' }}">
+					</span>
+					</span>
+					</a>
+				</span>
+
+				<div id="ddtlabs_sonos_popup" data-role="popup" data-position-to="window" data-theme="a" data-overlay-theme="b">
+					<a href="#" data-rel="back" data-role="button" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+					<div class="ddtlabs">
+					<div class="sonospopup">
+					<table width="100%">
+						<tr><td id="header" colspan="2">Dieser Player:</td></tr>
+						<tr><td id="text">Bass</td>    <td id="slider" style="width: 100%;"> {{ basic.slider(id~gad~bass, gad~bass, -10, 10, 1, '') }}</td></tr>
+						<tr><td id="text">Treble</td>  <td id="slider"> {{ basic.slider(id~treble, gad~treble, -10, 10, 1, '') }}</td></tr>
+						<tr><td id="text">Balance</td> <td id="slider"> {{ basic.slider(id~treble, gad~balance, -100, 100, 1, '') }}</td></tr>
+						<tr><td id="popupspacer" colspan="2"></td></tr>
+						<tr><td id="header" colspan="2">Lautstärke der Nachbargeräte:</td></tr>
+						{% for neighbor in neighbors%}
+							<tr>
+							<td id="text">{{ basic.value(id~prefix~neighbor~roomName, prefix~neighbor~roomName, '', '') }}</td>
+							<td id="slider">{{ basic.slider(id~prefix~neighbor~'volumePop', prefix~neighbor~volume, 0, 100, 1, '') }}</td	>
+							</tr>
+						{% endfor %}
+					</table>
+					</div>
+					</div>
+				</div>
+			</td>
+
+		</tr>
+		</table>
+
 	</td>
 </tr>
 
@@ -143,20 +195,31 @@
 		</div>
 	</td>
 	<td>
-		<div class="btnright">
+
+	<table width="100%" class="btnright-wide"><tr>
+
+	<td>
 			<span data-role="controlgroup" data-type="horizontal">
 			{{ basic.multistate(id~repeat, gad~repeat, ['0', '1', '2'], ['audio_repeat.svg', 'audio_repeat_song.svg', 'audio_repeat.svg'], 'mini') }}
 			</span>
+	</td><td>
 			<span data-role="controlgroup" data-type="horizontal">
 			{{ basic.dual(id~shuffle, gad~shuffle, 'audio_shuffle.svg', 'audio_shuffle.svg', 1, '') }}
 			</span>
+	</td><td>
 			<span data-role="controlgroup" data-type="horizontal">
    			{{ basic.dual(id~loudness, gad~loudness, 'audio_loudness.svg', 'audio_loudness.svg', 1, 0, 'mini') }}
 			</span>
+	</td><td>
 			<span data-role="controlgroup" data-type="horizontal">
    			{{ basic.dual(id~crossfade, gad~crossfade, 'audio_fade.svg', 'audio_fade.svg', 1, 0, 'mini') }}
 			</span>
-		</div>
+	</td>
+
+	</tr></table>
+
+
+
 	</td>
 </tr>
 

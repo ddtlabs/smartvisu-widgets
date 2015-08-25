@@ -5,10 +5,9 @@
 .ddtlabs .sonos {
 }
 
-.sonos td {
+.ddtlabs .sonos td {
 	border: 0px solid;
 	text-align: left;
-/**	vertical-align: top; */
 }
 
 /** cover imgage itself */
@@ -32,7 +31,7 @@
 
 /** td spacer */
 .ddtlabs .sonos #spacer {
-	height: 8px;
+	height: 10px;
 }
 
 .ddtlabs .sonos .vol {
@@ -52,9 +51,32 @@
 	text-align: center;
 }
 
-.ddtlabs .sonos .playlist, .btnright {
+.ddtlabs .sonos .playlist {
 	left: 18px;
 	position: relative;
+}
+
+.ddtlabs .sonos .btnright {
+	left: 18px;
+	position: relative;
+}
+
+/** wide layout */
+.ddtlabs .sonos .playlist-wide {
+	left: 0px;
+	position: relative;
+}
+
+.ddtlabs .sonos .btnright-wide td {
+	text-align: center;
+	border-spacing: 0;
+	padding: 0;
+}
+
+.ddtlabs .sonos .playlist .btnright-wide td {
+	text-align: center;
+	border-spacing: 0;
+	padding: 0;
 }
 
 /** Title itself */
@@ -64,10 +86,22 @@
 	vertical-align: top;
 }
 
+/** Title itself */
+.ddtlabs .sonos .title-wide {
+	left: 0px;
+	vertical-align: bottom;
+}
+
 /** Title td */
 .ddtlabs .sonos #title {
 	vertical-align: top;
 	height: 21px;
+}
+
+.ddtlabs .sonos #title-wide {
+	vertical-align: top;
+	height: 21px;
+	text-align: center;
 }
 
 .ddtlabs .sonos .playlist .ui-select {
@@ -80,6 +114,7 @@
 .ddtlabs .sonos .playlist .ui-btn-inner {
 	padding: 6px 15px 6px 0;
 }
+
 .ddtlabs .sonos .playlist .ui-btn-up-a {
     font-weight: lighter;
 }
@@ -121,4 +156,29 @@
 	vertical-align: text-top;
 }
 
+#ddtlabs_sonos_popup {
+	width: 450px;
+}
 
+.ddtlabs .sonospopup table{
+	padding: 10px 10px 10px 15px;
+}
+
+.ddtlabs .sonospopup td{
+	white-space: nowrap;
+	border: 0px solid;
+}
+
+.ddtlabs .sonospopup #popupspacer {
+	height: 10px;
+}
+
+.ddtlabs .sonospopup #header {
+}
+
+.ddtlabs .sonospopup #text {
+}
+
+.ddtlabs .sonospopup #slider {
+	padding: 0 0 0 18px;
+}

@@ -1,5 +1,5 @@
 ##############################################
-# $Id: 99_fronthemSonosUtils.pm 75 2015-08-23 07:30:00Z dev0 $
+# $Id: 99_fronthemSonosUtils.pm 78 2015-08-23 09:59:00Z dev0 $
 
 package main;
 use strict;
@@ -82,7 +82,7 @@ sub sv_defineAtTimer($) {
 
 	my $atName = "at_".$device."_GetTrackPos";
 	my $room = "hidden";
-	my $atSec = "04";
+	my $atSec = "10";
 
 	Log3 undef, 4, "sv_defineAtTimer: defmod ".$atName." at +00:00:" . $atSec . " get ".$device." currentTrackPosition";
 	Log3 undef, 4, "sv_defineAtTimer: defmod ".$atName." at +*00:00:" . $atSec . " get ".$device." currentTrackPosition";
@@ -320,7 +320,7 @@ sub SonosGroup(@)
 			$param->{result} = $gadval;
 			$param->{results} = [];
 			# job is done, no further processing afterwards
-	    	return 'done';
+			return 'done';
 		}
 
 		# other readings...
@@ -402,7 +402,7 @@ sub SonosTransportState(@)
 	}
 	elsif ($param->{cmd} eq '?')
 	{
-	return 'usage: Sonos';
+		return 'usage: Sonos';
 	}
 	return undef;
 }
@@ -460,7 +460,8 @@ sub SonosAlbumArtURL(@)
 			main::Log3 undef, 4, $cName . "Device: " . $device . " / TransportState: " . main::ReadingsVal($device, "transportState", "") . " / atDev (state/doNotExist): " . main::ReadingsVal($atName1, "state", "doNotExist") . " / currentNormalAudio: " . main::ReadingsVal($device, 'currentNormalAudio','');
 			if ((main::ReadingsVal($device, 'currentNormalAudio','0') eq 1) && (main::ReadingsVal($atName1, "state", "doNotExist") eq "doNotExist") && (main::ReadingsVal($device, "transportState", "STOPPED") eq "PLAYING")  && (main::ReadingsVal($device, 'currentTrackProvider','') !~ /Gruppenwiedergabe/) )
 			{
-				main::Log3 undef, 4, $cName . "jep, define timer (img change and no timer running)";
+				main::Log3 undef, 4, $cName . "get trackPos update and define timer (img change and no timer running)";
+				main::fhem("get " . $device . " CurrentTrackPosition");
 				main::sv_defineAtTimer($device);
 			}
 			elsif ((main::ReadingsVal($device, "transportState", "STOPPED") ne "PLAYING") || (main::ReadingsVal($device, 'currentNormalAudio','0') eq 0))

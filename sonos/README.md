@@ -2,13 +2,15 @@
 
 **Screenshots:**
 
-![](screenshots/sonos.png)
+![](screenshots/sonos1.png)
+![](screenshots/sonos2.png)
 
 **Description:**
 - SmartVISU widget to control Sonos(r) speakers with FHEM/Fronthem.
 
 **Features:**
 - Control groups, play/radio lists, track position, volume, mute, play, stop, skip, ...
+- Popup with equalizer and volume slider for neighbour players
 
 **Requirements:**
 - Fully functioning FHEM (at least version 9118, 2015-08-23) with configured Sonos modules
@@ -148,12 +150,17 @@ svTrackPosition:LastActionResult.*?GetCurrentTrackPosition.* { sv_calcTrackPosPe
 
 **ToDo:**
 - Remove notify which triggers currentTrackPosition continously and replace it with a timerEvent() js function. **Voluntaries up, please!**
-- Popup with sliders for treble, bass, balance and other settings.
+- ~~Popup with sliders for treble, bass, balance and other settings.~~
 - Get radio and play lists from FHEM readings.
-- Dynamic layout in width.
+- ~~Dynamic layout in width.~~
 
 **Change log:**
 - An at device was created for players that are group slaves at FHEM restart (fixed)
+- FHEM requirements: min. version 9118
+- Changed ongoing trackPosition update to 10sec (former 4sec)
+- Immediately trackPosition update if cover image changes (new track started)
+- A more dynamic layout in width.
+- Added a popup with equalizer and volumes for neighbour players
 
 **Credits / Copyrights / Trademarks:**
 - My wife!
