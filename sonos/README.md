@@ -3,6 +3,7 @@
 **Screenshots:**
 
 ![](screenshots/sonos1.png)
+
 ![](screenshots/sonos2.png)
 
 **Description:**
