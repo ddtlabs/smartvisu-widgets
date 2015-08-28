@@ -37,12 +37,10 @@ define n_sv_sonosGroups notify Sonos_[A-Za-z0-9]+:currentTrackProvider:.\w.* { s
 ```
 ```
 define n_sv_sonosTransportStateChanged notify Sonos_[A-Za-z0-9]+:transportState:.* { sv_SonosTransportStateChanged($NAME,$EVTPART1) }
-~~define n_sv_sonosGetTrackPos notify Sonos_[A-Za-z0-9]+:transportState:.* { sv_SonosGetTrackPos($NAME,$EVTPART1) }~~
 ```
 - ~~Define additional userReading svTrackPosition for each Sonos player, but do not delete the existing readings:~~
 ```
-~~svTrackPosition:LastActionResult.*?GetCurrentTrackPosition.* { sv_calcTrackPosPercent($name, ReadingsVal($name, "LastActionResult", "")) }~~
-Delete it if you are updating from version 0.78 or below.
+If defined -> delete it!
 ```
 - Do not forget to save.
 
@@ -128,7 +126,7 @@ Delete it if you are updating from version 0.78 or below.
 **Fronthem converter usage:**
   - **SonosGroup:** used for all svHasClient_Sonos_.* and svIsInAnyGroup readings (these FHEM readings will automatically be created at first when Sonos speakers are grouped)
   - **SonosAlbumArtURL:** used for currentAlbumArtURL reading (inter alia fixing a FHEM Sonos module bug)
-  - **SonosTrackPos:** used for svTrackPosition userReading
+  - **SonosTrackPos:** used for svTrackPosition reading
   - **SonosTransportState:** used for transportState.* reading
   - **NumDirect:** used for Volume reading
   - **Direct:** used for all other readings
@@ -173,10 +171,14 @@ Delete it if you are updating from version 0.78 or below.
 - v0.79
 - TransportState handling changed (dual state for play,pause,stop - better haptic):
   - delete old notify:
-    - delete n_sv_sonosGetTrackPos
+```
+delete n_sv_sonosGetTrackPos
+```
   - define new notify:
-    - define n_sv_sonosTransportStateChanged notify Sonos_[A-Za-z0-9]+:transportState:.* { sv_SonosTransportStateChanged($NAME,$EVTPART1) }
-- New gad_items / Readings: svTransportStatePause, svTransportStatePlay, svTransportStateStop (converter: SonosTransportState)
+```
+define n_sv_sonosTransportStateChanged notify Sonos_[A-Za-z0-9]+:transportState:.* { sv_SonosTransportStateChanged($NAME,$EVTPART1) }
+```
+- New gad-items / readings: svTransportStatePause, svTransportStatePlay, svTransportStateStop (converter: SonosTransportState)
 - Current widget version can be found in popup window, too.
 - UserReading definition for svTrackPosition is no longer needed. Delete it you are updating from v0.78 or below, please.
 - Popup IDs were not set correctly: same popup was shown for all players (fixed)
