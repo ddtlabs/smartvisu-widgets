@@ -1,5 +1,7 @@
 ### Sonos Widget for smartVISU / FHEM
 
+**Version: 0.80**
+
 **Screenshots:**
 
 ![](screenshots/sonos1.png)
@@ -13,6 +15,9 @@
 - Control groups, play/radio lists, track position, volume, mute, play, stop, skip, ...
 - Popup with equalizer and volume slider for neighbour players
 
+**Important update note:**
+- If your are updating from version 0.78 or below, you have to replace a notify and delete a userReadings definition. See change log blow.
+
 **Requirements:**
 - Fully functioning FHEM (at least version 9118, 2015-08-23) with configured Sonos modules
 - SmartVISU **2.8+** (https://github.com/Martin-Gleiss/smartvisu)
@@ -25,17 +30,19 @@
 **FHEM:**
 - Copy 99_fronthemSonosUtils.pm to your FHEM module folder (typically /opt/fhem/FHEM).
 - Check that file has the same permission as all other files in this directory.
-- Type "reload 99_fronthemSonosUtils" in your FHEM command box / telnet session. Or just restart FHEM.
+- Restart FHEM.
 - Define 2 FHEM notifies (replace "Sonos_" by your used prefix, if you named it differently):
 ```
 define n_sv_sonosGroups notify Sonos_[A-Za-z0-9]+:currentTrackProvider:.\w.* { sv_setSonosGroupsReadings($NAME, $EVENT) }
 ```
 ```
-define n_sv_sonosGetTrackPos notify Sonos_[A-Za-z0-9]+:transportState:.* { sv_SonosGetTrackPos($NAME,$EVTPART1) }
+define n_sv_sonosTransportStateChanged notify Sonos_[A-Za-z0-9]+:transportState:.* { sv_SonosTransportStateChanged($NAME,$EVTPART1) }
+~~define n_sv_sonosGetTrackPos notify Sonos_[A-Za-z0-9]+:transportState:.* { sv_SonosGetTrackPos($NAME,$EVTPART1) }~~
 ```
-- Define additional userReading svTrackPosition for each Sonos player, but do not delete the existing readings:
+- ~~Define additional userReading svTrackPosition for each Sonos player, but do not delete the existing readings:~~
 ```
-svTrackPosition:LastActionResult.*?GetCurrentTrackPosition.* { sv_calcTrackPosPercent($name, ReadingsVal($name, "LastActionResult", "")) }
+~~svTrackPosition:LastActionResult.*?GetCurrentTrackPosition.* { sv_calcTrackPosPercent($name, ReadingsVal($name, "LastActionResult", "")) }~~
+Delete it if you are updating from version 0.78 or below.
 ```
 - Do not forget to save.
 
@@ -122,7 +129,7 @@ svTrackPosition:LastActionResult.*?GetCurrentTrackPosition.* { sv_calcTrackPosPe
   - **SonosGroup:** used for all svHasClient_Sonos_.* and svIsInAnyGroup readings (these FHEM readings will automatically be created at first when Sonos speakers are grouped)
   - **SonosAlbumArtURL:** used for currentAlbumArtURL reading (inter alia fixing a FHEM Sonos module bug)
   - **SonosTrackPos:** used for svTrackPosition userReading
-  - **SonosTransportState:** used for transportState reading
+  - **SonosTransportState:** used for transportState.* reading
   - **NumDirect:** used for Volume reading
   - **Direct:** used for all other readings
   - Some readings may not be displayed in FHEM Gad Editor because they are not on Sonos modules internal setList. Enter them nevertheless.
@@ -132,9 +139,6 @@ svTrackPosition:LastActionResult.*?GetCurrentTrackPosition.* { sv_calcTrackPosPe
   - can be found in the beginning of sonos player macro in widget_ddtlabs_sonos.html
   - some additional readings are created dynamically based on Sonos neighbours within Sonos players.
     - eg. svHasClient_Sonos_Livingroom, svHasClient_Sonos_Kitchen, ...
-
-**Update notes:**
-- If 99_fronthemSonosUtils.pm was replaced, then type "reload 99_fronthemSonosUtils" in your FHEM command box / telnet session. Or just restart FHEM.
 
 **Debugging:**
 - Enable at least verbose 4 and have a look at 99_fronthemSonosUtils.pm for disabled Log3 and main::Log3 lines and enable them. reload 99_fronthemSonosUtils
@@ -150,18 +154,35 @@ svTrackPosition:LastActionResult.*?GetCurrentTrackPosition.* { sv_calcTrackPosPe
 - I decided to use a unique prefix name to be sure to not collide with other widgets.
 
 **ToDo:**
-- Remove notify which triggers currentTrackPosition continously and replace it with a timerEvent() js function. **Voluntaries up, please!**
+- Remove continously currentTrackPosition update and replace it with a timerEvent() js function. **Voluntaries up, please!**
 - ~~Popup with sliders for treble, bass, balance and other settings.~~
 - Get radio and play lists from FHEM readings.
 - ~~Dynamic layout in width.~~
+
+**Update notes:**
+- If 99_fronthemSonosUtils.pm was replaced, then restart FHEM. "Reload 99_fronthemSonosUtils" could no be enough!
 
 **Change log:**
 - An at device was created for players that are group slaves at FHEM restart (fixed)
 - FHEM requirements: min. version 9118
 - Changed ongoing trackPosition update to 10sec (former 4sec)
 - Immediately trackPosition update if cover image changes (new track started)
+- v0.78
 - A more dynamic layout in width.
 - Added a popup with equalizer and volumes for neighbour players
+- v0.79
+- TransportState handling changed (dual state for play,pause,stop - better haptic):
+  - delete old notify:
+    - delete n_sv_sonosGetTrackPos
+  - define new notify:
+    - define n_sv_sonosTransportStateChanged notify Sonos_[A-Za-z0-9]+:transportState:.* { sv_SonosTransportStateChanged($NAME,$EVTPART1) }
+- New gad_items / Readings: svTransportStatePause, svTransportStatePlay, svTransportStateStop (converter: SonosTransportState)
+- Current widget version can be found in popup window, too.
+- UserReading definition for svTrackPosition is no longer needed. Delete it you are updating from v0.78 or below, please.
+- Popup IDs were not set correctly: same popup was shown for all players (fixed)
+- Minor layout changes
+v0.80
+- Code cleanup
 
 **Credits / Copyrights / Trademarks:**
 - My wife!

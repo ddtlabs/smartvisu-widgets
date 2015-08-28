@@ -1,5 +1,6 @@
 ##############################################
-# $Id: 99_fronthemSonosUtils.pm 78 2015-08-23 09:59:00Z dev0 $
+# $Id: 99_fronthemSonosUtils.pm 80 2015-08-28 13:33:00Z dev0 $
+# Verison 0.80
 
 package main;
 use strict;
@@ -14,11 +15,75 @@ fronthemSonosUtils_Initialize($$)
 
 
 ##########################################################################################
-# sv_SonosGroups()
+# sv_SonosTransportStateChanged()
 #
 # example call:
-# define n_sv_sonosGroups notify [yourPrefix]_.*:currentTrackProvider:.\w.* { sv_SonosGroups($NAME, $EVENT) }
-# eg. define n_sv_sonosGroups notify Sonos_.*:currentTrackProvider:.\w.* { sv_SonosGroups($NAME, $EVENT) }
+# define <notifyName> notify <yourPrefix>_.*:transportState:.* { sv_SonosTransportStateChanged($NAME,$EVTPART1) }
+# eg. define n_sv_sonosGetTrackPos notify Sonos_.*:transportState:.* { sv_SonosTransportStateChanged($NAME,$EVTPART1) }
+##########################################################################################
+
+sub sv_SonosTransportStateChanged($$) {
+	my ($NAME,$EVTPART1) = @_;
+
+	sv_SonosSetTansportState($NAME,$EVTPART1);
+	sv_SonosGetTrackPos($NAME,$EVTPART1);
+}
+
+
+
+##########################################################################################
+# sv_SonosGetTansportState()
+#
+# example call:
+# define n_sv_sonosGetTrackPos notify [yourPrefix]_.*:transportState:.* { sv_SonosGetTrackPos($NAME,$EVTPART1) }
+# eg. define n_sv_sonosGetTrackPos notify Sonos_.*:transportState:.* { sv_SonosGetTrackPos($NAME,$EVTPART1) }
+##########################################################################################
+
+sub sv_SonosSetTansportState($$) {
+	my ($device,$event) = @_;
+
+	$event =~ s/://g;
+
+	if (($event eq "Play") || ($event eq "PLAYING"))
+	{
+		Log3 undef, 4, "sv_SonosSetTansportState($device,$event) => Play 1 / Pause 0 / Stop: 0";
+		fhem("sleep 0.01; setreading " . $device . " svTransportStatePlay 1" );
+		fhem("sleep 0.01; setreading " . $device . " svTransportStatePause 0" );
+		fhem("sleep 0.01; setreading " . $device . " svTransportStateStop 0" );
+	}
+	elsif (($event eq "Pause") || ($event eq "PAUSED_PLAYBACK"))
+	{
+		Log3 undef, 4, "sv_SonosSetTansportState($device,$event) => Play 0 / Pause 1 / Stop 0";
+		fhem("sleep 0.01; setreading " . $device . " svTransportStatePlay 0" );
+		fhem("sleep 0.01; setreading " . $device . " svTransportStatePause 1" );
+		fhem("sleep 0.01; setreading " . $device . " svTransportStateStop 0" );
+	}
+	elsif (($event eq "Stop") || ($event eq "STOPPED") || ($event eq "ERROR"))
+	{
+		Log3 undef, 4, "sv_SonosSetTansportState($device,$event) => Play 0 / Pause 0 / Stop 1";
+		#fhem("get $device CurrentTrackPosition");
+		sv_SonosTrackPositionUpdate($device);
+		fhem("sleep 0.01; setreading " . $device . " svTransportStatePlay 0" );
+		fhem("sleep 0.01; setreading " . $device . " svTransportStatePause 0" );
+		fhem("sleep 0.01; setreading " . $device . " svTransportStateStop 1" );
+	}
+	else
+	{
+		Log3 undef, 1, "sv_SonosGetTansportState($device,$event) => unknown state";
+	}
+
+	return undef;
+}
+
+
+
+
+##########################################################################################
+# sv_setSonosGroupsReadings()
+#
+# example call:
+# define n_sv_sonosTransportState notify Sonos_[A-Za-z0-9]+:transportState:.(STOPPED|PLAYING|PAUSED_PLAYBACK|ERROR).* { sv_SonosSetTansportState($NAME, $EVTPART1) }
+# eg. define n_sv_sonosTransportState notify Sonos_[A-Za-z0-9]+:transportState:.(STOPPED|PLAYING|PAUSED_PLAYBACK|ERROR).* { sv_SonosSetTansportState($NAME, $EVTPART1) }
 #
 # Note:
 # If your SONOSPLAYER devices contain more than 1 underscore or umlauts then you have to
@@ -38,15 +103,15 @@ sub sv_setSonosGroupsReadings($$) {
 
 	if ($trigger eq "Gruppenwiedergabe:")
 	{
-	    fhem("sleep 0.1; setreading $device svIsInThisGroup ".$prefix."_$room");
-		fhem("sleep 0.1; setreading $device svIsInAnyGroup 1");
-		fhem("sleep 0.1; setreading ".$prefix."_$room svHasClient_"."$device"." 1");
+	    fhem("sleep 0.01; setreading $device svIsInThisGroup ".$prefix."_$room");
+		fhem("sleep 0.01; setreading $device svIsInAnyGroup 1");
+		fhem("sleep 0.01; setreading ".$prefix."_$room svHasClient_"."$device"." 1");
 	}
 	else
 	{
-		fhem("sleep 0.1; setreading $device svIsInThisGroup none");
-		fhem("sleep 0.1; setreading $device svIsInAnyGroup 0");
-		fhem("sleep 0.1; setreading ".$prefix."_[0-9a-zA-Z]+:FILTER=TYPE=SONOSPLAYER svHasClient_"."$device"." 0");
+		fhem("sleep 0.01; setreading $device svIsInThisGroup none");
+		fhem("sleep 0.01; setreading $device svIsInAnyGroup 0");
+		fhem("sleep 0.01; setreading ".$prefix."_[0-9a-zA-Z]+:FILTER=TYPE=SONOSPLAYER svHasClient_"."$device"." 0");
 	}
 }
 
@@ -84,31 +149,61 @@ sub sv_defineAtTimer($) {
 	my $room = "hidden";
 	my $atSec = "10";
 
-	Log3 undef, 4, "sv_defineAtTimer: defmod ".$atName." at +00:00:" . $atSec . " get ".$device." currentTrackPosition";
-	Log3 undef, 4, "sv_defineAtTimer: defmod ".$atName." at +*00:00:" . $atSec . " get ".$device." currentTrackPosition";
-
 	if (ReadingsVal($atName, "state", "doNotExist") eq "doNotExist")
 	{
-		fhem("defmod -temporary ".$atName." at +*00:00:" . $atSec . " get ".$device." currentTrackPosition");
+		Log3 undef, 4, "sv_defineAtTimer: defmod ".$atName." at +*00:00:" . $atSec . " {sv_SonosTrackPositionUpdate(\"$device\")}";
+		fhem("sleep 0.01; {sv_SonosTrackPositionUpdate(\"$device\")}");
+		fhem("defmod -temporary ".$atName." at +*00:00:" . $atSec . " {sv_SonosTrackPositionUpdate(\"$device\")}");
 		fhem("attr ".$atName." room ".$room);
 	}
-	## non permanent at will be modified to permanent at -> TEMPORARY device -> will not be saved
-	#fhem("defmod ".$atName." at +00:00:" . $atSec . " get ".$device." currentTrackPosition");
-	#fhem("defmod ".$atName." at +*00:00:" . $atSec . " get ".$device." currentTrackPosition");
-	#fhem("attr ".$atName." room ".$room);
 	return undef;
 }
 
 sub sv_deleteAtTimer($) {
 	my ($device) = @_;
+
 	my $atName = "at_" . $device . "_GetTrackPos";
+
 	if (ReadingsVal($atName, "state", "doNotExist") ne "doNotExist")
 	{
-		Log3 undef, 4, "sv_deleteAtTimer: " . "delete $atName";
-		fhem("sleep 0.1; setreading ".$device." svTrackPosition 0");
+		Log3 undef, 4, "sv_deleteAtTimer($device): " . "delete $atName";
 		fhem("delete $atName");
 	}
 }
+
+
+
+##########################################################################################
+# sv_calcTrackPosPercent()      ($LastActionResult = eg. GetCurrentTrackPosition: 0:00:11)
+##########################################################################################
+
+sub sv_SonosTrackPositionUpdate($) {
+	my ($device) = @_;
+
+	fhem("get $device CurrentTrackPosition");
+
+	my $trackPosP;
+	my $trackDurT = ReadingsVal($device, 'currentTrackDuration', '0:01:00');
+
+	if (($trackDurT eq "0:00:00") ||  ($trackDurT eq "NOT_IMPLEMENTED"))
+	{
+		$trackPosP = 0;
+	}
+	else
+	{
+		my $trackDurS = SONOS_GetTimeSeconds($trackDurT);
+		my $trackPosT = ReadingsVal($device, "currentTrackPosition", "0:00:10");
+		my $trackPosS = SONOS_GetTimeSeconds($trackPosT);
+		$trackPosP = int(100 * $trackPosS / (0.1 + $trackDurS));
+		if ($trackPosP >= 100) {$trackPosP = 100}  # $trackDurS = 0
+	}
+
+	Log3 undef, 4, "sv_SonosTrackPositioUpdate($device): setreading $device svTrackPosition $trackPosP";
+	fhem("sleep 0.01; setreading $device svTrackPosition $trackPosP");
+
+	return undef;
+}
+
 
 
 
@@ -140,22 +235,6 @@ sub sv_SonosSec2time($) {
 
 	Log3 undef, 1, "Error: more than 86399 secs (>= 1 day) are not allowed by fhem time format for at command. $errorsec secs were converted to 23:59:59 at ";
 	return "23:59:39" if $hr >= 24;
-}
-
-
-
-##########################################################################################
-# sv_calcTrackPosPercent()      ($LastActionResult = eg. GetCurrentTrackPosition: 0:00:11)
-##########################################################################################
-
-sub sv_calcTrackPosPercent($$) {
-	my ($device, $LastActionResult) = @_;
-
-	my @lar = split(" ", $LastActionResult);
-	my ($x, $posT) = @lar;
-	my $posP = int(100 * SONOS_GetTimeSeconds($posT) / ( 0.1 + SONOS_GetTimeSeconds(ReadingsVal($device, 'currentTrackDuration', '01:00:00'))));
-	#Log3 undef, 4, "Device: " . $device . " / LastActionResult: " . $LastActionResult . " / posP: " . $posP;
-	return $posP;
 }
 
 
@@ -263,7 +342,7 @@ sub SonosGroup(@)
 		$param->{gad} = $gad;
 		$param->{gadval} = $event;
 		$param->{gads} = [];
-    	return undef;
+		return undef;
 	}
 	elsif ($param->{cmd} eq 'rcv')
 	{
@@ -378,27 +457,75 @@ sub SonosTransportState(@)
 	}
 	elsif ($param->{cmd} eq 'rcv')
 	{
-		# set stop via state if reading transportState is STOPPED
-		if (($reading eq "transportState") && ($gadval eq "STOPPED"))
+		if ($reading eq "svTransportState")
 		{
-			$param->{result} = main::fhem("set $device Stop");
+			$param->{result} = main::fhem("set $device $gadval");
 			$param->{results} = [];
 			return 'done';
 		}
-		# set start via state if reading transportState is PLAYING
-		elsif (($reading eq "transportState") && ($gadval eq "PLAYING"))
+		if ($reading eq "svTransportStateStop")
 		{
-			$param->{result} = main::fhem("set $device Play");
-			$param->{results} = [];
-			return 'done';
+			if ($gadval eq "1")
+			{
+				main::fhem("setreading $device svTransportStatePlay 0");	# immediately update, not needed but better haptic
+				main::fhem("setreading $device svTransportStateStop 1");    # trackPos @ timer deletion
+				$param->{result} = main::fhem("set $device Stop");
+				$param->{results} = [];
+				return 'done';
+			}
+			elsif ($gadval eq "0")
+			{
+				$param->{result} = main::fhem("setreading $device svTransportStateStop 1");
+				$param->{results} = [];
+				return 'done';
+			}
 		}
+		if ($reading eq "svTransportStatePlay")
+		{
+			if ($gadval eq "1")
+			{
+				# immediately update, not needed but better haptic
+				main::fhem("setreading $device svTransportStateStop 0");
+				$param->{result} = main::fhem("set $device Play");
+				$param->{results} = [];
+				return 'done';
+			}
+			elsif ($gadval eq "0")
+			{
+				$param->{result} = main::fhem("set $device Pause");;
+				$param->{results} = [];
+				return 'done';
+			}
+		}
+		if ($reading eq "svTransportStatePause")
+		{
+			if ($gadval eq "1")
+			{
+				if (main::ReadingsVal($device, "svTransportStatePlay","") eq "1")
+				{
+					$param->{result} = main::fhem("set $device Pause");
+				}
+				else
+				{
+					$param->{result} = main::fhem("setreading $device svTransportStatePause 0"); # if button was pushed in stop mode
+				}
+				$param->{results} = [];
+				return 'done';
+			}
 
-	# other readings...
-	main::Log3 undef, 1, $cName . "SonosTransportState converter should only be used for reading transportState";
-	main::Log3 undef, 1, $cName . "but was used for: set " . $device . " " . $reading . " " . $gadval;
-	$param->{result} = $gadval;
-	$param->{results} = [];
-	return undef
+			if ($gadval eq "0")
+			{
+				$param->{result} = main::fhem("set $device Play");;
+				$param->{results} = [];
+				return 'done';
+			}
+		}
+		# other readings...
+		main::Log3 undef, 1, $cName . "SonosTransportState converter should only be used for reading transportState / svTransportState.* with gadval=0/1";
+		main::Log3 undef, 1, $cName . "but was used for: set " . $device . " " . $reading . " " . $gadval;
+		$param->{result} = $gadval;
+		$param->{results} = [];
+		return undef
 	}
 	elsif ($param->{cmd} eq '?')
 	{
@@ -461,7 +588,7 @@ sub SonosAlbumArtURL(@)
 			if ((main::ReadingsVal($device, 'currentNormalAudio','0') eq 1) && (main::ReadingsVal($atName1, "state", "doNotExist") eq "doNotExist") && (main::ReadingsVal($device, "transportState", "STOPPED") eq "PLAYING")  && (main::ReadingsVal($device, 'currentTrackProvider','') !~ /Gruppenwiedergabe/) )
 			{
 				main::Log3 undef, 4, $cName . "get trackPos update and define timer (img change and no timer running)";
-				main::fhem("get " . $device . " CurrentTrackPosition");
+				main::sv_SonosTrackPositionUpdate($device);
 				main::sv_defineAtTimer($device);
 			}
 			elsif ((main::ReadingsVal($device, "transportState", "STOPPED") ne "PLAYING") || (main::ReadingsVal($device, 'currentNormalAudio','0') eq 0))
@@ -473,6 +600,7 @@ sub SonosAlbumArtURL(@)
 
 			# replace empty.jpg url
 			$event =~ s/\/fhem\/sonos\/cover\/empty.jpg/\/smartvisu\/pages\/base\/pics\/sonos_empty.jpg/g;
+			main::sv_SonosTrackPositionUpdate($device);  #better haptic
 		}
 
 		$param->{gadval} = $event;
@@ -601,10 +729,6 @@ sub SonosTrackPos(@)
       get ongoing currentTrackPosition. Will be called from notify with definition:<br/>
       Sonos_.*:transportState:.* { sv_SonosGetTrackPos($NAME,$EVTPART1) }<br/>
       Prefix Sonos_ has to be replaced by your own if it differs.
-      </li><br/>
-    <li><b>sv_calcTrackPosPercent($device, $lastActionResult)</b><br>Used to set
-      userReading svTrackPosition within Sonos player devices:<br/>
-      svTrackPosition:LastActionResult.*?GetCurrentTrackPosition.* { sv_calcTrackPosPercent($name, ReadingsVal($name, "LastActionResult", "")) }
       </li><br/>
     <li><b>sv_SonosReadingsInit()</b><br/>Used to init svReadings within all Sonos players
       if needed.

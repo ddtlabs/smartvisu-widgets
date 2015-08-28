@@ -22,14 +22,13 @@
 
 {% macro player(id, gad, neighbors, radiolist_header, radiolist_items, playlist_header, playlist_items) %}
 
-	{% import "basic.html" as basic %}
-	{% import "widget_ddtlabs_sonos.html" as ddtlabs_sonos %}
-
-	{% set uid = uid(page, id) %}
-
+	{% set text_volume    = 'Volume of neighbors'%}
 	{% set prefix         = 'mm_' %}
-	{% set gad            = prefix~gad %}
 
+	{% set version        = '0.80'%}
+
+	{% set uid            = uid(page, id) %}
+	{% set gad            = prefix~gad %}
 	{% set state          = '.state' %}
 	{% set volume         = '.volume' %}
 	{% set artist         = '.currentArtist' %}
@@ -49,21 +48,31 @@
 	{% set addMember      = '.AddMember' %}
 	{% set remMember      = '.RemoveMember' %}
 	{% set bass           = '.Bass' %}
-	{% set bass           = '.Bass' %}
 	{% set treble         = '.Treble' %}
 	{% set balance        = '.Balance' %}
 	{% set roomName       = '.roomName' %}
 
 	{% set isInAnyGroup   = '.svIsInAnyGroup' %}      /** Coverter: SonosGroup */
 	{% set hasClient      = '.svHasClient' %}         /** Coverter: SonosGroup */
+
 	{% set trackPos       = '.svTrackPosition' %}     /** Coverter: SonosTrackPos */
+
 	{% set coverUrl       = '.currentAlbumArtURL' %}  /** Coverter: SonosAlbumArtURL */
 	{% set play           = '.transportState' %}      /** Coverter: SonosTransportState */
+	{% set transportState = '.svTransportState' %}    /** Coverter: SonosTransportState */
+	{% set transportStateStop  = '.svTransportStateStop' %}    /** Coverter: SonosTransportState */
+	{% set transportStatePlay  = '.svTransportStatePlay' %}    /** Coverter: SonosTransportState */
+	{% set transportStatePause = '.svTransportStatePause' %}   /** Coverter: SonosTransportState */
+
+
+	{% import "basic.html" as basic %}
+	{% import "widget_ddtlabs_sonos.html" as ddtlabs_sonos %}
 
 <div class="ddtlabs">
 <div id="{{ uid }}" class="sonos">
 
 <table width="100%" style="min-width: 460px;">
+/** <table width="100%" style="min-width: 600px;"> */
 <tr>
     <td id="vol" rowspan="5">
     	<div class="vol">
@@ -75,6 +84,9 @@
 	   	{{ ddtlabs_sonos.cover(id~coverUrl, gad~coverUrl) }}
 		<div class="pos">
 		{{ basic.slider(id~trackPos, gad~trackPos, 0, 100, 1) }}
+		</div>
+		<div class="symbolpause">
+		{{ basic.symbol(gad~gad~transportStatePause~Symbol, gad~transportStatePause, '', 'audio_pause.svg', '1', '', 'red') }}
 		</div>
     </td>
 	<td id="title-wide">
@@ -142,7 +154,7 @@
 
 			<td>
 				<span data-role="controlgroup" data-type="horizontal">
-					<a href="#ddtlabs_sonos_popup" data-rel="popup" data-transition="fade" class="ui-mini ui-btn ui-btn-up-a ui-shadow ui-btn-corner-all ui-btn-inline ui-btn-icon-center">
+					<a href="#{{id}}ddtlabs_sonos_popup" data-rel="popup" data-transition="fade" class="ui-mini ui-btn ui-btn-up-a ui-shadow ui-btn-corner-all ui-btn-inline ui-btn-icon-center">
 					<span class="ui-btn-inner">
 					<span class="ui-btn-text">
 						<img data-inline="true" data-iconpos="center" class="icon" src="{{ icon0~'audio_eq.svg' }}">
@@ -151,17 +163,18 @@
 					</a>
 				</span>
 
-				<div id="ddtlabs_sonos_popup" data-role="popup" data-position-to="window" data-theme="a" data-overlay-theme="b">
+				<div class="ddtlabs-sonos-popup-eq" id="{{id}}ddtlabs_sonos_popup" data-role="popup" data-position-to="window" data-theme="a" data-overlay-theme="b">
 					<a href="#" data-rel="back" data-role="button" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
 					<div class="ddtlabs">
 					<div class="sonospopup">
+					<span class="desc">Sonons Widget v{{version}}</span>
 					<table width="100%">
-						<tr><td id="header" colspan="2">Dieser Player:</td></tr>
-						<tr><td id="text">Bass</td>    <td id="slider" style="width: 100%;"> {{ basic.slider(id~gad~bass, gad~bass, -10, 10, 1, '') }}</td></tr>
-						<tr><td id="text">Treble</td>  <td id="slider"> {{ basic.slider(id~treble, gad~treble, -10, 10, 1, '') }}</td></tr>
-						<tr><td id="text">Balance</td> <td id="slider"> {{ basic.slider(id~treble, gad~balance, -100, 100, 1, '') }}</td></tr>
+						<tr><td id="header" colspan="2">Sonos {{ basic.value(id~gad~roomName, gad~roomName, '', '') }}:</td></tr>
+						<tr><td id="text">Bass</td>    <td id="slider" style="width: 100%;"> {{ basic.slider(id~bass, gad~bass, -10, 10, 1, '') }}</td></tr>
+						<tr><td id="text">Treble</td>  <td id="slider"> {{ basic.slider(id~gad~treble, gad~treble, -10, 10, 1, '') }}</td></tr>
+						<tr><td id="text">Balance</td> <td id="slider"> {{ basic.slider(id~gad~balance, gad~balance, -100, 100, 1, '') }}</td></tr>
 						<tr><td id="popupspacer" colspan="2"></td></tr>
-						<tr><td id="header" colspan="2">Lautstärke der Nachbargeräte:</td></tr>
+						<tr><td id="header" colspan="2">{{text_volume}}:</td></tr>
 						{% for neighbor in neighbors%}
 							<tr>
 							<td id="text">{{ basic.value(id~prefix~neighbor~roomName, prefix~neighbor~roomName, '', '') }}</td>
@@ -187,12 +200,24 @@
 		</div>
 	</td>
 	<td>
+
+/**
 		<div data-role="controlgroup" data-type="horizontal" class="play">
 		{{ basic.button(id~'_prev', gad~state, 'Prev', 'control_arrow_left.svg', 'Previous') }}
 		{{ basic.dual(id~play,   gad~play, 'audio_play.svg', 'audio_play.svg', 'PLAYING', 'STOPPED', '') }}
 		{{ basic.button(id~'_stop', gad~state, 'Stop', 'audio_stop.svg', 'Stop') }}
 		{{ basic.button(id~'_next', gad~state, 'Next', 'control_arrow_right.svg', 'Next') }}
 		</div>
+*/
+
+		<div data-role="controlgroup" data-type="horizontal" class="play">
+		{{ basic.button(id~'_prev', gad~state, 'Prev', 'control_arrow_left.svg', 'Previous') }}
+		{{ basic.dual(id~gad~'_playX',  gad~transportStatePlay, 'audio_play.svg', 'audio_play.svg', '1', '0', '') }}
+/**		{{ basic.dual(id~gad~'_pauseX',  gad~transportStatePause, 'audio_pause.svg', 'audio_pause.svg', '1', '0', '') }} */
+		{{ basic.dual(id~gad~'_stopX',  gad~transportStateStop, 'audio_stop.svg', 'audio_stop.svg', '1', '0', '') }}
+		{{ basic.button(id~'_next', gad~state, 'Next', 'control_arrow_right.svg', 'Next') }}
+		</div>
+
 	</td>
 	<td>
 

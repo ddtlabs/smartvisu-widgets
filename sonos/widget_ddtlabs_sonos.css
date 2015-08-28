@@ -14,6 +14,8 @@
 .ddtlabs .sonos .coverimg {
 	width: 186px;
 	height: 186px;
+	background: #eeeeee none repeat scroll 0 0;
+	border-color: gray;
 	border-radius: 10px;
 	border: 2px solid;
 }
@@ -128,6 +130,10 @@
 	width:  96%;
 }
 
+.ddtlabs .sonos .symbolpause {
+	 margin: -60px 0 0 70px !important;
+}
+
 .ddtlabs .sonos .pos .ui-slider-track {
 	margin: -30px 0 5px 0 !important;
 	height: 8px;
@@ -156,7 +162,7 @@
 	vertical-align: text-top;
 }
 
-#ddtlabs_sonos_popup {
+.ddtlabs-sonos-popup-eq {
 	width: 450px;
 }
 
@@ -181,4 +187,12 @@
 
 .ddtlabs .sonospopup #slider {
 	padding: 0 0 0 18px;
+}
+
+.ddtlabs .sonospopup .desc {
+	float: right;
+	font-size: x-small;
+	position: relative;
+	margin: 0 28px; 0 0;
+	color: gray;
 }
