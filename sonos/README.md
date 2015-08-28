@@ -161,19 +161,21 @@ If defined -> delete it!
 - If 99_fronthemSonosUtils.pm was replaced, then restart FHEM. "Reload 99_fronthemSonosUtils" could no be enough!
 
 **Change log:**
+- **1st bugfix**
 - An at device was created for players that are group slaves at FHEM restart (fixed)
 - FHEM requirements: min. version 9118
 - Changed ongoing trackPosition update to 10sec (former 4sec)
 - Immediately trackPosition update if cover image changes (new track started)
-- v0.78
+- **v0.78**
 - A more dynamic layout in width.
 - Added a popup with equalizer and volumes for neighbour players
-- v0.79
+- **v0.79**
 - TransportState handling changed (dual state for play,pause,stop - better haptic):
   - delete old notify:
 ```
 delete n_sv_sonosGetTrackPos
 ```
+- TransportState handling changed (dual state for play,pause,stop - better haptic):
   - define new notify:
 ```
 define n_sv_sonosTransportStateChanged notify Sonos_[A-Za-z0-9]+:transportState:.* { sv_SonosTransportStateChanged($NAME,$EVTPART1) }
@@ -183,7 +185,7 @@ define n_sv_sonosTransportStateChanged notify Sonos_[A-Za-z0-9]+:transportState:
 - UserReading definition for svTrackPosition is no longer needed. Delete it you are updating from v0.78 or below, please.
 - Popup IDs were not set correctly: same popup was shown for all players (fixed)
 - Minor layout changes
-v0.80
+- **v0.80**
 - Code cleanup
 
 **Credits / Copyrights / Trademarks:**
