@@ -1,6 +1,6 @@
 ### Sonos Widget for smartVISU / FHEM
 
-**Version: 0.80**
+**Version: 0.82**
 
 **Screenshots:**
 
