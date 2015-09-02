@@ -1,26 +1,54 @@
-##############################################
-# $Id: 99_fronthemSonosUtils.pm 80 2015-08-28 13:33:00Z dev0 $
-# Verison 0.80
+# ########################################################################################
+# $Id: 99_fronthemSonosUtils.pm 82 2015-08-28 13:33:00Z dev0 $
+# Verison 0.82
+# ########################################################################################
+#
+#  This functions are free software; you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation; either version 2 of the License, or
+#  (at your option) any later version.
+#
+#  The GNU General Public License can be found at
+#  http://www.gnu.org/copyleft/gpl.html.
+#  A copy is found in the textfile GPL.txt and important notices to the license
+#  from the author is found in LICENSE.txt distributed with these scripts.
+#
+#  This script is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+# ########################################################################################
+
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+# # # # # # #   S O N O S   /   S M A R T V I S U   F U N C T I O N S   # # # # # # # # #
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 
 package main;
 use strict;
 use warnings;
 use POSIX;
-sub
 
-fronthemSonosUtils_Initialize($$)
+sub fronthemSonosUtils_Initialize($$)
 {
- my ($hash) = @_;
+	my ($hash) = @_;
+ 	Log3 undef, 3, "99_fronthemSonosUtils.pm v0.82 (re)loaded";
+
 }
 
 
-##########################################################################################
+# ########################################################################################
 # sv_SonosTransportStateChanged()
 #
 # example call:
 # define <notifyName> notify <yourPrefix>_.*:transportState:.* { sv_SonosTransportStateChanged($NAME,$EVTPART1) }
 # eg. define n_sv_sonosGetTrackPos notify Sonos_.*:transportState:.* { sv_SonosTransportStateChanged($NAME,$EVTPART1) }
-##########################################################################################
+# ########################################################################################
 
 sub sv_SonosTransportStateChanged($$) {
 	my ($NAME,$EVTPART1) = @_;
@@ -30,55 +58,57 @@ sub sv_SonosTransportStateChanged($$) {
 }
 
 
-
-##########################################################################################
+# ########################################################################################
 # sv_SonosGetTansportState()
 #
 # example call:
 # define n_sv_sonosGetTrackPos notify [yourPrefix]_.*:transportState:.* { sv_SonosGetTrackPos($NAME,$EVTPART1) }
 # eg. define n_sv_sonosGetTrackPos notify Sonos_.*:transportState:.* { sv_SonosGetTrackPos($NAME,$EVTPART1) }
-##########################################################################################
+# ########################################################################################
 
 sub sv_SonosSetTansportState($$) {
 	my ($device,$event) = @_;
 
 	$event =~ s/://g;
 
-	if (($event eq "Play") || ($event eq "PLAYING"))
-	{
-		Log3 undef, 4, "sv_SonosSetTansportState($device,$event) => Play 1 / Pause 0 / Stop: 0";
-		fhem("sleep 0.01; setreading " . $device . " svTransportStatePlay 1" );
-		fhem("sleep 0.01; setreading " . $device . " svTransportStatePause 0" );
-		fhem("sleep 0.01; setreading " . $device . " svTransportStateStop 0" );
-	}
-	elsif (($event eq "Pause") || ($event eq "PAUSED_PLAYBACK"))
-	{
-		Log3 undef, 4, "sv_SonosSetTansportState($device,$event) => Play 0 / Pause 1 / Stop 0";
-		fhem("sleep 0.01; setreading " . $device . " svTransportStatePlay 0" );
-		fhem("sleep 0.01; setreading " . $device . " svTransportStatePause 1" );
-		fhem("sleep 0.01; setreading " . $device . " svTransportStateStop 0" );
-	}
-	elsif (($event eq "Stop") || ($event eq "STOPPED") || ($event eq "ERROR"))
-	{
-		Log3 undef, 4, "sv_SonosSetTansportState($device,$event) => Play 0 / Pause 0 / Stop 1";
-		#fhem("get $device CurrentTrackPosition");
-		sv_SonosTrackPositionUpdate($device);
-		fhem("sleep 0.01; setreading " . $device . " svTransportStatePlay 0" );
-		fhem("sleep 0.01; setreading " . $device . " svTransportStatePause 0" );
-		fhem("sleep 0.01; setreading " . $device . " svTransportStateStop 1" );
-	}
-	else
-	{
-		Log3 undef, 1, "sv_SonosGetTansportState($device,$event) => unknown state";
-	}
+	my @d = sv_SonosGetSlaves($device);
+	push(@d, $device);
 
+	foreach my $dev (@d)
+	{
+		Log3 undef, 3, "sv_SonosSetTansportState($dev,$event) => Play 1 / Pause 0 / Stop: 0";
+		if (($event eq "Play") || ($event eq "PLAYING"))
+		{
+			fhem("sleep 0.01; setreading " . $dev . " svTransportStatePlay 1" );
+			fhem("sleep 0.01; setreading " . $dev . " svTransportStatePause 0" );
+			fhem("sleep 0.01; setreading " . $dev . " svTransportStateStop 0" );
+		}
+		elsif (($event eq "Pause") || ($event eq "PAUSED_PLAYBACK"))
+		{
+			Log3 undef, 4, "sv_SonosSetTansportState($dev,$event) => Play 0 / Pause 1 / Stop 0";
+			fhem("sleep 0.01; setreading " . $dev . " svTransportStatePlay 0" );
+			fhem("sleep 0.01; setreading " . $dev . " svTransportStatePause 1" );
+			fhem("sleep 0.01; setreading " . $dev . " svTransportStateStop 0" );
+		}
+		elsif (($event eq "Stop") || ($event eq "STOPPED") || ($event eq "ERROR"))
+		{
+			Log3 undef, 4, "sv_SonosSetTansportState($dev,$event) => Play 0 / Pause 0 / Stop 1";
+			sv_SonosTrackPositionUpdate($dev);
+			fhem("sleep 0.01; setreading " . $dev . " svTransportStatePlay 0" );
+			fhem("sleep 0.01; setreading " . $dev . " svTransportStatePause 0" );
+			fhem("sleep 0.01; setreading " . $dev . " svTransportStateStop 1" );
+		}
+			else
+		{
+			Log3 undef, 1, "sv_SonosGetTansportState($device,$event) => unknown state";
+		}
+	}
 	return undef;
 }
 
 
 
-
-##########################################################################################
+# ########################################################################################
 # sv_setSonosGroupsReadings()
 #
 # example call:
@@ -88,7 +118,7 @@ sub sv_SonosSetTansportState($$) {
 # Note:
 # If your SONOSPLAYER devices contain more than 1 underscore or umlauts then you have to
 # adjust both regexs [-0-9a-zA-Z]+ below.
-##########################################################################################
+# ########################################################################################
 
 sub sv_setSonosGroupsReadings($$) {
 	my ($device,$EVENT) = @_;
@@ -106,6 +136,11 @@ sub sv_setSonosGroupsReadings($$) {
 	    fhem("sleep 0.01; setreading $device svIsInThisGroup ".$prefix."_$room");
 		fhem("sleep 0.01; setreading $device svIsInAnyGroup 1");
 		fhem("sleep 0.01; setreading ".$prefix."_$room svHasClient_"."$device"." 1");
+
+		# overwrite currentAlbumArtURL when player has become a slave
+		my $masterCoverUrl = ReadingsVal($prefix . "_" . $room, "currentAlbumArtURL", "");
+	    fhem("sleep 0.01; setreading $device currentAlbumArtURL $masterCoverUrl");
+
 	}
 	else
 	{
@@ -117,13 +152,13 @@ sub sv_setSonosGroupsReadings($$) {
 
 
 
-##########################################################################################
+# ########################################################################################
 # sv_SonosGetTrackPos()
 #
 # example call:
 # define n_sv_sonosGetTrackPos notify [yourPrefix]_.*:transportState:.* { sv_SonosGetTrackPos($NAME,$EVTPART1) }
 # eg. define n_sv_sonosGetTrackPos notify Sonos_.*:transportState:.* { sv_SonosGetTrackPos($NAME,$EVTPART1) }
-##########################################################################################
+# ########################################################################################
 
 sub sv_SonosGetTrackPos($$) {
 	my ($device,$evt) = @_;
@@ -173,9 +208,16 @@ sub sv_deleteAtTimer($) {
 
 
 
-##########################################################################################
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+# # # # # # # # # # # #    H E L P E R   F U N C T I O N S   # # # # # # # # # # # # # # #
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+
+# ####################################################################
 # sv_calcTrackPosPercent()      ($LastActionResult = eg. GetCurrentTrackPosition: 0:00:11)
-##########################################################################################
+# ####################################################################
 
 sub sv_SonosTrackPositionUpdate($) {
 	my ($device) = @_;
@@ -185,7 +227,7 @@ sub sv_SonosTrackPositionUpdate($) {
 	my $trackPosP;
 	my $trackDurT = ReadingsVal($device, 'currentTrackDuration', '0:01:00');
 
-	if (($trackDurT eq "0:00:00") ||  ($trackDurT eq "NOT_IMPLEMENTED"))
+	if (($trackDurT eq "0:00:00") || ($trackDurT eq "NOT_IMPLEMENTED"))
 	{
 		$trackPosP = 0;
 	}
@@ -194,6 +236,8 @@ sub sv_SonosTrackPositionUpdate($) {
 		my $trackDurS = SONOS_GetTimeSeconds($trackDurT);
 		my $trackPosT = ReadingsVal($device, "currentTrackPosition", "0:00:10");
 		my $trackPosS = SONOS_GetTimeSeconds($trackPosT);
+
+		# update is too late, we are one step beyond...
 		$trackPosP = int(100 * $trackPosS / (0.1 + $trackDurS));
 		if ($trackPosP >= 100) {$trackPosP = 100}  # $trackDurS = 0
 	}
@@ -201,17 +245,72 @@ sub sv_SonosTrackPositionUpdate($) {
 	Log3 undef, 4, "sv_SonosTrackPositioUpdate($device): setreading $device svTrackPosition $trackPosP";
 	fhem("sleep 0.01; setreading $device svTrackPosition $trackPosP");
 
+	my @c = sv_SonosGetSlaves($device);
+	foreach my $client (@c) {
+		Log3 undef, 4, "sv_SonosTrackPositioUpdate($device): setreading $client svTrackPosition $trackPosP";
+		fhem("sleep 0.01; setreading $client svTrackPosition $trackPosP");
+	}
+
 	return undef;
 }
 
 
+# ####################################################################
+# sv_SonosGetDevices()
+#
+# get all sonos devices (stereo pairs will be handled as one device)
+# ####################################################################
+
+sub sv_SonosGetDevices() {
+	my @p = devspec2array('TYPE=SONOS');
+	my $prefix = shift @p;
+	return "No SONOS device" if ($prefix eq "");
+
+	my @s = devspec2array("TYPE=SONOSPLAYER:FILTER=NAME=" . $prefix ."_[0-9a-zA-Z]+");
+	return @s;
+}
+
+# ####################################################################
+# sv_SonosGetSlaves($)
+#
+# get player's slaves if any
+# ####################################################################
+
+sub sv_SonosGetSlaves($) {
+	my ($device) = @_;
+
+	my @slaves;
+	my @p = sv_SonosGetDevices();
+	foreach my $player (@p)
+	{
+		if (ReadingsVal($device, "svHasClient_" . $player, "0") eq "1")
+		{
+			push(@slaves, $player);
+		}
+	}
+	return @slaves;
+}
 
 
-##########################################################################################
+# ####################################################################
+# sv_SonosGetMaster($)
+#
+# get player's master if any
+# ####################################################################
+
+sub sv_SonosGetMaster($) {
+	my ($device) = @_;
+
+	my $master = ReadingsVal($device, "svIsInThisGroup", "none");
+	return $master if $master ne "none";
+	return $device;
+}
+
+# ####################################################################
 # sv_SonosSec2time(secs)
 # - convert seconds to fhem time format
 # - will be used in fronthem converter SonosTrackPos
-##########################################################################################
+# ####################################################################
 
 sub sv_SonosSec2time($) {
 
@@ -239,9 +338,9 @@ sub sv_SonosSec2time($) {
 
 
 
-###############################################################################
+# ####################################################################
 # Init all sv.* readings used by smartvisu Widget
-###############################################################################
+# ####################################################################
 
 sub sv_SonosReadingsInit() {
 	my @p = devspec2array('TYPE=SONOS');
@@ -256,7 +355,7 @@ sub sv_SonosReadingsInit() {
 		fhem("setreading ".$prefix."_[A-Za-z0-9] svHasClient_$sd 0");
 	}
 
-	Log3 undef, 1, "notify: setreading " . $prefix . "_[A-Za-z0-9] svPlaylists 0";
+	Log3 undef, 1, "notify: setreading " . $prefix . "_[A-Za-z0-9] svPlaylists none";
 	fhem("setreading " . $prefix . "_[A-Za-z0-9] svPlaylists 0");
 	Log3 undef, 1, "notify: setreading " . $prefix . "_[A-Za-z0-9] svTrackPosition 0";
 	fhem("setreading " . $prefix . "_[A-Za-z0-9] svTrackPosition 0");
@@ -264,12 +363,18 @@ sub sv_SonosReadingsInit() {
 	fhem("setreading " . $prefix . "_[A-Za-z0-9] svIsInAnyGroup 0");
 	Log3 undef, 1, "notify: setreading " . $prefix . "_[A-Za-z0-9] svIsInThisGroup none";
 	fhem("setreading " . $prefix . "_[A-Za-z0-9] svIsInThisGroup none");
+	Log3 undef, 1, "notify: setreading " . $prefix . "_[A-Za-z0-9] svTransportStatePause 0";
+	fhem("setreading " . $prefix . "_[A-Za-z0-9] svTransportStatePause none");
+	Log3 undef, 1, "notify: setreading " . $prefix . "_[A-Za-z0-9] svTransportStatePlay 0";
+	fhem("setreading " . $prefix . "_[A-Za-z0-9] svTransportStatePlay none");
+	Log3 undef, 1, "notify: setreading " . $prefix . "_[A-Za-z0-9] svTransportStateStop 0";
+	fhem("setreading " . $prefix . "_[A-Za-z0-9] svTransportStateStop none");
 }
 
 
-###############################################################################
+# ####################################################################
 # Delete all sv.* readings used by smartvisu Widget
-###############################################################################
+# ####################################################################
 
 sub sv_SonosReadingsDelete() {
 	my @p = devspec2array('TYPE=SONOS');
@@ -292,29 +397,38 @@ sub sv_SonosReadingsDelete() {
 	fhem("deletereading " . $prefix . "_[A-Za-z0-9] svIsInAnyGroup 0");
 	Log3 undef, 1, "notify: deletereading " . $prefix . "_[A-Za-z0-9] svIsInThisGroup";
 	fhem("deletereading " . $prefix . "_[A-Za-z0-9] svIsInThisGroup");
+	Log3 undef, 1, "notify: deletereading " . $prefix . "_[A-Za-z0-9] svTransportStatePause";
+	fhem("deletereading " . $prefix . "_[A-Za-z0-9] svTransportStatePause");
+	Log3 undef, 1, "notify: deletereading " . $prefix . "_[A-Za-z0-9] svTransportStatePlay";
+	fhem("deletereading " . $prefix . "_[A-Za-z0-9] svTransportStatePlay");
+	Log3 undef, 1, "notify: deletereading " . $prefix . "_[A-Za-z0-9] svTransportStateStop";
+	fhem("deletereading " . $prefix . "_[A-Za-z0-9] svTransportStateStop");
 }
 
 
 
 
-##########################################################################################
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #
-# #######################   S O N O S   C O N V E R T E R   ##############################
+# # # # # # #   S O N O S   C O N V E R T E R   # # # # # # # # # # # # # # # # # # # # #
 #
-##########################################################################################
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 package fronthem;
 use strict;
 use warnings;
 
 
-###############################################################################
+# ########################################################################################
+# Fronthem converter: SonosGroup
 #
 # Fronthem Converter for Sonos Widget
 # direkt relations (gadval == reading == setval) with the following exeptions:
 #
 # - catch readings svHasClient.* / svIsInAnyGroup and do the job
 #
-###############################################################################
+# ########################################################################################
+
 sub SonosGroup(@)
 {
 	my ($param) = @_;
@@ -418,14 +532,16 @@ sub SonosGroup(@)
 
 
 
-###############################################################################
+# ########################################################################################
+# Fronthem converter: SonosTransportState
 #
 # Fronthem Converter for Sonos Widget
 # direkt relations (gadval == reading == setval) with the following exeptions:
 #
 # - get play/stop status from transportState reading and set play/stop via state
 #
-###############################################################################
+# ########################################################################################
+
 sub SonosTransportState(@)
 {
 	my ($param) = @_;
@@ -484,8 +600,7 @@ sub SonosTransportState(@)
 		{
 			if ($gadval eq "1")
 			{
-				# immediately update, not needed but better haptic
-				main::fhem("setreading $device svTransportStateStop 0");
+				main::fhem("setreading $device svTransportStateStop 0");    # immediately update, not needed but better haptic
 				$param->{result} = main::fhem("set $device Play");
 				$param->{results} = [];
 				return 'done';
@@ -537,14 +652,16 @@ sub SonosTransportState(@)
 
 
 
-###############################################################################
+# ########################################################################################
+# Fronthem converter: SonosAlbumArtURL
 #
 # Fronthem Converter for Sonos Widget
 # direkt relations (gadval == reading == setval) with the following exeptions:
 #
 # - replace empty.jpg url (reading currentAlbumArtURL)
 #
-###############################################################################
+# ########################################################################################
+
 sub SonosAlbumArtURL(@)
 {
 	my ($param) = @_;
@@ -596,11 +713,24 @@ sub SonosAlbumArtURL(@)
 				main::Log3 undef, 4, $cName . "delete Timer";
 				main::sv_deleteAtTimer($device);
 			}
-			################################
 
-			# replace empty.jpg url
-			$event =~ s/\/fhem\/sonos\/cover\/empty.jpg/\/smartvisu\/pages\/base\/pics\/sonos_empty.jpg/g;
-			main::sv_SonosTrackPositionUpdate($device);  #better haptic
+			# If currentAlbumArtURL =~ /empty.jpg/
+			if ($event =~ /\/fhem\/sonos\/cover\/empty.jpg/)
+			{
+				$event = "/smartvisu/pages/base/pics/sonos_empty.jpg";
+				main::sv_SonosTrackPositionUpdate($device);  #better haptic
+				main::Log3 undef, 4, "empty  currentAlbumArtURL replaced device: $device - event: ".  $event;
+			}
+			# overwrite slave player's currentAlbumArtURL
+			else
+			{
+				my @c = main::sv_SonosGetSlaves($device);
+				foreach my $client (@c)
+				{
+					main::fhem("setreading $client currentAlbumArtURL ".  $event);
+					main::Log3 undef, 4, "setreading $client currentAlbumArtURL ".  $event;
+				}
+			}
 		}
 
 		$param->{gadval} = $event;
@@ -626,14 +756,14 @@ sub SonosAlbumArtURL(@)
 
 
 
-###############################################################################
+# ########################################################################################
+# Fronthem converter: SonosTrackPos
 #
 # Fronthem Converter for Sonos Widget
 # direkt relations (gadval == reading == setval) with the following exeptions:
 #
-# -
-#
-###############################################################################
+# ########################################################################################
+
 sub SonosTrackPos(@)
 {
 	my ($param) = @_;
@@ -667,13 +797,20 @@ sub SonosTrackPos(@)
 	{
 		if ($reading eq "svTrackPosition")
 		{
+
+			#if position was set by a slave
+			my $device = main::sv_SonosGetMaster($device);
+
+			#calc percent
 			my $durationT = main::ReadingsVal($device, 'currentTrackDuration', '0:00:10');
 			my $durationS = main::SONOS_GetTimeSeconds($durationT);
 			my $newposS = $gadval * $durationS / 100 ;
 			my $newposT = main::sv_SonosSec2time($newposS);
 
-			#main::Log3 undef, 3, $cName . "set ".$device." CurrentTrackPosition ".$newposT;
+			main::Log3 undef, 4, $cName . "set ".$device." CurrentTrackPosition ".$newposT;
 			main::fhem("set ".$device." CurrentTrackPosition ".$newposT);
+
+
 			$param->{results} = [];
 			return 'done';
 		}
@@ -692,10 +829,13 @@ sub SonosTrackPos(@)
 }
 
 
-
-
 1;
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+# # # # # # # # # # #    C O M M A N D   R E F E R E N C E   # # # # # # # # # # # # # #
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 =pod
 =begin html

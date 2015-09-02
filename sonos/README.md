@@ -187,6 +187,11 @@ define n_sv_sonosTransportStateChanged notify Sonos_[A-Za-z0-9]+:transportState:
 - Minor layout changes
 - **v0.80**
 - Code cleanup
+- **v.081**
+- Slave player can control master (play,pause,stop,next,prev,trackPos)
+- If player is a slave then cover art and track position will be shown from master player
+- **v.082**
+- SET Track Position will be redirected from slave player to master
 
 **Credits / Copyrights / Trademarks:**
 - My wife!

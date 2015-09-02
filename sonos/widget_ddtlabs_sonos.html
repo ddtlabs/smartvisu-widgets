@@ -17,18 +17,24 @@
 * @param radiolist_items: 2D array of radio display_name/sonos_favourite_item. eg. [['1LIVE','1LIVE - Das junge Radio des WDR. 103.7 (Euro-Hits)'],['Rock Ant.','ROCK ANTENNE Classic Perlen (Classic Rock)']]
 * @param playlist_header: header for play list
 * @param playlist_items: 2D array of play list display_names/sonos_playlist_item. eg. [['Rock','Rock'],['New Soul','NewSoul']]
+*
 * @author and copyright dev0
 */
 
 {% macro player(id, gad, neighbors, radiolist_header, radiolist_items, playlist_header, playlist_items) %}
 
-	{% set text_volume    = 'Volume of neighbors'%}
+/** set your preferences here */
+
 	{% set prefix         = 'mm_' %}
+	{% set text_volume    = 'Volume of neighbors'%}
 
-	{% set version        = '0.80'%}
+/** do not modify anything below, as long as you know what you are dong */
 
+	{% set version        = '0.82'%}
+	{% set defCoverArtUrl = 'pages/base/pics/sonos_empty.jpg' %}
 	{% set uid            = uid(page, id) %}
-	{% set gad            = prefix~gad %}
+
+	{% set gad            = prefix~gad %}           /** use Direct converter if no further comment */
 	{% set state          = '.state' %}
 	{% set volume         = '.volume' %}
 	{% set artist         = '.currentArtist' %}
@@ -54,25 +60,19 @@
 
 	{% set isInAnyGroup   = '.svIsInAnyGroup' %}      /** Coverter: SonosGroup */
 	{% set hasClient      = '.svHasClient' %}         /** Coverter: SonosGroup */
-
 	{% set trackPos       = '.svTrackPosition' %}     /** Coverter: SonosTrackPos */
-
 	{% set coverUrl       = '.currentAlbumArtURL' %}  /** Coverter: SonosAlbumArtURL */
-	{% set play           = '.transportState' %}      /** Coverter: SonosTransportState */
-	{% set transportState = '.svTransportState' %}    /** Coverter: SonosTransportState */
 	{% set transportStateStop  = '.svTransportStateStop' %}    /** Coverter: SonosTransportState */
 	{% set transportStatePlay  = '.svTransportStatePlay' %}    /** Coverter: SonosTransportState */
 	{% set transportStatePause = '.svTransportStatePause' %}   /** Coverter: SonosTransportState */
 
-
 	{% import "basic.html" as basic %}
-	{% import "widget_ddtlabs_sonos.html" as ddtlabs_sonos %}
+	{% import "widget_ddtlabs_sonos.html" as ddtlabs_int_sonos %}
 
 <div class="ddtlabs">
 <div id="{{ uid }}" class="sonos">
 
 <table width="100%" style="min-width: 460px;">
-/** <table width="100%" style="min-width: 600px;"> */
 <tr>
     <td id="vol" rowspan="5">
     	<div class="vol">
@@ -81,12 +81,12 @@
 		</div>
     </td>
     <td id="cover" rowspan="5">
-	   	{{ ddtlabs_sonos.cover(id~coverUrl, gad~coverUrl) }}
+	   	{{ ddtlabs_int_sonos.cover(id~coverUrl, gad~coverUrl, defCoverArtUrl) }}
 		<div class="pos">
 		{{ basic.slider(id~trackPos, gad~trackPos, 0, 100, 1) }}
 		</div>
 		<div class="symbolpause">
-		{{ basic.symbol(gad~gad~transportStatePause~Symbol, gad~transportStatePause, '', 'audio_pause.svg', '1', '', 'red') }}
+		{{ basic.symbol(id~gad~transportStatePause~Symbol, gad~transportStatePause, '', 'audio_pause.svg', '1', '', 'red') }}
 		</div>
     </td>
 	<td id="title-wide">
@@ -121,10 +121,11 @@
 		<div class="playlist playlist-wide">
 		<table width="100%"  class="btnright-wide">
 		<tr>
+
 			<td>
-				{{ ddtlabs_sonos.selectmenu_playlist(id~'playlist', gad~playlist,  playlist_items, '', playlist_header) }}
+				{{ ddtlabs_int_sonos.selectmenu(id~'playlist', gad~playlist,  playlist_items, '', playlist_header) }}
 			</td><td>
-				{{ ddtlabs_sonos.selectmenu_radiolist(id~'radiolist', gad~radiolist, radiolist_items, '', radiolist_header) }}
+				{{ ddtlabs_int_sonos.selectmenu(id~'radiolist', gad~radiolist, radiolist_items, '', radiolist_header, 'urlencode') }}
 			</td>
 		</tr>
 		</table>
@@ -154,7 +155,7 @@
 
 			<td>
 				<span data-role="controlgroup" data-type="horizontal">
-					<a href="#{{id}}ddtlabs_sonos_popup" data-rel="popup" data-transition="fade" class="ui-mini ui-btn ui-btn-up-a ui-shadow ui-btn-corner-all ui-btn-inline ui-btn-icon-center">
+					<a href="#{{id}}ddtlabs_sonos_popup" data-rel="popup" data-transition="flip" class="ui-mini ui-btn ui-btn-up-a ui-shadow ui-btn-corner-all ui-btn-inline ui-btn-icon-center">
 					<span class="ui-btn-inner">
 					<span class="ui-btn-text">
 						<img data-inline="true" data-iconpos="center" class="icon" src="{{ icon0~'audio_eq.svg' }}">
@@ -200,20 +201,9 @@
 		</div>
 	</td>
 	<td>
-
-/**
-		<div data-role="controlgroup" data-type="horizontal" class="play">
-		{{ basic.button(id~'_prev', gad~state, 'Prev', 'control_arrow_left.svg', 'Previous') }}
-		{{ basic.dual(id~play,   gad~play, 'audio_play.svg', 'audio_play.svg', 'PLAYING', 'STOPPED', '') }}
-		{{ basic.button(id~'_stop', gad~state, 'Stop', 'audio_stop.svg', 'Stop') }}
-		{{ basic.button(id~'_next', gad~state, 'Next', 'control_arrow_right.svg', 'Next') }}
-		</div>
-*/
-
 		<div data-role="controlgroup" data-type="horizontal" class="play">
 		{{ basic.button(id~'_prev', gad~state, 'Prev', 'control_arrow_left.svg', 'Previous') }}
 		{{ basic.dual(id~gad~'_playX',  gad~transportStatePlay, 'audio_play.svg', 'audio_play.svg', '1', '0', '') }}
-/**		{{ basic.dual(id~gad~'_pauseX',  gad~transportStatePause, 'audio_pause.svg', 'audio_pause.svg', '1', '0', '') }} */
 		{{ basic.dual(id~gad~'_stopX',  gad~transportStateStop, 'audio_stop.svg', 'audio_stop.svg', '1', '0', '') }}
 		{{ basic.button(id~'_next', gad~state, 'Next', 'control_arrow_right.svg', 'Next') }}
 		</div>
@@ -221,29 +211,30 @@
 	</td>
 	<td>
 
-	<table width="100%" class="btnright-wide"><tr>
-
-	<td>
+	<table width="100%" class="btnright-wide">
+	<tr>
+		<td>
 			<span data-role="controlgroup" data-type="horizontal">
 			{{ basic.multistate(id~repeat, gad~repeat, ['0', '1', '2'], ['audio_repeat.svg', 'audio_repeat_song.svg', 'audio_repeat.svg'], 'mini') }}
 			</span>
-	</td><td>
+		</td>
+		<td>
 			<span data-role="controlgroup" data-type="horizontal">
 			{{ basic.dual(id~shuffle, gad~shuffle, 'audio_shuffle.svg', 'audio_shuffle.svg', 1, '') }}
 			</span>
-	</td><td>
+		</td>
+		<td>
 			<span data-role="controlgroup" data-type="horizontal">
    			{{ basic.dual(id~loudness, gad~loudness, 'audio_loudness.svg', 'audio_loudness.svg', 1, 0, 'mini') }}
 			</span>
-	</td><td>
+		</td>
+		<td>
 			<span data-role="controlgroup" data-type="horizontal">
-   			{{ basic.dual(id~crossfade, gad~crossfade, 'audio_fade.svg', 'audio_fade.svg', 1, 0, 'mini') }}
+	   		{{ basic.dual(id~crossfade, gad~crossfade, 'audio_fade.svg', 'audio_fade.svg', 1, 0, 'mini') }}
 			</span>
-	</td>
-
-	</tr></table>
-
-
+		</td>
+	</tr>
+	</table>
 
 	</td>
 </tr>
@@ -263,8 +254,8 @@
 * @param prefix: should be emtpy
 */
 
-{% macro cover(id, src, prefix) %}
-	<img class="coverimg" id="{{ uid(page, id) }}" data-widget="ddtlabs_sonos.cover" data-item="{{ src }}" src="{{ prefix }}" />
+{% macro cover(id, src, defCoverArtUrl) %}
+	<img class="coverimg" id="{{ uid(page, id) }}" data-widget="ddtlabs_sonos.cover" data-item="{{ src }}" src="{{ defCoverArtUrl }}" />
 {% endmacro %}
 
 
@@ -278,32 +269,15 @@
 * @param label: lable for this widget
 */
 
-{% macro selectmenu_playlist(id, gad, items, label, selected) %}
+{% macro selectmenu(id, gad, items, label, selected, urlencode) %}
 <a class="ui-btn-inline ui-mini selectmenu">
 	<select name="{{ uid(page, id) }}" id="{{ uid(page, id) }}" data-widget="ddtlabs_sonos.selectmenu" data-item="{{ gad }}" data-native-menu="false" data-placeholder="false" data-mini="true" data-native-menu="false" class="selectmenu" />
 		{% for item in items %}
-			<option value="{{ item[1] }}">{{ item[0] }}</option>
-		{% endfor %}
-		<option selected>{{ selected }}</option>
-	</select>
-</a>
-{% endmacro %}
-
-
-/**
-* Selectmenu for radio lists
-*
-* @param id: unique id for this widget
-* @param gad: gad for this widget
-* @param items: array of playlists
-* @param label: lable for this widget
-*/
-
-{% macro selectmenu_radiolist(id, gad, items, label, selected) %}
-<a class="ui-btn-inline ui-mini selectmenu">
-	<select name="{{ uid(page, id) }}" id="{{ uid(page, id) }}" data-widget="ddtlabs_sonos.selectmenu" data-item="{{ gad }}" data-native-menu="false" data-placeholder="false" data-mini="true" data-native-menu="false" class="selectmenu"/>
-		{% for item in items %}
-			<option value="{{ item[1]|url_encode }}">{{ item[0] }}</option>
+			{% if urlencode %}
+				<option value="{{ item[1]|url_encode }}">{{ item[0] }}</option>
+			{% else %}
+				<option value="{{ item[1] }}">{{ item[0] }}</option>
+			{% endif %}
 		{% endfor %}
 		<option selected>{{ selected }}</option>
 	</select>
