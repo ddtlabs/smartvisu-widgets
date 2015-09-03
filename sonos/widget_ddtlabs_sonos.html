@@ -30,7 +30,7 @@
 
 /** do not modify anything below, as long as you know what you are dong */
 
-	{% set version        = '0.82'%}
+	{% set version        = '0.83'%}
 	{% set defCoverArtUrl = 'pages/base/pics/sonos_empty.jpg' %}
 	{% set uid            = uid(page, id) %}
 
@@ -69,8 +69,11 @@
 	{% import "basic.html" as basic %}
 	{% import "widget_ddtlabs_sonos.html" as ddtlabs_int_sonos %}
 
+
 <div class="ddtlabs">
 <div id="{{ uid }}" class="sonos">
+
+
 
 <table width="100%" style="min-width: 460px;">
 <tr>
@@ -121,7 +124,6 @@
 		<div class="playlist playlist-wide">
 		<table width="100%"  class="btnright-wide">
 		<tr>
-
 			<td>
 				{{ ddtlabs_int_sonos.selectmenu(id~'playlist', gad~playlist,  playlist_items, '', playlist_header) }}
 			</td><td>
@@ -164,7 +166,7 @@
 					</a>
 				</span>
 
-				<div class="ddtlabs-sonos-popup-eq" id="{{id}}ddtlabs_sonos_popup" data-role="popup" data-position-to="window" data-theme="a" data-overlay-theme="b">
+				<div class="ddtlabs-sonos-popup-eq" id="{{id}}ddtlabs_sonos_popup" data-role="popup" data-position-to="origin" data-theme="a" data-overlay-theme="a">
 					<a href="#" data-rel="back" data-role="button" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
 					<div class="ddtlabs">
 					<div class="sonospopup">
@@ -215,7 +217,8 @@
 	<tr>
 		<td>
 			<span data-role="controlgroup" data-type="horizontal">
-			{{ basic.multistate(id~repeat, gad~repeat, ['0', '1', '2'], ['audio_repeat.svg', 'audio_repeat_song.svg', 'audio_repeat.svg'], 'mini') }}
+/**			{{ basic.multistate(id~repeat, gad~repeat, ['0', '1', '2'], ['audio_repeat.svg', 'audio_repeat_song.svg', 'audio_repeat.svg'], 'mini') }} */
+			{{ basic.dual(id~repeat, gad~repeat, 'audio_repeat.svg', 'audio_repeat.svg', 1, '0') }}
 			</span>
 		</td>
 		<td>
@@ -283,6 +286,4 @@
 	</select>
 </a>
 {% endmacro %}
-
-
 

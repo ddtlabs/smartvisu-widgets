@@ -1,6 +1,6 @@
 # ########################################################################################
-# $Id: 99_fronthemSonosUtils.pm 82 2015-08-28 13:33:00Z dev0 $
-# Verison 0.82
+# $Id: 99_fronthemSonosUtils.pm 83 2015-08-28 13:33:00Z dev0 $
+# Verison 0.83
 # ########################################################################################
 #
 #  This functions are free software; you can redistribute it and/or modify
@@ -76,7 +76,7 @@ sub sv_SonosSetTansportState($$) {
 
 	foreach my $dev (@d)
 	{
-		Log3 undef, 3, "sv_SonosSetTansportState($dev,$event) => Play 1 / Pause 0 / Stop: 0";
+		Log3 undef, 4, "sv_SonosSetTansportState($dev,$event) => Play 1 / Pause 0 / Stop: 0";
 		if (($event eq "Play") || ($event eq "PLAYING"))
 		{
 			fhem("sleep 0.01; setreading " . $dev . " svTransportStatePlay 1" );

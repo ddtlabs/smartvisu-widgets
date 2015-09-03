@@ -192,6 +192,9 @@ define n_sv_sonosTransportStateChanged notify Sonos_[A-Za-z0-9]+:transportState:
 - If player is a slave then cover art and track position will be shown from master player
 - **v.082**
 - SET Track Position will be redirected from slave player to master
+**v0.83**
+- missed to set log level back to 4 (fixed)
+- replaced multistate button by dual
 
 **Credits / Copyrights / Trademarks:**
 - My wife!
