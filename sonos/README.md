@@ -31,7 +31,7 @@
 - Copy 99_fronthemSonosUtils.pm to your FHEM module folder (typically /opt/fhem/FHEM).
 - Check that file has the same permission as all other files in this directory.
 - Restart FHEM.
-- Define 2 FHEM notifies (replace "Sonos_" by your used prefix, if you named it differently):
+- **UPDATED:** Define 2 FHEM notifies (replace "Sonos_" by your used prefix, if you named it differently):
 ```
 define n_sv_sonosGroups notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:currentTrackProvider:.\w.* { sv_setSonosGroupsReadings($NAME, $EVENT) }
 ```
