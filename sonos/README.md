@@ -16,14 +16,14 @@
 - Popup with equalizer and volume slider for neighbour players
 
 **Important update note:**
-- If your are updating from version 0.78 or below, you have to replace a notify and delete a userReadings definition. See change log blow.
+- If your are updating from version **0.85** or below, you have to replace a notify and delete a userReadings definition. See change log blow.
 
 **Requirements:**
 - Fully functioning FHEM (at least version 9118, 2015-08-23) with configured Sonos modules
 - SmartVISU **2.8+** (https://github.com/Martin-Gleiss/smartvisu)
 - Fronthem (https://github.com/herrmannj/fronthem)
 - ~~FHEM Sonos player device names without umlauts or underscores in room name. A underscore between prefix and room name is needed on the other hand.~~
-~~ If you are affected then rename your player(s), please. Otherwise you can try to change regexs in notifies and subs in 99_fronthemSonosUtils.pm.~~
+~~If you are affected then rename your player(s), please. Otherwise you can try to change regexs in notifies and subs in 99_fronthemSonosUtils.pm.~~
 
 **Installation advices:**
 
@@ -178,12 +178,12 @@ define n_sv_sonosTransportState notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:transpor
 - If player is a slave then cover art and track position will be shown from master player
 - **v.082**
 - SET Track Position will be redirected from slave player to master
-**v0.83**
+- **v0.83**
 - missed to set log level back to 4 (fixed)
 - replaced multistate button by dual
-**v0.84**
+- **v0.84**
 - Minor changes
-**v0.85**
+- **v0.85**
 - Device name recognition revised, no more device name restriction!
   - **You have to adopt both notify calls**
   - See definition above.
