@@ -155,6 +155,7 @@ define n_sv_sonosTransportState notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:transpor
 
 **Update notes:**
 - If 99_fronthemSonosUtils.pm was replaced, then restart FHEM. "Reload 99_fronthemSonosUtils" could no be enough in some cases!
+- See change log for instructions.
 
 **Change log:**
 - **1st bugfix**
