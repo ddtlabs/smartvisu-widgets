@@ -187,6 +187,7 @@ define n_sv_sonosTransportState notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:transpor
 - Device name recognition revised, no more device name restriction!
   - **You have to adopt both notify calls**
   - See definition above.
+- Master states are synced to slave players (improvement)
 
 **Credits / Copyrights / Trademarks:**
 - My wife!
