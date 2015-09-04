@@ -1,6 +1,6 @@
 ### Sonos Widget for smartVISU / FHEM
 
-**Version: 0.82**
+**Version: 0.85**
 
 **Screenshots:**
 
@@ -22,8 +22,8 @@
 - Fully functioning FHEM (at least version 9118, 2015-08-23) with configured Sonos modules
 - SmartVISU **2.8+** (https://github.com/Martin-Gleiss/smartvisu)
 - Fronthem (https://github.com/herrmannj/fronthem)
-- FHEM Sonos player device names without umlauts or underscores in room name. A underscore between prefix and room name is needed on the other hand.
- If you are affected then rename your player(s), please. Otherwise you can try to change regexs in notifies and subs in 99_fronthemSonosUtils.pm.
+- ~~FHEM Sonos player device names without umlauts or underscores in room name. A underscore between prefix and room name is needed on the other hand.~~
+~~ If you are affected then rename your player(s), please. Otherwise you can try to change regexs in notifies and subs in 99_fronthemSonosUtils.pm.~~
 
 **Installation advices:**
 
@@ -33,14 +33,10 @@
 - Restart FHEM.
 - Define 2 FHEM notifies (replace "Sonos_" by your used prefix, if you named it differently):
 ```
-define n_sv_sonosGroups notify Sonos_[A-Za-z0-9]+:currentTrackProvider:.\w.* { sv_setSonosGroupsReadings($NAME, $EVENT) }
+define n_sv_sonosGroups notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:currentTrackProvider:.\w.* { sv_setSonosGroupsReadings($NAME, $EVENT) }
 ```
 ```
-define n_sv_sonosTransportStateChanged notify Sonos_[A-Za-z0-9]+:transportState:.* { sv_SonosTransportStateChanged($NAME,$EVTPART1) }
-```
-- ~~Define additional userReading svTrackPosition for each Sonos player, but do not delete the existing readings:~~
-```
-If defined -> delete it!
+define n_sv_sonosTransportState notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:transportState:.* { sv_SonosTransportStateChanged($NAME,$EVTPART1) }
 ```
 - Do not forget to save.
 
@@ -142,7 +138,7 @@ If defined -> delete it!
 - Enable at least verbose 4 and have a look at 99_fronthemSonosUtils.pm for disabled Log3 and main::Log3 lines and enable them. reload 99_fronthemSonosUtils
 
 **Uninstall:**
-- Remove additional userReading svTrackPosition from all Sonos players.
+- Remove additional userReading svTrackPosition from all Sonos players (if defined in earlier version).
 - Delete both created notifies within FHEM.
 - Call within FHEM {sv_SonosReadingsDelete()} to delete all addional created readings within Sonos players.
 - Delete all copied files.
@@ -158,7 +154,7 @@ If defined -> delete it!
 - ~~Dynamic layout in width.~~
 
 **Update notes:**
-- If 99_fronthemSonosUtils.pm was replaced, then restart FHEM. "Reload 99_fronthemSonosUtils" could no be enough!
+- If 99_fronthemSonosUtils.pm was replaced, then restart FHEM. "Reload 99_fronthemSonosUtils" could no be enough in some cases!
 
 **Change log:**
 - **1st bugfix**
@@ -170,16 +166,6 @@ If defined -> delete it!
 - A more dynamic layout in width.
 - Added a popup with equalizer and volumes for neighbour players
 - **v0.79**
-- TransportState handling changed (dual state for play,pause,stop - better haptic):
-  - delete old notify:
-```
-delete n_sv_sonosGetTrackPos
-```
-- TransportState handling changed (dual state for play,pause,stop - better haptic):
-  - define new notify:
-```
-define n_sv_sonosTransportStateChanged notify Sonos_[A-Za-z0-9]+:transportState:.* { sv_SonosTransportStateChanged($NAME,$EVTPART1) }
-```
 - New gad-items / readings: svTransportStatePause, svTransportStatePlay, svTransportStateStop (converter: SonosTransportState)
 - Current widget version can be found in popup window, too.
 - UserReading definition for svTrackPosition is no longer needed. Delete it you are updating from v0.78 or below, please.
@@ -195,6 +181,12 @@ define n_sv_sonosTransportStateChanged notify Sonos_[A-Za-z0-9]+:transportState:
 **v0.83**
 - missed to set log level back to 4 (fixed)
 - replaced multistate button by dual
+**v0.84**
+- Minor changes
+**v0.85**
+- Device name recognition revised, no more device name restriction!
+  - **You have to adopt both notify calls**
+  - See definition above.
 
 **Credits / Copyrights / Trademarks:**
 - My wife!

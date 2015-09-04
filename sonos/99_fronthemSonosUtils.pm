@@ -1,6 +1,6 @@
 # ########################################################################################
-# $Id: 99_fronthemSonosUtils.pm 83 2015-08-28 13:33:00Z dev0 $
-# Verison 0.83
+# $Id: 99_fronthemSonosUtils.pm 85 2015-08-28 13:33:00Z dev0 $
+# Verison 0.85
 # ########################################################################################
 #
 #  This functions are free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ use POSIX;
 sub fronthemSonosUtils_Initialize($$)
 {
 	my ($hash) = @_;
- 	Log3 undef, 3, "99_fronthemSonosUtils.pm v0.82 (re)loaded";
+ 	Log3 undef, 3, "99_fronthemSonosUtils.pm v0.85 (re)loaded";
 
 }
 
@@ -71,8 +71,8 @@ sub sv_SonosSetTansportState($$) {
 
 	$event =~ s/://g;
 
-	my @d = sv_SonosGetSlaves($device);
-	push(@d, $device);
+	my @d = sv_SonosGetSlaves($device);	# get all device slaves
+	push(@d, $device);					# add device itself to array
 
 	foreach my $dev (@d)
 	{
@@ -123,30 +123,41 @@ sub sv_SonosSetTansportState($$) {
 sub sv_setSonosGroupsReadings($$) {
 	my ($device,$EVENT) = @_;
 
-	Log3 undef, 4, "EVENT: " . $EVENT;
+	Log3 undef, 4, "device: $device / EVENT: " . $EVENT;
 
 	my @evt = split(" ",$EVENT);
 	my ($evtName, $trigger, $room) = @evt;
 
-	my @pre = devspec2array('TYPE=SONOS');
-	my $prefix = shift @pre;
-
 	if ($trigger eq "Gruppenwiedergabe:")
 	{
-	    fhem("sleep 0.01; setreading $device svIsInThisGroup ".$prefix."_$room");
+		my $master = sv_SonosGetDeviceFromRoom($room);
+	    fhem("sleep 0.01; setreading $device svIsInThisGroup $master");
+		Log3 undef, 4, "sleep 0.01; setreading $device svIsInThisGroup $master";
 		fhem("sleep 0.01; setreading $device svIsInAnyGroup 1");
-		fhem("sleep 0.01; setreading ".$prefix."_$room svHasClient_"."$device"." 1");
+		fhem("sleep 0.01; setreading $master svHasClient_"."$device"." 1");
 
 		# overwrite currentAlbumArtURL when player has become a slave
-		my $masterCoverUrl = ReadingsVal($prefix . "_" . $room, "currentAlbumArtURL", "");
+		my $masterCoverUrl = ReadingsVal($master, "currentAlbumArtURL", "");
 	    fhem("sleep 0.01; setreading $device currentAlbumArtURL $masterCoverUrl");
+
+	    # sync transportState to slave, sonos module shows always PLAYING if player is a slave.
+	    # Ask Reinerlein if this is a bug?
+	    fhem("sleep 0.1; setreading $device svTransportStatePlay "   . ReadingsVal($master, "svTransportStatePlay", ""));
+	    fhem("sleep 0.1; setreading $device svTransportStatePlause " . ReadingsVal($master, "svTransportStatePause", ""));
+	    fhem("sleep 0.1; setreading $device svTransportStateStop "   . ReadingsVal($master, "svTransportStateStop", ""));
+		# TrackPos sync to salve
+	    #fhem("sleep 0.1; setreading $device svTrackPosition "        . ReadingsVal($master, "svTrackPosition", ""));
 
 	}
 	else
 	{
 		fhem("sleep 0.01; setreading $device svIsInThisGroup none");
 		fhem("sleep 0.01; setreading $device svIsInAnyGroup 0");
-		fhem("sleep 0.01; setreading ".$prefix."_[0-9a-zA-Z]+:FILTER=TYPE=SONOSPLAYER svHasClient_"."$device"." 0");
+		my @devs = sv_SonosGetDevices();
+		foreach my $dev (@devs)
+		{
+			fhem("sleep 0.01; setreading $dev svHasClient_"."$device"." 0");
+		}
 	}
 }
 
@@ -227,7 +238,7 @@ sub sv_SonosTrackPositionUpdate($) {
 	my $trackPosP;
 	my $trackDurT = ReadingsVal($device, 'currentTrackDuration', '0:01:00');
 
-	if (($trackDurT eq "0:00:00") || ($trackDurT eq "NOT_IMPLEMENTED"))
+	if (($trackDurT eq "0:00:00") || ($trackDurT eq "NOT_IMPLEMENTED") || ($trackDurT eq "")) # last is a test
 	{
 		$trackPosP = 0;
 	}
@@ -243,9 +254,8 @@ sub sv_SonosTrackPositionUpdate($) {
 	}
 
 	Log3 undef, 4, "sv_SonosTrackPositioUpdate($device): setreading $device svTrackPosition $trackPosP";
-	fhem("sleep 0.01; setreading $device svTrackPosition $trackPosP");
-
-	my @c = sv_SonosGetSlaves($device);
+	my @c = sv_SonosGetSlaves($device);	# include slaves
+	push(@c, $device);   				# include device itself
 	foreach my $client (@c) {
 		Log3 undef, 4, "sv_SonosTrackPositioUpdate($device): setreading $client svTrackPosition $trackPosP";
 		fhem("sleep 0.01; setreading $client svTrackPosition $trackPosP");
@@ -256,19 +266,47 @@ sub sv_SonosTrackPositionUpdate($) {
 
 
 # ####################################################################
+# sv_SonosGetPrefix()
+#
+# get sonos prefix name
+# ####################################################################
+
+sub sv_SonosGetPrefix() {
+	my @p = devspec2array('TYPE=SONOS');
+	my $prefix = shift @p;
+	return "No SONOS device" if ($prefix eq "");
+	return $prefix;
+}
+
+
+# ####################################################################
 # sv_SonosGetDevices()
 #
 # get all sonos devices (stereo pairs will be handled as one device)
 # ####################################################################
 
 sub sv_SonosGetDevices() {
-	my @p = devspec2array('TYPE=SONOS');
-	my $prefix = shift @p;
-	return "No SONOS device" if ($prefix eq "");
-
-	my @s = devspec2array("TYPE=SONOSPLAYER:FILTER=NAME=" . $prefix ."_[0-9a-zA-Z]+");
-	return @s;
+	my @devs = devspec2array("TYPE=SONOSPLAYER:FILTER=NAME!=.*(_LR|_RR|_LF|_RF|_SW|_LF_RF)");
+	return @devs;
 }
+
+
+# ####################################################################
+# sv_SonosGetDevicesFromRoom()
+#
+# get device name from room (used for $EVENT: "Gruppenwiedergabe: Livingroom")
+# ####################################################################
+
+sub sv_SonosGetDeviceFromRoom($) {
+	my ($room) = @_;
+
+	my @devs = devspec2array("TYPE=SONOSPLAYER:FILTER=NAME!=.*(_LR|_RR|_LF|_RF|_SW|_LF_RF)");
+	foreach my $dev (@devs)
+	{
+		return $dev if ($dev =~/$room/);
+	}
+}
+
 
 # ####################################################################
 # sv_SonosGetSlaves($)
@@ -277,15 +315,15 @@ sub sv_SonosGetDevices() {
 # ####################################################################
 
 sub sv_SonosGetSlaves($) {
-	my ($device) = @_;
+	my ($master) = @_;
 
 	my @slaves;
-	my @p = sv_SonosGetDevices();
-	foreach my $player (@p)
+	my @d = sv_SonosGetDevices();
+	foreach my $device (@d)
 	{
-		if (ReadingsVal($device, "svHasClient_" . $player, "0") eq "1")
+		if (ReadingsVal($master, "svHasClient_" . $device, "0") eq "1")
 		{
-			push(@slaves, $player);
+			push(@slaves, $device);
 		}
 	}
 	return @slaves;
@@ -343,32 +381,31 @@ sub sv_SonosSec2time($) {
 # ####################################################################
 
 sub sv_SonosReadingsInit() {
-	my @p = devspec2array('TYPE=SONOS');
 
-	my $prefix = shift @p;
-	return "No SONOS device" if $prefix eq "";
+	my @d = sv_SonosGetDevices();
 
-	my @d = devspec2array("TYPE=SONOSPLAYER:FILTER=NAME=" . $prefix ."_[0-9a-zA-Z]+");
-	foreach my $sd (@d)
+	foreach my $device (@d)
 	{
-		Log3 undef, 1, "notify: setreading ".$prefix."_[A-Za-z0-9] svHasClient_$sd 0";
-		fhem("setreading ".$prefix."_[A-Za-z0-9] svHasClient_$sd 0");
+		foreach my $devName (@d)
+		{
+			Log3 undef, 1, "notify: setreading $device svHasClient_$devName 0";
+			fhem("setreading $device svHasClient_$devName 0");
+		}
+		Log3 undef, 1, "notify: setreading $device svPlaylists none";
+		fhem("setreading $device svPlaylists 0");
+		Log3 undef, 1, "notify: setreading $device svTrackPosition 0";
+		fhem("setreading $device svTrackPosition 0");
+		Log3 undef, 1, "notify: setreading $device svIsInAnyGroup 0";
+		fhem("setreading $device svIsInAnyGroup 0");
+		Log3 undef, 1, "notify: setreading $device svIsInThisGroup none";
+		fhem("setreading $device svIsInThisGroup none");
+		Log3 undef, 1, "notify: setreading $device svTransportStatePause 0";
+		fhem("setreading $device svTransportStatePause none");
+		Log3 undef, 1, "notify: setreading $device svTransportStatePlay 0";
+		fhem("setreading $device svTransportStatePlay none");
+		Log3 undef, 1, "notify: setreading $device svTransportStateStop 0";
+		fhem("setreading $device svTransportStateStop none");
 	}
-
-	Log3 undef, 1, "notify: setreading " . $prefix . "_[A-Za-z0-9] svPlaylists none";
-	fhem("setreading " . $prefix . "_[A-Za-z0-9] svPlaylists 0");
-	Log3 undef, 1, "notify: setreading " . $prefix . "_[A-Za-z0-9] svTrackPosition 0";
-	fhem("setreading " . $prefix . "_[A-Za-z0-9] svTrackPosition 0");
-	Log3 undef, 1, "notify: setreading " . $prefix . "_[A-Za-z0-9] svIsInAnyGroup 0";
-	fhem("setreading " . $prefix . "_[A-Za-z0-9] svIsInAnyGroup 0");
-	Log3 undef, 1, "notify: setreading " . $prefix . "_[A-Za-z0-9] svIsInThisGroup none";
-	fhem("setreading " . $prefix . "_[A-Za-z0-9] svIsInThisGroup none");
-	Log3 undef, 1, "notify: setreading " . $prefix . "_[A-Za-z0-9] svTransportStatePause 0";
-	fhem("setreading " . $prefix . "_[A-Za-z0-9] svTransportStatePause none");
-	Log3 undef, 1, "notify: setreading " . $prefix . "_[A-Za-z0-9] svTransportStatePlay 0";
-	fhem("setreading " . $prefix . "_[A-Za-z0-9] svTransportStatePlay none");
-	Log3 undef, 1, "notify: setreading " . $prefix . "_[A-Za-z0-9] svTransportStateStop 0";
-	fhem("setreading " . $prefix . "_[A-Za-z0-9] svTransportStateStop none");
 }
 
 
@@ -377,32 +414,31 @@ sub sv_SonosReadingsInit() {
 # ####################################################################
 
 sub sv_SonosReadingsDelete() {
-	my @p = devspec2array('TYPE=SONOS');
-	my $prefix = shift @p;
 
-	return "No SONOS device" if $prefix eq "";
+	my @d = sv_SonosGetDevices();
 
-	my @d = devspec2array("TYPE=SONOSPLAYER:FILTER=NAME=" . $prefix ."_[0-9a-zA-Z]+");
-	foreach my $sd (@d)
+	foreach my $device (@d)
 	{
-		Log3 undef, 4, "notify: deletereading ".$prefix."_[A-Za-z0-9] svHasClient_$sd";
-		fhem("deletereading ".$prefix."_[A-Za-z0-9] svHasClient_$sd");
+		foreach my $devName (@d)
+		{
+			Log3 undef, 1, "notify: deletereading $device svHasClient_$devName";
+			fhem("deletereading $device svHasClient_$devName");
+		}
+		Log3 undef, 1, "notify: deletereading $device svPlaylists";
+		fhem("deletereading $device svPlaylists 0");
+		Log3 undef, 1, "notify: deletereading $device svTrackPosition";
+		fhem("deletereading $device svTrackPosition 0");
+		Log3 undef, 1, "notify: deletereading $device svIsInAnyGroup";
+		fhem("deletereading $device svIsInAnyGroup 0");
+		Log3 undef, 1, "notify: deletereading $device svIsInThisGroup";
+		fhem("deletereading $device svIsInThisGroup");
+		Log3 undef, 1, "notify: deletereading $device svTransportStatePause";
+		fhem("deletereading $device svTransportStatePause");
+		Log3 undef, 1, "notify: deletereading $device svTransportStatePlay";
+		fhem("deletereading $device svTransportStatePlay");
+		Log3 undef, 1, "notify: deletereading $device svTransportStateStop";
+		fhem("deletereading $device svTransportStateStop");
 	}
-
-	Log3 undef, 1, "notify: deletereading " . $prefix . "_[A-Za-z0-9] svPlaylists";
-	fhem("deletereading " . $prefix . "_[A-Za-z0-9] svPlaylists 0");
-	Log3 undef, 1, "notify: deletereading " . $prefix . "_[A-Za-z0-9] svTrackPosition";
-	fhem("deletereading " . $prefix . "_[A-Za-z0-9] svTrackPosition 0");
-	Log3 undef, 1, "notify: deletereading " . $prefix . "_[A-Za-z0-9] svIsInAnyGroup";
-	fhem("deletereading " . $prefix . "_[A-Za-z0-9] svIsInAnyGroup 0");
-	Log3 undef, 1, "notify: deletereading " . $prefix . "_[A-Za-z0-9] svIsInThisGroup";
-	fhem("deletereading " . $prefix . "_[A-Za-z0-9] svIsInThisGroup");
-	Log3 undef, 1, "notify: deletereading " . $prefix . "_[A-Za-z0-9] svTransportStatePause";
-	fhem("deletereading " . $prefix . "_[A-Za-z0-9] svTransportStatePause");
-	Log3 undef, 1, "notify: deletereading " . $prefix . "_[A-Za-z0-9] svTransportStatePlay";
-	fhem("deletereading " . $prefix . "_[A-Za-z0-9] svTransportStatePlay");
-	Log3 undef, 1, "notify: deletereading " . $prefix . "_[A-Za-z0-9] svTransportStateStop";
-	fhem("deletereading " . $prefix . "_[A-Za-z0-9] svTransportStateStop");
 }
 
 
@@ -421,12 +457,7 @@ use warnings;
 
 # ########################################################################################
 # Fronthem converter: SonosGroup
-#
-# Fronthem Converter for Sonos Widget
-# direkt relations (gadval == reading == setval) with the following exeptions:
-#
 # - catch readings svHasClient.* / svIsInAnyGroup and do the job
-#
 # ########################################################################################
 
 sub SonosGroup(@)
@@ -534,12 +565,7 @@ sub SonosGroup(@)
 
 # ########################################################################################
 # Fronthem converter: SonosTransportState
-#
-# Fronthem Converter for Sonos Widget
-# direkt relations (gadval == reading == setval) with the following exeptions:
-#
 # - get play/stop status from transportState reading and set play/stop via state
-#
 # ########################################################################################
 
 sub SonosTransportState(@)
@@ -654,12 +680,7 @@ sub SonosTransportState(@)
 
 # ########################################################################################
 # Fronthem converter: SonosAlbumArtURL
-#
-# Fronthem Converter for Sonos Widget
-# direkt relations (gadval == reading == setval) with the following exeptions:
-#
 # - replace empty.jpg url (reading currentAlbumArtURL)
-#
 # ########################################################################################
 
 sub SonosAlbumArtURL(@)
@@ -695,7 +716,7 @@ sub SonosAlbumArtURL(@)
 			# master if there is any. transportState = ERROR ans AlbumURL is empty.
 			if (($event eq "") && (main::ReadingsVal($device, "transportState", $device) eq "ERROR"))
 			{
-				#main::Log3 undef, 3, $cName . "set " . main::ReadingsVal($device, "svIsInThisGroup", $device) . " RemoveMember " . $device;
+				main::Log3 undef, 4, $cName . "set " . main::ReadingsVal($device, "svIsInThisGroup", $device) . " RemoveMember " . $device;
 				main::fhem("set " . main::ReadingsVal($device, "svIsInThisGroup", $device) . " RemoveMember " . $device);
 			}
 
@@ -758,10 +779,7 @@ sub SonosAlbumArtURL(@)
 
 # ########################################################################################
 # Fronthem converter: SonosTrackPos
-#
-# Fronthem Converter for Sonos Widget
-# direkt relations (gadval == reading == setval) with the following exeptions:
-#
+# - set trackPosition in %
 # ########################################################################################
 
 sub SonosTrackPos(@)
