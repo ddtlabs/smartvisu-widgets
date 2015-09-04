@@ -34,8 +34,6 @@
 - **UPDATED:** Define 2 FHEM notifies (replace "Sonos_" by your used prefix, if you named it differently):
 ```
 define n_sv_sonosGroups notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:currentTrackProvider:.\w.* { sv_setSonosGroupsReadings($NAME, $EVENT) }
-```
-```
 define n_sv_sonosTransportState notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:transportState:.* { sv_SonosTransportStateChanged($NAME,$EVTPART1) }
 ```
 - Do not forget to save.
