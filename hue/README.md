@@ -1,5 +1,12 @@
 ### HUE Widgets for SmartVISU / FHEM
 
+**Screenshots:**
+
+![](screenshots/widget_hue.png)
+
+![](screenshots/widget_hue2.png)
+
+
 Installation hints:
 
 - Copy widget_hue.html to your pages folder
