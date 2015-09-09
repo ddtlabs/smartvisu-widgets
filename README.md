@@ -1,3 +1,1 @@
----
-redirect_from: "/foo"
----
+Widgets for use with FHEM and smartVISU
