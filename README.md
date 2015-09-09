@@ -1,1 +1,3 @@
-### Widgets for use with smartVISU / FHEM
+---
+redirect_from: "/foo"
+---
