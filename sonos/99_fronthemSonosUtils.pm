@@ -1,6 +1,6 @@
 # ########################################################################################
-# $Id: 99_fronthemSonosUtils.pm 85 2015-08-28 13:33:00Z dev0 $
-# Verison 0.85
+# $Id: 99_fronthemSonosUtils.pm 86 2015-08-28 13:33:00Z dev0 $
+# Verison 0.86
 # ########################################################################################
 #
 #  This functions are free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ use POSIX;
 sub fronthemSonosUtils_Initialize($$)
 {
 	my ($hash) = @_;
- 	Log3 undef, 3, "99_fronthemSonosUtils.pm v0.85 (re)loaded";
+ 	Log3 undef, 3, "99_fronthemSonosUtils.pm v0.86 (re)loaded";
 
 }
 
@@ -880,12 +880,13 @@ sub SonosTrackPos(@)
   <ul>
     <li><b>sv_setSonosGroupsReadings($NAME, $EVENT)</b><br>Used to set readings sv.*
       depending on Sonos group states. Will be called from notify with definition:<br/>
-      Sonos_[A-Za-z0-9]+:currentTrackProvider:.\w.* { sv_setSonosGroupsReadings($NAME, $EVENT) }<br/>
+      Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:currentTrackProvider:.\w.* { sv_setSonosGroupsReadings($NAME, $EVENT) }<br/>
       Prefix Sonos_ has to be replaced by your own if it differs.
       </li><br/>
-    <li><b>sv_SonosGetTrackPos($NAME, $EVTPART1)</b><br>Used to define at devices to
-      get ongoing currentTrackPosition. Will be called from notify with definition:<br/>
-      Sonos_.*:transportState:.* { sv_SonosGetTrackPos($NAME,$EVTPART1) }<br/>
+    <li><b>sv_SonosTransportStateChanged($NAME, $EVTPART1)</b><br>Used to define at
+      devices to get ongoing currentTrackPosition and set trackPosition readings. Will be
+      called from notify with definition:<br/>
+      Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:transportState:.* { sv_SonosTransportStateChanged($NAME,$EVTPART1) }<br/>
       Prefix Sonos_ has to be replaced by your own if it differs.
       </li><br/>
     <li><b>sv_SonosReadingsInit()</b><br/>Used to init svReadings within all Sonos players

@@ -30,7 +30,7 @@
 
 /** do not modify anything below, as long as you know what you are dong */
 
-	{% set version        = '0.85'%}
+	{% set version        = '0.86'%}
 	{% set defCoverArtUrl = 'pages/base/pics/sonos_empty.jpg' %}
 	{% set uid            = uid(page, id) %}
 
@@ -80,9 +80,12 @@
     <td id="vol" rowspan="5">
     	<div class="vol">
 			<img class="slider-bottomup-scale" src="pages/base/pics/scale_buttomup.png">
-			{{ basic.slider(id~volume, gad~volume, 0, 100, 1, 'bottomup') }}
+			{{ ddtlabs_int_sonos.slider(id~volume, gad~volume, 0, 100, 1, 'bottomup') }}
 		</div>
     </td>
+
+/**   <td style="xwidth: 50px;"  rowspan="6"></td>  */
+
     <td id="cover" rowspan="5">
 	   	{{ ddtlabs_int_sonos.cover(id~coverUrl, gad~coverUrl, defCoverArtUrl) }}
 		<div class="pos">
@@ -92,6 +95,9 @@
 		{{ basic.symbol(id~gad~transportStatePause~Symbol, gad~transportStatePause, '', 'audio_pause.svg', '1', '', 'red') }}
 		</div>
     </td>
+
+/**   <td style="xwidth: 50px;"  rowspan="6">&nbsp;</td>   */
+
 	<td id="title-wide">
 		<span class="title title-wide">
 		{{ basic.value(id~radioSender, gad~radioSender, '', '') }}
@@ -181,7 +187,7 @@
 						{% for neighbor in neighbors%}
 							<tr>
 							<td id="text">{{ basic.value(id~prefix~neighbor~roomName, prefix~neighbor~roomName, '', '') }}</td>
-							<td id="slider">{{ basic.slider(id~prefix~neighbor~'volumePop', prefix~neighbor~volume, 0, 100, 1, '') }}</td	>
+							<td id="slider">{{ ddtlabs_int_sonos.slider(id~prefix~neighbor~'volumePop', prefix~neighbor~volume, 0, 100, 1, '') }}</td	>
 							</tr>
 						{% endfor %}
 					</table>
@@ -286,4 +292,25 @@
 	</select>
 </a>
 {% endmacro %}
+
+/**
+* Displays a slider-control
+*
+* @param unique id for this widget
+* @param a item
+* @param the minimum value if the slider is moved to total left (optional, default 0)
+* @param the maximum value if the slider is moved to total right (optional, default 255)
+* @param step between two values (optional, default 5)
+* @param the orientation ('none', 'vertical', 'bottomup', 'semicircle')
+* @info written my Martin Gleiss
+* @info modified: 800ms delay for volume slider
+*/
+{% macro slider(id, item, min, max, step, mode) %}
+
+	<input id="{{ uid(page, id) }}" data-widget="basic.slider" data-item="{{ item }}"
+		type="range" value="0" min="{{ min|default(0) }}" max="{{ max|default(255) }}" step="{{ step|default(5) }}"
+		orientation="{{ mode }}" data-highlight="true" />
+
+{% endmacro %}
+
 

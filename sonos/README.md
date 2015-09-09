@@ -1,6 +1,6 @@
 ### Sonos Widget for smartVISU / FHEM
 
-**Version: 0.85**
+**Version: 0.86**
 
 **Screenshots:**
 
@@ -112,10 +112,10 @@ define n_sv_sonosTransportState notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:transpor
 		</div>
 	</div>
 </div>
-/** Note: radio stations must be added to Sonos favourites to work with FHEM's Sonos Modules */
+/** Note: radio stations must be added to Sonos "My Radiostations" to work with FHEM's Sonos Modules */
 ```
 
-- Group / ungroup your players in all possible combinations with FHEM or Sonos Controller while FHEM is running. Dynamic readings will be created.
+- Group / ungroup your players in all possible combinations with Sonos Controller while FHEM is running. Dynamic readings will be created.
 
 **Fronthem converter usage:**
   - **SonosGroup:** used for all svHasClient_Sonos_.* and svIsInAnyGroup readings (these FHEM readings will automatically be created at first when Sonos speakers are grouped)
@@ -167,7 +167,7 @@ define n_sv_sonosTransportState notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:transpor
 - **v0.79**
 - New gad-items / readings: svTransportStatePause, svTransportStatePlay, svTransportStateStop (converter: SonosTransportState)
 - Current widget version can be found in popup window, too.
-- UserReading definition for svTrackPosition is no longer needed. Delete it you are updating from v0.78 or below, please.
+- UserReading definition for svTrackPosition is no longer needed. **Delete it you are updating from v0.78 or below, please.**
 - Popup IDs were not set correctly: same popup was shown for all players (fixed)
 - Minor layout changes
 - **v0.80**
@@ -187,6 +187,8 @@ define n_sv_sonosTransportState notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:transpor
   - **You have to adopt both notify calls**
   - See definition above.
 - Master states are synced to slave players (improvement)
+- **v0.86**
+- Added a little bit more delay to volume sliders
 
 **Credits / Copyrights / Trademarks:**
 - My wife!
