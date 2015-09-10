@@ -1,0 +1,139 @@
+/**
+* Homematic RTR (HM-CC-RT-DN) + humidity
+*
+* @param unique id for this widget
+* @param name of the rtr
+* @param a gad/item for humidity (optional)
+* @param step for plus/minus buttons (optional, default 0.5)
+* @author dev0 / ddtlabs
+*/
+{% macro rtr(id, gad, gad_humidity, step) %}
+	{% import "basic.html" as basic %}
+	{% import "widget_ddtlabs_icon.html" as ddtlabs_icon %}
+
+	<span class="ddtlabs">
+	<div id="{{ uid(page, id) }}" data-widget="device.rtr" data-step="{{ step|default(0.5) }}" class="rtr">
+
+		<div class="actual">
+			<div class="temp">
+			{{ basic.float(id~'.measured-temp', gad~'_Clima.measured-temp', '°' ) }}
+			{% if gad_humidity %}  &nbsp;&nbsp;&nbsp;-&nbsp;&nbsp;&nbsp; {{ basic.value(id~'.humidity', gad_humidity) }}%   {% endif %}
+			<hr width="60%">
+			</div>
+		</div>
+
+		<div class="set">
+			<a data-role="button" data-icon="minus" data-inline="true" data-iconpos="notext" class="ui-mini"></a>
+			<div class="temp">{{ basic.float(id~'set', gad~'_Clima.desired-temp', '°' ) }}</div>
+			<a data-role="button" data-icon="plus" data-inline="true" data-iconpos="notext" class="ui-mini"></a>
+		</div>
+
+		<hr style="width: 80%">
+
+		<div class="control">
+			<span data-role="controlgroup" data-type="horizontal">
+				{{ basic.dual(id~'.bd.controlMode.manauto', gad~'_Clima.controlMode', 'sani_heating_automatic.svg', 'sani_heating_manual.svg', 'auto', 'manual', 'mini') }}
+				{{ basic.dual(id~'.bd.controlMode.boost', gad~'_Clima.controlMode', 'icons/my/or/sani_heating_boost.png', 'icons/my/ws/sani_heating_boost.png', 'boost', 'auto', 'mini') }}
+				{{ basic.dual(id~'.bd.night_day', gad~'_Clima.desired-temp', 'scene_day.svg', 'scene_night.svg', '19.5', '16', 'mini') }}
+			</span>
+
+			<span data-role="controlgroup" data-type="horizontal">
+				<div class="ui-mini ui-btn ui-shadow ui-btn-corner-all ui-btn-inline ui-btn-icon-center ui-last-child ui-btn-up-a status">
+					{{ basic.symbol(id~'.window.open', gad~'.window', '', 'fts_window_2w_open.svg', 'open', '', 'icon1') }}
+					{{ basic.symbol(id~'.window.close', gad~'.window', '', 'fts_window_2w.svg', 'closed', '', '') }}
+				</div>
+
+				<div class="ui-mini ui-btn ui-shadow ui-btn-corner-all ui-btn-inline ui-btn-icon-center ui-last-child ui-btn-up-a status">
+					<div style="margin: 3px 0 0 0 ;">
+					{{ ddtlabs_icon.battery(id~'.battery', '', gad~'.batteryx10', 21, 32) }}
+					</div>
+				</div>
+
+				<div class="ui-mini ui-btn ui-shadow ui-btn-corner-all ui-btn-inline ui-btn-icon-center ui-last-child ui-btn-up-a status">
+					<div style="margin: 3px 0 0 0 ;  font-size: 10pt; font-weight: normal;">
+					{{ basic.value(id~'.valve', gad~'_Clima.valve') }}<br>%
+					</div>
+				</div>
+
+			</span>
+		</div>
+	</div>
+	</span>
+{% endmacro %}
+
+
+/**
+* Homematic RTR (HM-CC-RT-DN) + humidity
+*
+* @param unique id for this widget
+* @param name of the rtr
+* @param a gad/item for humidity (optional)
+* @param step for plus/minus buttons (optional, default 0.5)
+* @info The following SV/FHEM readings will be used:
+* @info gad_Clima.measured-temp, gad_Clima.desired-temp, gad_Clima.controlMode, gad.window, gad.batteryx10, gad_Clima.valve
+* @info gad.battery is a userReadings with factor 10 of reading batteryLevel
+* @author dev0 / ddtlabs
+*/
+{% macro rtr_list(id, gads, humidity, valve) %}
+	{% import "basic.html" as basic %}
+	{% import "icon.html" as icon %}
+	{% import "widget_ddtlabs_icon.html" as ddtlabs_icon %}
+
+	{% set desiredTemp = '_Clima.desired-temp' %}
+	{% set measuredTemp = '_Clima.measured-temp' %}
+	{% set controlMode = '_Clima.controlMode' %}
+	{% set valve = '_Clima.valve' %}
+	{% set battery = '.batteryx10' %}
+	{% set humidity = '.humidity' %}
+	{% set lock = '.R-btnLock' %}
+
+<span class="ddtlabs">
+	<span class="rtr-list">
+		<table>
+
+		<tr>
+			<th>Raum</th>
+			<th>Temp</th><th>&nbsp;</th>
+			{% if humidity %}	<th>rF</th><th>&nbsp;</th>		{% endif %}
+			{% if valve %}		<th>Vent</th><th>&nbsp;</th>	{% endif %}
+			<th class="settings">Einstellungen</th>
+		</tr>
+
+		<tr><td colspan="0" align="center"><hr></td></tr>
+
+		{% for gad in gads %}
+
+		<tr>
+			<td>{{gad[1]}}</td>
+			<td><div class="xxx">{{ basic.float(id~gad[0]~'ist', gad[0]~measuredTemp, '°', '') }}</div></td><td>&nbsp;</td>
+			{% if humidity %}
+			<td>{{ basic.float(id~gad[0]~'humidity', gad[0]~humidity, '%', '') }}</td><td>&nbsp;</td> {% endif %}
+			{% if valve %}
+			<td>{{ basic.float(id~gad[0]~'valve', gad[0]~valve, '%', '') }}</td><td>&nbsp;</td> {% endif %}
+			<td>
+			<div id="{{ uid(page, id~gad[0]) }}" data-widget="device.rtr" data-step="{{ step|default(0.5) }}">
+				<div class="list">
+					<a data-role="button" data-icon="minus" data-inline="true" data-iconpos="notext" class="ui-micro"></a>
+					{{ basic.float(id~gad[0]~'set', gad[0]~desiredTemp, '°' ) }}
+					<a data-role="button" data-icon="plus" data-inline="true" data-iconpos="notext" class="ui-micro"></a>
+					<a><img class="space" src="pages/base/pics/trans.png" /></a>
+					{{ basic.multistate(id~gad[0]~'controlMode', gad[0]~controlMode, ['manual','auto','party'], ['time_manual_mode.svg', 'time_automatic.svg', 'time_calendar.svg'], 'micro') }}
+					{{ basic.multistate(id~gad[0]~'lock', gad[0]~lock, ['on','off'], ['secur_locked.svg', 'secur_open.svg'], 'micro') }}
+					{% if battery %} {{ ddtlabs_icon.battery2(id~gad[0]~'.battery', '', gad[0]~battery, 21, 32) }} {% endif %}
+				</div>
+			</div>
+			</td>
+		</tr>
+
+		<tr><td colspan="0" align="center"><hr></td></tr>
+
+		{% endfor %}
+
+		</table>
+	</span>
+</span>
+{% endmacro %}
+
+
+
+
