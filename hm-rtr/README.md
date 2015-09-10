@@ -9,10 +9,10 @@
 ![](screenshots/list.png)
 
 **Description:**
-- SmartVISU widgets to control Homematic RTRs and and list overview.
+- SmartVISU widgets to control Homematic RTRs and list overview.
 
 **Requirements:**
-- Fully functioning FHEM (at least version 9118, 2015-08-23) with configured Sonos modules
+- Fully functioning FHEM (at least version 9118, 2015-08-23) with configured HM rtr devices.
 - SmartVISU 2.8+ (https://github.com/Martin-Gleiss/smartvisu)
 
 **Installation advices:**
@@ -66,6 +66,7 @@ attr <your_rtr> userReadings onState:actuator {(ReadingsVal($name,"actuator","0"
 
 
 **Fronthem converter usage:**
+
 | item                    | reading         | converter       | cmd set      |
 | ----------------------- | --------------- | --------------- | ------------ |
 | RTR.R-btnLock           | R-btnLock       | Direct          | regSet       |
