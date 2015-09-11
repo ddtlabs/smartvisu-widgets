@@ -12,7 +12,7 @@
 - SmartVISU widgets to control Homematic RTRs and list overview.
 
 **Requirements:**
-- Fully functioning FHEM (at least version 9118, 2015-08-23) with configured HM rtr devices.
+- Fully functioning FHEM with configured HM rtr devices.
 - SmartVISU 2.8+ (https://github.com/Martin-Gleiss/smartvisu)
 
 **Installation advices:**
