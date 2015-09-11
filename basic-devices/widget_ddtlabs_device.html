@@ -1,0 +1,25 @@
+/**
+* Dimmer with switching and dimming function and own icons/color
+*
+* @param unique id for this widget
+* @param name of the dimmer
+* @param a item for switching
+* @param a item for dimming
+* @param the minimum value if the slider is moved to total left (optional, default 0)
+* @param the maximum value if the slider is moved to total right (optional, default 255)
+* @param step between two values (optional, default 5)
+* @param pic_on: icon for on state (optional, default: light_light.svg)
+* @param pic_off: icon for off state (optional, default: light_light.svg)
+* @param color: 'color' for pic_on e.g. '#f00' for red (optional, default: 'icon1' of design)
+*/
+{% macro dimmer(id, txt, item_switch, item_value, min, max, step, pic_on, pic_off, color) %}
+	{% import "basic.html" as basic %}
+	{% import "widget_ddtlabs_basic.html" as ddtlabs_basic %}
+
+	<div class="dimmer">
+		{{ ddtlabs_basic.switch(id~'switch', item_switch, pic_on|default('light_light.svg'), pic_off|default('light_light.svg'), '', '', color) }}
+		<p>{{ txt|e }}</p>
+		{{ basic.slider(id~'slider', item_value, min, max, step) }}
+	</div>
+
+{% endmacro %}
