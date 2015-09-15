@@ -1,0 +1,42 @@
+/**
+* a battery
+*
+* @param unique id for this widget
+* @param a item for switching
+* @param a item for the angle of the pin
+* @param the minimum value for 0 (optional, default 0, for future use)
+* @param the maximum value for 255 (optional, default 255)
+*/
+{% macro battery(id, item_switch, item_value, min, max) %}
+
+<svg id="{{ uid(page, id) }}" data-widget="ddtlabs_icon.battery" data-item="{{ item_value }}, {{ item_switch }}" data-min="{{ min|default('0') }}" data-max="{{ max|default('255') }}"
+		class="icon icon0" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 100 100">
+	<g>
+		<rect x="44" y="21" width="12" height="3"/>
+		<rect rx="3" x="35" y="25" width="30" height="45" fill="none"/>
+	</g>
+</svg>
+
+{% endmacro %}
+
+
+/**
+* a battery
+*
+* @param unique id for this widget
+* @param a item for switching
+* @param a item for the angle of the pin
+* @param the minimum value for 0 (optional, default 0, for future use)
+* @param the maximum value for 255 (optional, default 255)
+*/
+{% macro battery2(id, item_switch, item_value, min, max) %}
+
+<svg id="{{ uid(page, id) }}" data-widget="ddtlabs_icon.battery2" data-item="{{ item_value }}, {{ item_switch }}" data-min="{{ min|default('0') }}" data-max="{{ max|default('255') }}"
+		class="icon icon0" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="15 10 70 70">
+	<g>
+		<rect x="44" y="21" width="12" height="3"/>
+		<rect rx="3" x="35" y="25" width="30" height="45" fill="none"/>
+	</g>
+</svg>
+
+{% endmacro %}
