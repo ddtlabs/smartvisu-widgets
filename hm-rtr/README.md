@@ -24,7 +24,8 @@ attr <your_rtr> userReadings onState:actuator {(ReadingsVal($name,"actuator","0"
 ```
 
 **smartVISU:**
-- Copy widget_ddtlabs_hm.* to your smartVISU pages folder.
+- Copy widget_ddtlabs_hm.* and widget_ddtlabs_icon.* to your smartVISU pages folder.
+- Copy icons/* to smartVISU icons folder (typically /var/www/smartvisu/icons)
 - Copy content of *.css and *.js to your visu.css/visu.js or include it in any other way.
 - Check that permissions of all copied files are correct.
 
