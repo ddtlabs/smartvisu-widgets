@@ -1,19 +1,19 @@
 # ########################################################################################
 #
-# motionAction2d for use with fronthem/smartVISU and two (HM) dimmers
+# motionAction2 for use with fronthem/smartVISU
 #
 # The following fhem definitions must be created in order to use this sub as it is:
 #
 # define d_[prefix]_AUTO_MODE       # used to switch off whole automation for our room
 # define [prefix]_MD                # Physical Motion Detector available in fhem
 # define d_[prefix]_MD				# MD Dummy used to store several settings
-# attr d_[prefix]_MD readingList enable levelDay levelNight status timer uzsu
+# attr d_[prefix]_MD readingList enable levelDay levelNight status timer uzsu transition
 #
 # Requirement:
 # Module 98_dummy must be a least version 8809.
 #
 # How this sub has to be called:
-# define n_[prefix]_MD notify [prefix]_MD:motion:.* { motionAction2d('dimmer1', 'dimmer2', 'prefix', 'room') }
+# define n_[prefix]_MD notify [prefix]_MD:motion:.* { motionAction2('dimmer1', 'dimmer2', 'prefix', 'room') }
 #
 # Behavior:
 # - Actors are turned on only if they are switched off (manual control has priority)
@@ -28,12 +28,15 @@
 #   Frontends (fhem or smartVISU) are or can be configured to set the brightness (pct) to
 #   real numbers (eg. 1, 2 or 3) but we will set it to 1.5, 2.5, 3.5... So we can
 #   distinguish whether the level was set by this sub or by a gui, physical switch.
-#   If your devices does not support .5 pct levels then you have to change this code to
+#   If your devices do not support .5 pct levels then you have to change this code to
 #   even and odd values. However, Homematic does...
+#
+# Bugfixes:
+# - Light was not switched on again while motion in dim down phase (fixed with transition reading)
 #
 # ########################################################################################
 
-sub motionAction2d($$$$) {
+sub motionAction2($$$$) {
 
   # get sub parameters
   my ($dev1,$dev2,$prefix,$room) = @_;
@@ -43,14 +46,14 @@ sub motionAction2d($$$$) {
   my $roomAutomatic = ReadingsVal($prefix."_AUTO_MODE", "state", "on");
   my $mdAutomatic   = ReadingsVal($dummy, "enable", "on");
   my $mdStatus      = ReadingsVal($dummy, "status", "off");
+  my $mdTransition  = ReadingsVal($dummy, "transition", "off");  # will be use to detect dim down phase.
 
   # check if we have to do the job (both actors must be switched off or
   # md has to be already active, and both automatic dummies must be on)
-  if ((((Value($dev1) eq "off") && (Value($dev2) eq "off")) || ($mdStatus eq "on")) && \
+  if ((((Value($dev1) eq "off") && (Value($dev2) eq "off")) || ($mdStatus eq "on") || ($mdTransition eq "on")) && \
      ($roomAutomatic eq "on") && ($mdAutomatic eq "on")) {
 
     # load more dummy states into variables
-#    my $mdMode       = ReadingsVal($dummy, "mode", "day");
     my $mdMode       = ReadingsVal($dummy, "state", "day");
     my $mdLevelDay   = ReadingsVal($dummy, "levelDay", "60");
     my $mdLevelNight = ReadingsVal($dummy, "levelNight", "10");
@@ -75,7 +78,16 @@ sub motionAction2d($$$$) {
     if ( ($mdLevelDay ne 0) || ($mdLevelNight ne 0) ) {
       # at first it was a little bit strange for me to work with 2 levels of quotation and double semicolons to not break out ;-)
       # but nevertheless I got it and a big thank you to Rudolf König for his defmod command!
-      fhem('defmod '.$mdTimerName.' at +' . sec2time($mdTimer) . ' { if ((ReadingsVal("'.$dev1.'", "pct", "") =~ /^\d+\.5$/) && (ReadingsVal("'.$dev2.'", "pct", "") =~ /^\d+\.5$/)) { fhem("set '.$dev1.','.$dev2.' pct 0 0 4");; } fhem("setreading '.$dummy.' status off");; } ');
+      fhem('defmod '.$mdTimerName.' at +' . sec2time($mdTimer) . ' {
+        if ((ReadingsVal("'.$dev1.'", "pct", "") =~ /^\d+\.5$/) && (ReadingsVal("'.$dev2.'", "pct", "") =~ /^\d+\.5$/)) 
+          {
+            fhem("set '.$dev1.','.$dev2.' pct 0 0 8");;
+            fhem("set '.$dummy.' transition on");; 
+            fhem("define at_'.$dummy.'_transition_off at +00:00:09 set '.$dummy.' transition off");;
+          }
+          fhem("setreading '.$dummy.' status off");; 
+        }'
+      );
       fhem("attr ".$mdTimerName." room ".$room);
     }
   }
