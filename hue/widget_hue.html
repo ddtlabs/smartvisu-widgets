@@ -34,7 +34,7 @@
 					{{basic.dual(id~'sw', gad_name~'.sw')}}
 				</td>
 				<td width="20%">
-				{{ basic.colordisc(id~'rgb', gad_name~'.rgb_r', gad_name~'.rgb_g', gad_name~'.rgb_b', 0, 100, cd_rings, cd_segments) }}
+				{{ basic.colordisc(id~'rgb', gad_name~'.rgb_r', gad_name~'.rgb_g', gad_name~'.rgb_b', 0, 255, cd_rings, cd_segments) }}
 				</td>
 				<td width="20%">
 					{{basic.dual(id~'effect', gad_name~'.effect', icon1~'audio_repeat.png', icon0~'audio_repeat.png', 'colorloop', 'none')}}
@@ -121,7 +121,7 @@ It is depricated and will be removed in future version. Please use extcolordimme
 		<table width="100%" align="center">
 			<tr>
 				<td width="10%">
-					{{ basic.colordisc(id~'rgb', gad_name~'.rgb_r', gad_name~'.rgb_g', gad_name~'.rgb_b', 0, 100, cd_rings, cd_segments) }}
+					{{ basic.colordisc(id~'rgb', gad_name~'.rgb_r', gad_name~'.rgb_g', gad_name~'.rgb_b', 0, 255, cd_rings, cd_segments) }}
 				</td>
 				<td>
 					<p>{{ txt|e }}</p>
