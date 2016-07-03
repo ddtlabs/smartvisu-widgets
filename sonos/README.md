@@ -268,10 +268,11 @@ define n_sv_sonosTransportState notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:transpor
 - Added a little bit more delay to volume sliders
 - **v0.90**
 - Playlists and radio stations are captured from FHEM reading and must not be be specified in widget call. You have to remove them from widget call and you must configure them in GAD Editor. Thanx to raman for that feature.
-- You can define a all-in-one device for multiple players. See advanced example above
+- You can define a all-in-one device for multiple players. See advanced example above.
 - Show presence state at top of device
 - Minor changes and code cleanup
-- Advanved examaple for Widget call
+- Advanced example for Widget call
+- New presence symbol
 
 **Credits / Copyrights / Trademarks:**
 - My wife!
