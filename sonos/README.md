@@ -170,37 +170,38 @@ define n_sv_sonosTransportState notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:transpor
   - Some readings may not be displayed in FHEM Gad Editor because they are not on Sonos modules internal setList. Enter them nevertheless.
   - Last part of gad/items names that are displayed in gad editor are the reading names that must be selected for each reading and cmd. I hope that makes this configuration a little bit easier.
 
-| item                                   | device    | reading                   | converter           | cmd set                   |
-| -------------------------------------- | --------- | ------------------------- | ------------------- | ------------------------- |
-| mm_Sonos_xyz.Balance                   | Sonos_xyz | Balance                   | Direct              | Balance                   |
-| mm_Sonos_xyz.Bass                      | Sonos_xyz | Bass                      | Direct              | Bass                      |
-| mm_Sonos_xyz.CrossfadeMode             | Sonos_xyz | CrossfadeMode             | Direct              | CrossfadeMode             |
-| mm_Sonos_xyz.Loudness                  | Sonos_xyz | Loudness                  | Direct              | Loudness                  |
-| mm_Sonos_xyz.Mute                      | Sonos_xyz | Mute                      | Direct              | Mute                      |
-| mm_Sonos_xyz.Playlist                  | Sonos_xyz | Playlists                 | SonosLists          | Playlists                 |
-| mm_Sonos_xyz.Radiolist                 | Sonos_xyz | Radios                    | SonosLists          | Radios                    |
-| mm_Sonos_xyz.Repeat                    | Sonos_xyz | Repeat                    | Direct              | Repeat                    |
-| mm_Sonos_xyz.Shuffle                   | Sonos_xyz | Shuffle                   | Direct              | Shuffle                   |
-| mm_Sonos_xyz.Treble                    | Sonos_xyz | Treble                    | Direct              | Treble                    |
-| mm_Sonos_xyz.currentAlbum              | Sonos_xyz | currentAlbum              | Direct              |                           |
-| mm_Sonos_xyz.currentAlbumArtURL        | Sonos_xyz | currentAlbumArtURL        | SonosAlbumArtURL    |                           |
-| mm_Sonos_xyz.currentArtist             | Sonos_xyz | currentArtist             | Direct              |                           |
-| mm_Sonos_xyz.currentSender             | Sonos_xyz | currentSender             | Direct              |                           |
-| mm_Sonos_xyz.currentSenderCurrent      | Sonos_xyz | currentSenderCurrent      | Direct              |                           |
-| mm_Sonos_xyz.currentSenderInfo         | Sonos_xyz | currentSenderInfo         | Direct              |                           |
-| mm_Sonos_xyz.currentTitle              | Sonos_xyz | currentTitle              | Direct              |                           |
-| mm_Sonos_xyz.currentTrackDuration      | Sonos_xyz | currentTrackDuration      | Direct              |                           |
-| mm_Sonos_xyz.presence                  | Sonos_xyz | presence                  | Direct              |                           |
-| mm_Sonos_xyz.roomName                  | Sonos_xyz | roomName                  | Direct              |                           |
-| mm_Sonos_xyz.state                     | Sonos_xyz | state                     | Direct              | state                     |
-| mm_Sonos_xyz.svHasClient_<Sonos_XXX>   | Sonos_xyz | svHasClient_<Sonos_XXX>   | SonosGroup          | svHasClient_<Sonos_XXX>   |
-| mm_Sonos_xyz.svIsInAnyGroup            | Sonos_xyz | svIsInAnyGroup            | SonosGroup          | svIsInAnyGroup            |
-| mm_Sonos_xyz.svIsVisible               | Sonos_xyz | svIsVisible               | SonosRoomSelect     | svIsVisible               |
-| mm_Sonos_xyz.svTrackPosition           | Sonos_xyz | svTrackPosition           | SonosTrackPos       | svTrackPosition           |
-| mm_Sonos_xyz.svTransportStatePause     | Sonos_xyz | svTransportStatePause     | SonosTransportState | svTransportStatePause     |
-| mm_Sonos_xyz.svTransportStatePlay      | Sonos_xyz | svTransportStatePlay      | SonosTransportState | svTransportStatePlay      |
-| mm_Sonos_xyz.svTransportStateStop      | Sonos_xyz | svTransportStateStop      | SonosTransportState | svTransportStateStop      |
-| mm_Sonos_xyz.volume                    | Sonos_xyz | Volume                    | NumDirect           | Volume                    |
+| item                               | device    | reading               | converter           | cmd set               |
+| ---------------------------------- | --------- | --------------------- | ------------------- | --------------------- |
+| mm_Sonos_xyz.Balance               | Sonos_xyz | Balance               | Direct              | Balance               |
+| mm_Sonos_xyz.Bass                  | Sonos_xyz | Bass                  | Direct              | Bass                  |
+| mm_Sonos_xyz.CrossfadeMode         | Sonos_xyz | CrossfadeMode         | Direct              | CrossfadeMode         |
+| mm_Sonos_xyz.Loudness              | Sonos_xyz | Loudness              | Direct              | Loudness              |
+| mm_Sonos_xyz.Mute                  | Sonos_xyz | Mute                  | Direct              | Mute                  |
+| mm_Sonos_xyz.Playlist              | Sonos_xyz | Playlists             | SonosLists          | Playlists             |
+| mm_Sonos_xyz.Radiolist             | Sonos_xyz | Radios                | SonosLists          | Radios                |
+| mm_Sonos_xyz.Repeat                | Sonos_xyz | Repeat                | Direct              | Repeat                |
+| mm_Sonos_xyz.Shuffle               | Sonos_xyz | Shuffle               | Direct              | Shuffle               |
+| mm_Sonos_xyz.Treble                | Sonos_xyz | Treble                | Direct              | Treble                |
+| mm_Sonos_xyz.currentAlbum          | Sonos_xyz | currentAlbum          | Direct              |                       |
+| mm_Sonos_xyz.currentAlbumArtURL    | Sonos_xyz | currentAlbumArtURL    | SonosAlbumArtURL    |                       |
+| mm_Sonos_xyz.currentArtist         | Sonos_xyz | currentArtist         | Direct              |                       |
+| mm_Sonos_xyz.currentSender         | Sonos_xyz | currentSender         | Direct              |                       |
+| mm_Sonos_xyz.currentSenderCurrent  | Sonos_xyz | currentSenderCurrent  | Direct              |                       |
+| mm_Sonos_xyz.currentSenderInfo     | Sonos_xyz | currentSenderInfo     | Direct              |                       |
+| mm_Sonos_xyz.currentTitle          | Sonos_xyz | currentTitle          | Direct              |                       |
+| mm_Sonos_xyz.currentTrackDuration  | Sonos_xyz | currentTrackDuration  | Direct              |                       |
+| mm_Sonos_xyz.presence              | Sonos_xyz | presence              | Direct              |                       |
+| mm_Sonos_xyz.roomName              | Sonos_xyz | roomName              | Direct              |                       |
+| mm_Sonos_xyz.state                 | Sonos_xyz | state                 | Direct              | state                 |
+| mm_Sonos_xyz.svHasClient_Sonos_xxx | Sonos_xyz | svHasClient_Sonos_xxx | SonosGroup          | svHasClient_Sonos_xxx |
+| mm_Sonos_xyz.svHasClient_Sonos_yyy | Sonos_xyz | svHasClient_Sonos_yyy | SonosGroup          | svHasClient_Sonos_yyy |
+| mm_Sonos_xyz.svIsInAnyGroup        | Sonos_xyz | svIsInAnyGroup        | SonosGroup          | svIsInAnyGroup        |
+| mm_Sonos_xyz.svIsVisible           | Sonos_xyz | svIsVisible           | SonosRoomSelect     | svIsVisible           |
+| mm_Sonos_xyz.svTrackPosition       | Sonos_xyz | svTrackPosition       | SonosTrackPos       | svTrackPosition       |
+| mm_Sonos_xyz.svTransportStatePause | Sonos_xyz | svTransportStatePause | SonosTransportState | svTransportStatePause |
+| mm_Sonos_xyz.svTransportStatePlay  | Sonos_xyz | svTransportStatePlay  | SonosTransportState | svTransportStatePlay  |
+| mm_Sonos_xyz.svTransportStateStop  | Sonos_xyz | svTransportStateStop  | SonosTransportState | svTransportStateStop  |
+| mm_Sonos_xyz.volume                | Sonos_xyz | Volume                | NumDirect           | Volume                |
 
 
 **Used Sonos player readings:**
