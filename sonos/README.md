@@ -1,6 +1,6 @@
 ### Sonos Widget for smartVISU / FHEM
 
-**Version: 0.86**
+**Version: 0.90**
 
 **Screenshots:**
 
@@ -17,13 +17,14 @@
 
 **Important update note:**
 - If your are updating from version **0.85** or below, you have to replace a notify and delete a userReadings definition. See change log blow.
+- If your are updating from version **0.86** or below, you have to adopt widget call. Radiolists and playlists are read from readings. See change log blow.
 
 **Requirements:**
 - Fully functioning FHEM (at least version 9118, 2015-08-23) with configured Sonos modules
 - SmartVISU **2.8+** (https://github.com/Martin-Gleiss/smartvisu)
 - Fronthem (https://github.com/herrmannj/fronthem)
 - ~~FHEM Sonos player device names without umlauts or underscores in room name. A underscore between prefix and room name is needed on the other hand.~~
-~~If you are affected then rename your player(s), please. Otherwise you can try to change regexs in notifies and subs in 99_fronthemSonosUtils.pm.~~
+- ~~If you are affected then rename your player(s), please. Otherwise you can try to change regexs in notifies and subs in 99_fronthemSonosUtils.pm.~~
 
 **Installation advices:**
 
@@ -58,61 +59,102 @@ define n_sv_sonosTransportState notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:transpor
 *
 * @param id: unique id for this widget, no default, mandatory
 * @param gad: gad name, no default, mandatory
-* @param neighbors:	array of other Sonos neighbour speakers. eg: ['Sonos_Studio', 'Sonos_Wohnzimmer'], no default, optional
-* @param radiolist_header: header for radio list
-* @param radiolist_items: 2D array of radio display_name/sonos_favourite_name. eg. [['1LIVE','1LIVE - Das junge Radio des WDR. 103.7 (Euro-Hits)'],['Rock Ant.','ROCK ANTENNE Classic Perlen (Classic Rock)']]
-* @param playlist_header: header for play list
-* @param playlist_items: 2D array of play lists display_names/sonos_playlist_name. eg. [['Rock','Rock'],['New Soul','NewSoul']]
+* @param neighbors:	array of other Sonos neighbour speakers. eg: ['Sonos_Studio', 'Sonos_Wohnzimmer'], no default
 * @author dev0
 */
 
-{% macro player(id, gad, neighbors, radiolist_header, radiolist_items, playlist_header, playlist_items) %}
+{% macro player(id, gad, neighbors) %}
 ```
 
-**Example widget call** for two players (eg. for rooms_*.html or category_*.html):
+**Simple example widget call** for three separate players (eg. for rooms_*.html or category_*.html):
 ```
-<div class="block" style="width: 100%;">
-	<div class="set-1" data-role="collapsible-set" data-theme="c" data-content-theme="a" data-mini="true">
-		<div data-role="collapsible" data-collapsed="false" >
-		<h3>Sonos Studio <span class="sonos_header_presence"></span></h3>
-		<table width="100%"><tr><td>
-
-			{{ ddtlabs_sonos.player('sonos_studio', 'Sonos_Studio', ['Sonos_Sleepingroom', 'Sonos_Livingroom'],
-			'Radio:',[
-			['1LIVE','1LIVE - Das junge Radio des WDR. 103.7 (Euro-Hits)'],
-			['Rock Ant.','ROCK ANTENNE Classic Perlen (Classic Rock)']
-			],
-			'Playlists:', [
-			['Rock','Rock'],
-			['New Soul','NewSoul']
-			])}}
-
-		</td></tr></table>
-		</div>
-	</div>
-</div>
+{% import "widget_ddtlabs_sonos.html" as ddtlabs_sonos %}
 
 <div class="block" style="width: 100%;">
 	<div class="set-1" data-role="collapsible-set" data-theme="c" data-content-theme="a" data-mini="true">
 		<div data-role="collapsible" data-collapsed="false" >
-		<h3>Sonos Studio <span class="sonos_header_presence"></span></h3>
-		<table width="100%"><tr><td>
-
-			{{ ddtlabs_sonos.player('sonos_sleepingroom', 'Sonos_Sleepingroom', ['Sonos_Studio', 'Sonos_Livingroom'],
-			'Radio:',[
-			['1LIVE','1LIVE - Das junge Radio des WDR. 103.7 (Euro-Hits)'],
-			['Rock Ant.','ROCK ANTENNE Classic Perlen (Classic Rock)']
-			],
-			'Playlists:', [
-			['Rock','Rock'],
-			['New Soul','NewSoul']
-			])}}
-
-		</td></tr></table>
+		<h3>Sonos Studio <span class="sonos_header_presence">
+			{{ ddtlabs_sonos.presence('sonos_studio', 'Sonos_Studio') }}
+		</span></h3>
+		<table width="100%">
+			<tr><td>
+        {{ ddtlabs_sonos.player('sonos_studio', 'Sonos_Studio', ['Sonos_Kitchen', 'Sonos_Wohnzimmer']) }}
+			</td></tr>
+		</table>
 		</div>
 	</div>
 </div>
+
+
+<div class="block" style="width: 100%;">
+	<div class="set-1" data-role="collapsible-set" data-theme="c" data-content-theme="a" data-mini="true">
+		<div data-role="collapsible" data-collapsed="false" >
+		<h3>Sonos Wohnzimmer <span class="sonos_header_presence">
+			{{ ddtlabs_sonos.presence('sonos_wohnzimmer', 'Sonos_Wohnzimmer') }}
+		</span></h3>
+		<table width="100%">
+			<tr><td>
+        {{ ddtlabs_sonos.player('sonos_wohnzimmer', 'Sonos_Wohnzimmer', ['Sonos_Kitchen', 'Sonos_Studio']) }}
+			</td></tr>
+		</table>
+		</div>
+	</div>
+</div>
+
+
+<div class="block" style="width: 100%;">
+	<div class="set-1" data-role="collapsible-set" data-theme="c" data-content-theme="a" data-mini="true">
+		<div data-role="collapsible" data-collapsed="false" >
+		<h3>Sonos Kitchen <span class="sonos_header_presence">
+			{{ ddtlabs_sonos.presence('sonos_kitchen', 'Sonos_Kitchen') }}
+		</span></h3>
+		<table width="100%">
+			<tr><td>
+        {{ ddtlabs_sonos.player('sonos_kitchen', 'Sonos_Kitchen', ['Sonos_Wohnzimmer', 'Sonos_Studio']) }}
+			</td></tr>
+		</table>
+		</div>
+	</div>
+</div>
+
 /** Note: radio stations must be added to Sonos "My Radiostations" to work with FHEM's Sonos Modules */
+```
+
+**Advanced example widget call** for three devices, but only 1 player is displayed. You can select your Sonos device from selectmenu:
+```
+{% import "status.html" as status %}
+{{ status.collapse('mm_Sonos_Studio_visible',     'mm_Sonos_Studio.svIsVisible') }}
+{{ status.collapse('mm_Sonos_Livingroom_visible', 'mm_Sonos_Livingroom.svIsVisible') }}
+{{ status.collapse('mm_Sonos_Kitchen_visible',    'mm_Sonos_Kitchen.svIsVisible') }}
+
+{% import "widget_ddtlabs_sonos.html" as ddtlabs_sonos %}
+<div class="block" style="width: 100%; Xmin-width: 520px;">
+  <div class="ui-bar-c ui-li-divider ui-corner-top" style="height: 16px;">
+    <table border="0" class="sonos_player_table_selector">
+    <tr>
+      <td>
+        <div class="sonos_header_presence_aio hide" data-bind="mm_Sonos_Studio_visible">     {{ ddtlabs_sonos.presence('id_sonos_studio_presence',     'Sonos_Studio') }}     </div>
+        <div class="sonos_header_presence_aio hide" data-bind="mm_Sonos_Livingroom_visible"> {{ ddtlabs_sonos.presence('id_sonos_livingroom_presence', 'Sonos_Livingroom') }} </div>
+        <div class="sonos_header_presence_aio hide" data-bind="mm_Sonos_Kitchen_visible">    {{ ddtlabs_sonos.presence('id_sonos_kitchen_presence',    'Sonos_Kitchen') }}      </div>
+      </td>
+      <td>
+        <div class="sonos_player_selector">
+        {{ ddtlabs_sonos.selectmenu_static('id_select_player', 'mm_Sonos_Livingroom.svIsVisibleName',  [['Sonos Livingroom','Sonos_Livingroom'],['Sonos Studio','Sonos_Studio'],['Sonos Kitchen','Sonos_Kitchen']], '', '')}}
+        </div>
+      </td>
+    </tr>
+    </table>
+  </div>
+  <div class="ui-fixed ui-body-a ui-corner-bottom">
+    <table width="100%" height="280">
+      <tr><td>
+        <div class="hide" data-bind="mm_Sonos_Studio_visible">     {{ ddtlabs_sonos.player('sonos_studio',     'Sonos_Studio',     ['Sonos_Kitchen', 'Sonos_Livingroom']) }}  </div>
+        <div class="hide" data-bind="mm_Sonos_Livingroom_visible"> {{ ddtlabs_sonos.player('sonos_livingroom', 'Sonos_Livingroom', ['Sonos_Kitchen', 'Sonos_Studio']) }}      </div>
+        <div class="hide" data-bind="mm_Sonos_Kitchen_visible">    {{ ddtlabs_sonos.player('sonos_kitchen',    'Sonos_Kitchen',    ['Sonos_Livingroom', 'Sonos_Studio']) }} </div>
+      </td></tr>
+    </table>
+  </div>
+</div>
 ```
 
 - Group / ungroup your players in all possible combinations with Sonos Controller while FHEM is running. Dynamic readings will be created.
@@ -121,11 +163,45 @@ define n_sv_sonosTransportState notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:transpor
   - **SonosGroup:** used for all svHasClient_Sonos_.* and svIsInAnyGroup readings (these FHEM readings will automatically be created at first when Sonos speakers are grouped)
   - **SonosAlbumArtURL:** used for currentAlbumArtURL reading (inter alia fixing a FHEM Sonos module bug)
   - **SonosTrackPos:** used for svTrackPosition reading
-  - **SonosTransportState:** used for transportState.* reading
+  - **SonosTransportState:** used for transportState.* readings
+  - **SonosLists:** used for Playlist and Radiolist readings
   - **NumDirect:** used for Volume reading
   - **Direct:** used for all other readings
   - Some readings may not be displayed in FHEM Gad Editor because they are not on Sonos modules internal setList. Enter them nevertheless.
   - Last part of gad/items names that are displayed in gad editor are the reading names that must be selected for each reading and cmd. I hope that makes this configuration a little bit easier.
+
+| item                                   | device    | reading                   | converter           | cmd set                   |
+| -------------------------------------- | --------- | ------------------------- | ------------------- | ------------------------- |
+| mm_Sonos_xyz.Balance                   | Sonos_xyz | Balance                   | Direct              | Balance                   |
+| mm_Sonos_xyz.Bass                      | Sonos_xyz | Bass                      | Direct              | Bass                      |
+| mm_Sonos_xyz.CrossfadeMode             | Sonos_xyz | CrossfadeMode             | Direct              | CrossfadeMode             |
+| mm_Sonos_xyz.Loudness                  | Sonos_xyz | Loudness                  | Direct              | Loudness                  |
+| mm_Sonos_xyz.Mute                      | Sonos_xyz | Mute                      | Direct              | Mute                      |
+| mm_Sonos_xyz.Playlist                  | Sonos_xyz | Playlists                 | SonosLists          | Playlists                 |
+| mm_Sonos_xyz.Radiolist                 | Sonos_xyz | Radios                    | SonosLists          | Radios                    |
+| mm_Sonos_xyz.Repeat                    | Sonos_xyz | Repeat                    | Direct              | Repeat                    |
+| mm_Sonos_xyz.Shuffle                   | Sonos_xyz | Shuffle                   | Direct              | Shuffle                   |
+| mm_Sonos_xyz.Treble                    | Sonos_xyz | Treble                    | Direct              | Treble                    |
+| mm_Sonos_xyz.currentAlbum              | Sonos_xyz | currentAlbum              | Direct              |                           |
+| mm_Sonos_xyz.currentAlbumArtURL        | Sonos_xyz | currentAlbumArtURL        | SonosAlbumArtURL    |                           |
+| mm_Sonos_xyz.currentArtist             | Sonos_xyz | currentArtist             | Direct              |                           |
+| mm_Sonos_xyz.currentSender             | Sonos_xyz | currentSender             | Direct              |                           |
+| mm_Sonos_xyz.currentSenderCurrent      | Sonos_xyz | currentSenderCurrent      | Direct              |                           |
+| mm_Sonos_xyz.currentSenderInfo         | Sonos_xyz | currentSenderInfo         | Direct              |                           |
+| mm_Sonos_xyz.currentTitle              | Sonos_xyz | currentTitle              | Direct              |                           |
+| mm_Sonos_xyz.currentTrackDuration      | Sonos_xyz | currentTrackDuration      | Direct              |                           |
+| mm_Sonos_xyz.presence                  | Sonos_xyz | presence                  | Direct              |                           |
+| mm_Sonos_xyz.roomName                  | Sonos_xyz | roomName                  | Direct              |                           |
+| mm_Sonos_xyz.state                     | Sonos_xyz | state                     | Direct              | state                     |
+| mm_Sonos_xyz.svHasClient_<Sonos_XXX>   | Sonos_xyz | svHasClient_<Sonos_XXX>   | SonosGroup          | svHasClient_<Sonos_XXX>   |
+| mm_Sonos_xyz.svIsInAnyGroup            | Sonos_xyz | svIsInAnyGroup            | SonosGroup          | svIsInAnyGroup            |
+| mm_Sonos_xyz.svIsVisible               | Sonos_xyz | svIsVisible               | SonosRoomSelect     | svIsVisible               |
+| mm_Sonos_xyz.svTrackPosition           | Sonos_xyz | svTrackPosition           | SonosTrackPos       | svTrackPosition           |
+| mm_Sonos_xyz.svTransportStatePause     | Sonos_xyz | svTransportStatePause     | SonosTransportState | svTransportStatePause     |
+| mm_Sonos_xyz.svTransportStatePlay      | Sonos_xyz | svTransportStatePlay      | SonosTransportState | svTransportStatePlay      |
+| mm_Sonos_xyz.svTransportStateStop      | Sonos_xyz | svTransportStateStop      | SonosTransportState | svTransportStateStop      |
+| mm_Sonos_xyz.volume                    | Sonos_xyz | Volume                    | NumDirect           | Volume                    |
+
 
 **Used Sonos player readings:**
   - can be found in the beginning of sonos player macro in widget_ddtlabs_sonos.html
@@ -148,7 +224,7 @@ define n_sv_sonosTransportState notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:transpor
 **ToDo:**
 - Remove continously currentTrackPosition update and replace it with a timerEvent() js function. **Voluntaries up, please!**
 - ~~Popup with sliders for treble, bass, balance and other settings.~~
-- Get radio and play lists from FHEM readings.
+- ~~Get radio and play lists from FHEM readings.~~
 - ~~Dynamic layout in width.~~
 
 **Update notes:**
@@ -189,6 +265,12 @@ define n_sv_sonosTransportState notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:transpor
 - Master states are synced to slave players (improvement)
 - **v0.86**
 - Added a little bit more delay to volume sliders
+- **v0.90**
+- Playlists and radio stations are captured from FHEM reading and must not be be specified in widget call. You have to remove them from widget call and you must configure them in GAD Editor. Thanx to raman for that feature.
+- You can define a all-in-one device for multiple players. See advanced example above
+- Show presence state at top of device
+- Minor changes and code cleanup
+- Advanved examaple for Widget call
 
 **Credits / Copyrights / Trademarks:**
 - My wife!

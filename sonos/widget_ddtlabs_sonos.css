@@ -1,7 +1,7 @@
 /**
  * ---  W i d g e t s :  S O N O S  ----------------------------------
  *
- *       for Widget Release 0.85+
+ *       for Widget Release 0.90+
  *
  */
 
@@ -199,3 +199,29 @@
 	margin: 0 28px; 0 0;
 	color: gray;
 }
+
+
+/** clean up  needed !!! */
+
+.sonos_player_selector {
+	margin-bottom: -23px;
+	margin-top: -12px;
+	display: table;
+	position: relative;
+}
+
+.sonos_header_presence_aio svg.fx-icon {
+	height: 17px;
+	width: 17px;
+	vertical-align: text-top;
+}
+
+.sonos_player_table_selector {
+	padding: 0;
+	margin: -5px 0 -3px 0;
+}
+
+.sonos_player_table_selector .ui-select .ui-mini.ui-btn-icon-right .ui-btn-inner {
+	padding: 3px 22px 3px 22px;
+}
+

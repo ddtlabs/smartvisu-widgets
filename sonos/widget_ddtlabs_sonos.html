@@ -1,251 +1,243 @@
 /**
-* -----------------------------------------------------------------------------
-* @package     smartVISU
-* @author      dev0
-* @copyright   2015
-* @license     GPL [http://www.gnu.de]
-* -----------------------------------------------------------------------------
+            ____                                          
+  _   _    / ___|    ___    _ __     ___    ___     _   _ 
+ (_) (_)   \___ \   / _ \  | '_ \   / _ \  / __|   (_) (_)
+  _   _     ___) | | (_) | | | | | | (_) | \__ \    _   _ 
+ (_) (_)   |____/   \___/  |_| |_|  \___/  |___/   (_) (_)
+
+                                                             
 */
 
-/**
+/** ----------------------------------------------------------------------------
 * Sonos(r,c) Multimedia Player
 *
 * @param id: unique id for this widget, no default, mandatory
 * @param gad: gad name, no default, mandatory
-* @param neighbors:	array of other Sonos neighbour speakers. eg: ['Sonos_Studio', 'Sonos_Wohnzimmer'], no default, optional
+* @param neighbors:  array of other Sonos neighbour speakers. eg: ['Sonos_Studio', 'Sonos_Wohnzimmer'], no default, optional
 * @param radiolist_header: header for radio list
-* @param radiolist_items: 2D array of radio display_name/sonos_favourite_item. eg. [['1LIVE','1LIVE - Das junge Radio des WDR. 103.7 (Euro-Hits)'],['Rock Ant.','ROCK ANTENNE Classic Perlen (Classic Rock)']]
 * @param playlist_header: header for play list
-* @param playlist_items: 2D array of play list display_names/sonos_playlist_item. eg. [['Rock','Rock'],['New Soul','NewSoul']]
 *
 * @author and copyright dev0
-*/
+------------------------------------------------------------------------------*/
 
-{% macro player(id, gad, neighbors, radiolist_header, radiolist_items, playlist_header, playlist_items) %}
+{% macro player(id, gad, neighbors) %}
 
 /** set your preferences here */
 
-	{% set prefix         = 'mm_' %}
-	{% set text_volume    = 'Volume of neighbors'%}
+  {% set prefix           = 'mm_' %}                  /** prefix used for all gad items */
+  {% set text_volume      = 'Volume of neighbors'%}   /** description within neighbors popup */
+  {% set radiolist_header = 'Radios' %}               /** radiolist button title */
+  {% set playlist_header  = 'Playlists' %}            /** playlist button title */
+
 
 /** do not modify anything below, as long as you know what you are dong */
 
-	{% set version        = '0.86'%}
-	{% set defCoverArtUrl = 'pages/base/pics/sonos_empty.jpg' %}
-	{% set uid            = uid(page, id) %}
+  {% set version        = '0.90'%}
+  {% set defCoverArtUrl = 'pages/base/pics/sonos_empty.jpg' %}
+  {% set uid            = uid(page, id) %}
 
-	{% set gad            = prefix~gad %}           /** use Direct converter if no further comment */
-	{% set state          = '.state' %}
-	{% set volume         = '.volume' %}
-	{% set artist         = '.currentArtist' %}
-	{% set title          = '.currentTitle' %}
-	{% set album          = '.currentAlbum' %}
-	{% set trackDuration  = '.currentTrackDuration' %}
-	{% set radioSender    = '.currentSender' %}
-	{% set radioShow      = '.currentSenderCurrent' %}
-	{% set radioInfo      = '.currentSenderInfo' %}
-	{% set mute           = '.Mute' %}
-	{% set repeat         = '.Repeat' %}
-	{% set shuffle        = '.Shuffle' %}
-	{% set playlist       = '.Playlist' %}
-	{% set radiolist      = '.Radiolist' %}
-	{% set loudness       = '.Loudness' %}
-	{% set crossfade      = '.CrossfadeMode' %}
-	{% set addMember      = '.AddMember' %}
-	{% set remMember      = '.RemoveMember' %}
-	{% set bass           = '.Bass' %}
-	{% set treble         = '.Treble' %}
-	{% set balance        = '.Balance' %}
-	{% set roomName       = '.roomName' %}
+  {% set gad            = prefix~gad %}                /** use 'Direct' converter in GAD editor */
+  {% set state          = '.state' %}                  /** use 'Direct' converter in GAD editor */
+  {% set volume         = '.volume' %}                 /** use 'Direct' converter in GAD editor */
+  {% set artist         = '.currentArtist' %}          /** use 'Direct' converter in GAD editor */
+  {% set title          = '.currentTitle' %}           /** use 'Direct' converter in GAD editor */
+  {% set album          = '.currentAlbum' %}           /** use 'Direct' converter in GAD editor */
+  {% set trackDuration  = '.currentTrackDuration' %}   /** use 'Direct' converter in GAD editor */
+  {% set radioSender    = '.currentSender' %}          /** use 'Direct' converter in GAD editor */
+  {% set radioShow      = '.currentSenderCurrent' %}   /** use 'Direct' converter in GAD editor */
+  {% set radioInfo      = '.currentSenderInfo' %}      /** use 'Direct' converter in GAD editor */
+  {% set mute           = '.Mute' %}                   /** use 'Direct' converter in GAD editor */
+  {% set repeat         = '.Repeat' %}                 /** use 'Direct' converter in GAD editor */
+  {% set shuffle        = '.Shuffle' %}                /** use 'Direct' converter in GAD editor */
+  {% set playlist       = '.Playlist' %}               /** use 'Direct' converter in GAD editor */
+  {% set radiolist      = '.Radiolist' %}              /** use 'Direct' converter in GAD editor */
+  {% set loudness       = '.Loudness' %}               /** use 'Direct' converter in GAD editor */
+  {% set crossfade      = '.CrossfadeMode' %}          /** use 'Direct' converter in GAD editor */
+  {% set addMember      = '.AddMember' %}              /** use 'Direct' converter in GAD editor */
+  {% set remMember      = '.RemoveMember' %}           /** use 'Direct' converter in GAD editor */
+  {% set bass           = '.Bass' %}                   /** use 'Direct' converter in GAD editor */
+  {% set treble         = '.Treble' %}                 /** use 'Direct' converter in GAD editor */
+  {% set balance        = '.Balance' %}                /** use 'Direct' converter in GAD editor */
+  {% set roomName       = '.roomName' %}               /** use 'Direct' converter in GAD editor */
 
-	{% set isInAnyGroup   = '.svIsInAnyGroup' %}      /** Coverter: SonosGroup */
-	{% set hasClient      = '.svHasClient' %}         /** Coverter: SonosGroup */
-	{% set trackPos       = '.svTrackPosition' %}     /** Coverter: SonosTrackPos */
-	{% set coverUrl       = '.currentAlbumArtURL' %}  /** Coverter: SonosAlbumArtURL */
-	{% set transportStateStop  = '.svTransportStateStop' %}    /** Coverter: SonosTransportState */
-	{% set transportStatePlay  = '.svTransportStatePlay' %}    /** Coverter: SonosTransportState */
-	{% set transportStatePause = '.svTransportStatePause' %}   /** Coverter: SonosTransportState */
+  {% set isInAnyGroup   = '.svIsInAnyGroup' %}         /** Coverter: SonosGroup */
+  {% set hasClient      = '.svHasClient' %}            /** Coverter: SonosGroup */
+  {% set trackPos       = '.svTrackPosition' %}        /** Coverter: SonosTrackPos */
+  {% set coverUrl       = '.currentAlbumArtURL' %}     /** Coverter: SonosAlbumArtURL */
 
-	{% import "basic.html" as basic %}
-	{% import "widget_ddtlabs_sonos.html" as ddtlabs_int_sonos %}
+  {% set transportStateStop  = '.svTransportStateStop' %}    /** Coverter: SonosTransportState */
+  {% set transportStatePlay  = '.svTransportStatePlay' %}    /** Coverter: SonosTransportState */
+  {% set transportStatePause = '.svTransportStatePause' %}   /** Coverter: SonosTransportState */
+
+  {% import "basic.html" as basic %}
+  {% import "widget_ddtlabs_sonos.html" as ddtlabs_int_sonos %}
 
 
 <div class="ddtlabs">
 <div id="{{ uid }}" class="sonos">
 
-
-
 <table width="100%" style="min-width: 460px;">
 <tr>
     <td id="vol" rowspan="5">
-    	<div class="vol">
-			<img class="slider-bottomup-scale" src="pages/base/pics/scale_buttomup.png">
-			{{ ddtlabs_int_sonos.slider(id~volume, gad~volume, 0, 100, 1, 'bottomup') }}
-		</div>
+      <div class="vol">
+      <img class="slider-bottomup-scale" src="pages/base/pics/scale_buttomup.png">
+      {{ ddtlabs_int_sonos.slider(id~volume, gad~volume, 0, 100, 1, 'bottomup') }}
+    </div>
     </td>
-
-/**   <td style="xwidth: 50px;"  rowspan="6"></td>  */
 
     <td id="cover" rowspan="5">
-	   	{{ ddtlabs_int_sonos.cover(id~coverUrl, gad~coverUrl, defCoverArtUrl) }}
-		<div class="pos">
-		{{ basic.slider(id~trackPos, gad~trackPos, 0, 100, 1) }}
-		</div>
-		<div class="symbolpause">
-		{{ basic.symbol(id~gad~transportStatePause~Symbol, gad~transportStatePause, '', 'audio_pause.svg', '1', '', 'red') }}
-		</div>
+       {{ ddtlabs_int_sonos.cover(id~coverUrl, gad~coverUrl, defCoverArtUrl) }}
+    <div class="pos">
+    {{ basic.slider(id~trackPos, gad~trackPos, 0, 100, 1) }}
+    </div>
+    <div class="symbolpause">
+    {{ basic.symbol(id~gad~transportStatePause~Symbol, gad~transportStatePause, '', 'audio_pause.svg', '1', '', 'red') }}
+    </div>
     </td>
 
-/**   <td style="xwidth: 50px;"  rowspan="6">&nbsp;</td>   */
-
-	<td id="title-wide">
-		<span class="title title-wide">
-		{{ basic.value(id~radioSender, gad~radioSender, '', '') }}
-		{{ basic.value(id~artist, gad~artist, '', '') }}
-		</span>
-	</td>
+  <td id="title-wide">
+    <span class="title title-wide">
+    {{ basic.value(id~radioSender, gad~radioSender, '', '') }}
+    {{ basic.value(id~artist, gad~artist, '', '') }}
+    </span>
+  </td>
 </tr>
 
 <tr>
-	<td id="title-wide">
-		<span class="title title-wide">
-		{{ basic.value(id~radioInfo, gad~radioInfo, '', '') }}
-		{{ basic.value(id~album, gad~album, '', '') }}
-		</span>
-	</td>
+  <td id="title-wide">
+    <span class="title title-wide">
+    {{ basic.value(id~radioInfo, gad~radioInfo, '', '') }}
+    {{ basic.value(id~album, gad~album, '', '') }}
+    </span>
+  </td>
 </tr>
 
 <tr>
-	<td id="title-wide">
-		<span class="title title-wide">
-		{{ basic.value(id~radioShow, gad~radioShow, '', '') }}
-		{{ basic.value(id~title, gad~title, '', '') }}
-		/** &nbsp;&nbsp;&nbsp; [{{ basic.value(id~trackDuration, gad~trackDuration, '', '') }}] */
-		</span>
-	</td>
+  <td id="title-wide">
+    <span class="title title-wide">
+    {{ basic.value(id~radioShow, gad~radioShow, '', '') }}
+    {{ basic.value(id~title, gad~title, '', '') }}
+    </span>
+  </td>
 </tr>
 
 <tr>
-	<td>
-		<div class="playlist playlist-wide">
-		<table width="100%"  class="btnright-wide">
-		<tr>
-			<td>
-				{{ ddtlabs_int_sonos.selectmenu(id~'playlist', gad~playlist,  playlist_items, '', playlist_header) }}
-			</td><td>
-				{{ ddtlabs_int_sonos.selectmenu(id~'radiolist', gad~radiolist, radiolist_items, '', radiolist_header, 'urlencode') }}
-			</td>
-		</tr>
-		</table>
-		</div>
-	</td>
+  <td>
+    <div class="playlist playlist-wide">
+    <table width="100%"  class="btnright-wide">
+    <tr>
+      <td>
+        {{ ddtlabs_int_sonos.selectmenu(id~'playlist', gad~playlist, playlist_header) }}
+      </td><td>
+        {{ ddtlabs_int_sonos.selectmenu(id~'radiolist', gad~radiolist, radiolist_header) }}
+      </td>
+    </tr>
+    </table>
+    </div>
+  </td>
 </tr>
 
 <tr>
-	<td>
+  <td>
 
-		<table width="100%" class="btnright-wide">
-		<tr>
+    <table width="100%" class="btnright-wide">
+    <tr>
 
-			<td>
-				<span data-role="controlgroup" data-type="horizontal">
-   				{{ basic.dual(id~gad~isInAnyGroup, gad~isInAnyGroup, 'my_audio_group_empty.svg', 'my_audio_group_fault.svg', '1', '0', 'mini') }}
-				</span>
-			</td>
+      <td>
+        <span data-role="controlgroup" data-type="horizontal">
+           {{ basic.dual(id~gad~isInAnyGroup, gad~isInAnyGroup, 'my_audio_group_empty.svg', 'my_audio_group_fault.svg', '1', '0', 'mini') }}
+        </span>
+      </td>
 
-			{% for neighbor in neighbors%}
-			<td>
-				<span data-role="controlgroup" data-type="horizontal">
-				{{ basic.dual(id~addMember~'.'~neighbor, gad~hasClient~'_'~neighbor, 'my_audio_group_'~neighbor~'.svg', 'my_audio_group_'~neighbor~'.svg', '1', '0') }}
-				</span>
-			</td>
-			{% endfor %}
+      {% for neighbor in neighbors%}
+      <td>
+        <span data-role="controlgroup" data-type="horizontal">
+        {{ basic.dual(id~addMember~'.'~neighbor, gad~hasClient~'_'~neighbor, 'my_audio_group_'~neighbor~'.svg', 'my_audio_group_'~neighbor~'.svg', '1', '0') }}
+        </span>
+      </td>
+      {% endfor %}
 
-			<td>
-				<span data-role="controlgroup" data-type="horizontal">
-					<a href="#{{id}}ddtlabs_sonos_popup" data-rel="popup" data-transition="flip" class="ui-mini ui-btn ui-btn-up-a ui-shadow ui-btn-corner-all ui-btn-inline ui-btn-icon-center">
-					<span class="ui-btn-inner">
-					<span class="ui-btn-text">
-						<img data-inline="true" data-iconpos="center" class="icon" src="{{ icon0~'audio_eq.svg' }}">
-					</span>
-					</span>
-					</a>
-				</span>
+      <td>
+        <span data-role="controlgroup" data-type="horizontal">
+          <a href="#{{id}}ddtlabs_sonos_popup" data-rel="popup" data-transition="flip" class="ui-mini ui-btn ui-btn-up-a ui-shadow ui-btn-corner-all ui-btn-inline ui-btn-icon-center">
+          <span class="ui-btn-inner">
+          <span class="ui-btn-text">
+            <img data-inline="true" data-iconpos="center" class="icon" src="{{ icon0~'audio_eq.svg' }}">
+          </span>
+          </span>
+          </a>
+        </span>
 
-				<div class="ddtlabs-sonos-popup-eq" id="{{id}}ddtlabs_sonos_popup" data-role="popup" data-position-to="origin" data-theme="a" data-overlay-theme="a">
-					<a href="#" data-rel="back" data-role="button" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
-					<div class="ddtlabs">
-					<div class="sonospopup">
-					<span class="desc">Sonons Widget v{{version}}</span>
-					<table width="100%">
-						<tr><td id="header" colspan="2">Sonos {{ basic.value(id~gad~roomName, gad~roomName, '', '') }}:</td></tr>
-						<tr><td id="text">Bass</td>    <td id="slider" style="width: 100%;"> {{ basic.slider(id~bass, gad~bass, -10, 10, 1, '') }}</td></tr>
-						<tr><td id="text">Treble</td>  <td id="slider"> {{ basic.slider(id~gad~treble, gad~treble, -10, 10, 1, '') }}</td></tr>
-						<tr><td id="text">Balance</td> <td id="slider"> {{ basic.slider(id~gad~balance, gad~balance, -100, 100, 1, '') }}</td></tr>
-						<tr><td id="popupspacer" colspan="2"></td></tr>
-						<tr><td id="header" colspan="2">{{text_volume}}:</td></tr>
-						{% for neighbor in neighbors%}
-							<tr>
-							<td id="text">{{ basic.value(id~prefix~neighbor~roomName, prefix~neighbor~roomName, '', '') }}</td>
-							<td id="slider">{{ ddtlabs_int_sonos.slider(id~prefix~neighbor~'volumePop', prefix~neighbor~volume, 0, 100, 1, '') }}</td	>
-							</tr>
-						{% endfor %}
-					</table>
-					</div>
-					</div>
-				</div>
-			</td>
+        <div class="ddtlabs-sonos-popup-eq" id="{{id}}ddtlabs_sonos_popup" data-role="popup" data-position-to="origin" data-theme="a" data-overlay-theme="a">  
+          <a href="#" data-rel="back" data-role="button" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+          <div class="ddtlabs">
+          <div class="sonospopup">
+          <span class="desc">Sonons Widget v{{version}}</span>
+          <table width="100%">
+            <tr><td id="header" colspan="2">Sonos {{ basic.value(id~gad~roomName, gad~roomName, '', '') }}:</td></tr>
+            <tr><td id="text">Bass</td>    <td id="slider" style="width: 100%;"> {{ basic.slider(id~bass, gad~bass, -10, 10, 1, '') }}</td></tr>
+            <tr><td id="text">Treble</td>  <td id="slider"> {{ basic.slider(id~gad~treble, gad~treble, -10, 10, 1, '') }}</td></tr>
+            <tr><td id="text">Balance</td> <td id="slider"> {{ basic.slider(id~gad~balance, gad~balance, -100, 100, 1, '') }}</td></tr>
+            <tr><td id="popupspacer" colspan="2"></td></tr>
+            <tr><td id="header" colspan="2">{{text_volume}}:</td></tr>
+            {% for neighbor in neighbors%}
+              <tr>
+              <td id="text">{{ basic.value(id~prefix~neighbor~roomName, prefix~neighbor~roomName, '', '') }}</td>
+              <td id="slider">{{ ddtlabs_int_sonos.slider(id~prefix~neighbor~'volumePop', prefix~neighbor~volume, 0, 100, 1, '') }}</td  >
+              </tr>
+            {% endfor %}
+          </table>
+          </div>
+          </div>
+        </div>
+      </td>
 
-		</tr>
-		</table>
+    </tr>
+    </table>
 
-	</td>
+  </td>
 </tr>
 
 <tr>
-	<td>
-		<div data-role="controlgroup" data-type="horizontal" class="mute">
-		{{ basic.dual(id~mute, gad~mute, 'audio_volume_mute.svg', 'audio_volume_mid.svg', 1, 0, 'mini') }}
-		</div>
-	</td>
-	<td>
-		<div data-role="controlgroup" data-type="horizontal" class="play">
-		{{ basic.button(id~'_prev', gad~state, 'Prev', 'control_arrow_left.svg', 'Previous') }}
-		{{ basic.dual(id~gad~'_playX',  gad~transportStatePlay, 'audio_play.svg', 'audio_play.svg', '1', '0', '') }}
-		{{ basic.dual(id~gad~'_stopX',  gad~transportStateStop, 'audio_stop.svg', 'audio_stop.svg', '1', '0', '') }}
-		{{ basic.button(id~'_next', gad~state, 'Next', 'control_arrow_right.svg', 'Next') }}
-		</div>
-
-	</td>
-	<td>
-
-	<table width="100%" class="btnright-wide">
-	<tr>
-		<td>
-			<span data-role="controlgroup" data-type="horizontal">
-/**			{{ basic.multistate(id~repeat, gad~repeat, ['0', '1', '2'], ['audio_repeat.svg', 'audio_repeat_song.svg', 'audio_repeat.svg'], 'mini') }} */
-			{{ basic.dual(id~repeat, gad~repeat, 'audio_repeat.svg', 'audio_repeat.svg', 1, '0') }}
-			</span>
-		</td>
-		<td>
-			<span data-role="controlgroup" data-type="horizontal">
-			{{ basic.dual(id~shuffle, gad~shuffle, 'audio_shuffle.svg', 'audio_shuffle.svg', 1, '') }}
-			</span>
-		</td>
-		<td>
-			<span data-role="controlgroup" data-type="horizontal">
-   			{{ basic.dual(id~loudness, gad~loudness, 'audio_loudness.svg', 'audio_loudness.svg', 1, 0, 'mini') }}
-			</span>
-		</td>
-		<td>
-			<span data-role="controlgroup" data-type="horizontal">
-	   		{{ basic.dual(id~crossfade, gad~crossfade, 'audio_fade.svg', 'audio_fade.svg', 1, 0, 'mini') }}
-			</span>
-		</td>
-	</tr>
-	</table>
-
-	</td>
+  <td>
+    <div data-role="controlgroup" data-type="horizontal" class="mute">
+    {{ basic.dual(id~mute, gad~mute, 'audio_volume_mute.svg', 'audio_volume_mid.svg', 1, 0, 'mini') }}
+    </div>
+  </td>
+  <td>
+    <div data-role="controlgroup" data-type="horizontal" class="play">
+    {{ basic.button(id~'_prev', gad~state, 'Prev', 'control_arrow_left.svg', 'Previous') }}
+    {{ basic.dual(id~gad~'_playX',  gad~transportStatePlay, 'audio_play.svg', 'audio_play.svg', '1', '0', '') }}
+    {{ basic.dual(id~gad~'_stopX',  gad~transportStateStop, 'audio_stop.svg', 'audio_stop.svg', '1', '0', '') }}
+    {{ basic.button(id~'_next', gad~state, 'Next', 'control_arrow_right.svg', 'Next') }}
+    </div>
+  </td>
+  <td>
+  <table width="100%" class="btnright-wide">
+  <tr>
+    <td>
+      <span data-role="controlgroup" data-type="horizontal">
+      {{ basic.dual(id~repeat, gad~repeat, 'audio_repeat.svg', 'audio_repeat.svg', 1, '0') }}
+      </span>
+    </td>
+    <td>
+      <span data-role="controlgroup" data-type="horizontal">
+      {{ basic.dual(id~shuffle, gad~shuffle, 'audio_shuffle.svg', 'audio_shuffle.svg', 1, '') }}
+      </span>
+    </td>
+    <td>
+      <span data-role="controlgroup" data-type="horizontal">
+         {{ basic.dual(id~loudness, gad~loudness, 'audio_loudness.svg', 'audio_loudness.svg', 1, 0, 'mini') }}
+      </span>
+    </td>
+    <td>
+      <span data-role="controlgroup" data-type="horizontal">
+         {{ basic.dual(id~crossfade, gad~crossfade, 'audio_fade.svg', 'audio_fade.svg', 1, 0, 'mini') }}
+      </span>
+    </td>
+  </tr>
+  </table>
+  </td>
 </tr>
 
 </table>
@@ -255,45 +247,65 @@
 
 
 
-/**
+/** ----------------------------------------------------------------------------
 * Display cover/logo
 *
 * @param id: unique id
 * @param src: url to image
 * @param prefix: should be emtpy
-*/
+------------------------------------------------------------------------------*/
 
 {% macro cover(id, src, defCoverArtUrl) %}
-	<img class="coverimg" id="{{ uid(page, id) }}" data-widget="ddtlabs_sonos.cover" data-item="{{ src }}" src="{{ defCoverArtUrl }}" />
+<img class="coverimg" id="{{ uid(page, id) }}" data-widget="ddtlabs_sonos.cover" data-item="{{ src }}" src="{{ defCoverArtUrl }}" />
 {% endmacro %}
 
 
 
-/**
-* Selectmenu for Playlists
+/** ----------------------------------------------------------------------------
+* Selectmenu_static for status.collopse
 *
 * @param id: unique id for this widget
 * @param gad: gad for this widget
 * @param items: array of playlists
 * @param label: lable for this widget
-*/
+------------------------------------------------------------------------------*/
 
-{% macro selectmenu(id, gad, items, label, selected, urlencode) %}
+{% macro selectmenu_static(id, gad, items, label, selected, urlencode) %}
 <a class="ui-btn-inline ui-mini selectmenu">
-	<select name="{{ uid(page, id) }}" id="{{ uid(page, id) }}" data-widget="ddtlabs_sonos.selectmenu" data-item="{{ gad }}" data-native-menu="false" data-placeholder="false" data-mini="true" data-native-menu="false" class="selectmenu" />
-		{% for item in items %}
-			{% if urlencode %}
-				<option value="{{ item[1]|url_encode }}">{{ item[0] }}</option>
-			{% else %}
-				<option value="{{ item[1] }}">{{ item[0] }}</option>
-			{% endif %}
-		{% endfor %}
-		<option selected>{{ selected }}</option>
-	</select>
+  <select name="{{ uid(page, id) }}" id="{{ uid(page, id) }}" data-widget="ddtlabs_sonos.selectmenu_static" data-item="{{ gad }}" data-native-menu="false" data-placeholder="false" data-mini="true" data-native-menu="false" class="selectmenu" />
+    {% for item in items %}
+      {% if urlencode %}
+        <option value="{{ item[1]|url_encode }}">{{ item[0] }}</option>
+      {% else %}
+        <option value="{{ item[1] }}">{{ item[0] }}</option>
+      {% endif %}
+    {% endfor %}
+    <option selected>{{ selected }}</option>
+  </select>
 </a>
 {% endmacro %}
 
-/**
+
+
+/** ----------------------------------------------------------------------------
+* Selectmenu for Playlists/Radios
+*
+* @param id: unique id for this widget
+* @param gad: gad for this widget
+* @param label: lable for this widget
+* @thanx to raman (https://forum.fhem.de/index.php/topic,54768.0.html)
+------------------------------------------------------------------------------*/
+
+{% macro selectmenu(id, gad, label) %}
+  <a class="ui-btn-inline ui-mini select">
+    <select name="{{ uid(page, id) }}" id="{{ uid(page, id) }}" data-widget="ddtlabs_sonos.selectmenu" data-item="{{ gad }}" data-label="{{ label }}" data-native-menu="false" data-placeholder="false" data-mini="true" data-native-menu="false" class="selectmenu" />
+    </select>
+  </a>
+{% endmacro %}
+
+
+
+/** ----------------------------------------------------------------------------
 * Displays a slider-control
 *
 * @param unique id for this widget
@@ -302,15 +314,35 @@
 * @param the maximum value if the slider is moved to total right (optional, default 255)
 * @param step between two values (optional, default 5)
 * @param the orientation ('none', 'vertical', 'bottomup', 'semicircle')
-* @info written my Martin Gleiss
 * @info modified: 800ms delay for volume slider
-*/
+------------------------------------------------------------------------------*/
+
 {% macro slider(id, item, min, max, step, mode) %}
-
-	<input id="{{ uid(page, id) }}" data-widget="basic.slider" data-item="{{ item }}"
-		type="range" value="0" min="{{ min|default(0) }}" max="{{ max|default(255) }}" step="{{ step|default(5) }}"
-		orientation="{{ mode }}" data-highlight="true" />
-
+  <input id="{{ uid(page, id) }}" data-widget="basic.slider" data-item="{{ item }}"
+    type="range" value="0" min="{{ min|default(0) }}" max="{{ max|default(255) }}" step="{{ step|default(5) }}"
+    orientation="{{ mode }}" data-highlight="true" />
 {% endmacro %}
 
+
+
+/** ----------------------------------------------------------------------------
+* Displays a presence button
+*
+* @param id: unique id for this widget
+* @param player: player name
+* @param prefix: prefix for playername
+* @param color_present: color for present state
+* @param color_absent: color for absent state
+------------------------------------------------------------------------------*/
+
+{% macro presence(id, player, prefix, color_present, color_absent) %}
+  {% import "basic.html" as basic %}
+  {% set prefix = prefix|default('mm_') %}
+  {% set color_present = color_present|default('black') %}
+  {% set color_absent  = color_absent|default('red') %}
+  
+  {{ basic.symbol('id_'~id~'_present',   prefix~player~'.presence', '', 'control_clear.svg',  'appeared',            '', color_present) }}
+  {{ basic.symbol('id_'~id~'_absent',    prefix~player~'.presence', '', 'control_on_off.svg', 'disappeared',         '', color_absent) }}
+  {{ basic.symbol('id_'~id~'_notLoaded', prefix~player~'.presence', '', 'control_on_off.svg', '~~NotLoadedMarker~~', '', color_absent) }}
+{% endmacro %}
 

@@ -1,7 +1,7 @@
-/* ---------------------------------------------------------------------------------------
+/* -----------------------------------------------------------------------------
 * Functions for smartVISU Sonos(c) Widget
-* Version 0.86+
-* ------------------------------------------------------------------------------------- */
+* Version 0.90
+* --------------------------------------------------------------------------- */
 
 /* -----------------------------------------------
 ddtlabs_sonos.cover
@@ -10,57 +10,82 @@ $(document).delegate('[data-widget="ddtlabs_sonos.cover"]',{update:function(d, a
 
 
 /* -----------------------------------------------
-ddtlabs_sonos.selectmenu
+ddtlabs_sonos.selectmenu_statsic
 ----------------------------------------------- */
 
-$(document).delegate('select[data-widget="ddtlabs_sonos.selectmenu"]', {
-	'update': function (event, response) {
-		$(this).val(response[0]).selectmenu('refresh');
-	},
-	'change': function (event) {
-		io.write($(this).attr('data-item'), $(this).val());
-	}
+$(document).delegate('select[data-widget="ddtlabs_sonos.selectmenu_static"]', {
+  'update': function (event, response) {
+    $(this).val(response[0]).selectmenu('refresh');
+  },
+  'change': function (event) {
+    io.write($(this).attr('data-item'), $(this).val());
+  }
 });
 
 
+/* ------------------------------------------------------
+ddtlabs_sonos.selectmenu with dynamic selects fron FHEM readings
+Special thanx to raman (https://forum.fhem.de/index.php/topic,54768.0.html)
+------------------------------------------------------ */
+
+$(document).delegate('select[data-widget="ddtlabs_sonos.selectmenu"]', {
+  'update': function (event, response) {
+    if ($(this).val() == undefined) {
+      $(this).find('option').remove().end();
+      var newOption = "<option value='" + $(this).attr('data-label') + "'>" + $(this).attr('data-label') + "</option>";
+      $(this).append(newOption).selectmenu('refresh');
+      var playlists = response[0].split(';;');
+                        playlists.sort();
+      for (var i = 0; i < playlists.length; i++) {
+        var newOption = "<option value='" + playlists[i] + "'>" + playlists[i] + "</option>";
+        $(this).append(newOption).selectmenu('refresh');
+      }
+    }
+  },
+  'change': function (event) {
+    io.write($(this).attr('data-item'), $(this).val());
+    $(this).val($(this).attr('data-label')).selectmenu('refresh',true);
+  }
+});
+
 
 /* -----------------------------------------------
-slider with more delay 800ms instead of 400
+slider with delay of 800ms
 ----------------------------------------------- */
 
 $(document).delegate('input[data-widget="ddtlabs_int_sonos.slider"]', {
-	'update': function (event, response) {
-		// DEBUG: console.log("[basic.slider] update '" + this.id + "': " + response + " timer: " + $(this).attr('timer') + " lock: " + $(this).attr('lock'));
-		$(this).attr('lock', 1);
-		$('#' + this.id).val(response).slider('refresh').attr('mem', $(this).val());
-	},
+  'update': function (event, response) {
+    // DEBUG: console.log("[basic.slider] update '" + this.id + "': " + response + " timer: " + $(this).attr('timer') + " lock: " + $(this).attr('lock'));
+    $(this).attr('lock', 1);
+    $('#' + this.id).val(response).slider('refresh').attr('mem', $(this).val());
+  },
 
-	'slidestop': function (event) {
-		if ($(this).val() != $(this).attr('mem')) {
-			io.write($(this).attr('data-item'), $(this).val());
-		}
-	},
+  'slidestop': function (event) {
+    if ($(this).val() != $(this).attr('mem')) {
+      io.write($(this).attr('data-item'), $(this).val());
+    }
+  },
 
-	'change': function (event) {
-		// DEBUG: console.log("[basic.slider] change '" + this.id + "': " + $(this).val() + " timer: " + $(this).attr('timer') + " lock: " + $(this).attr('lock'));
-		if (( $(this).attr('timer') === undefined || $(this).attr('timer') == 0 && $(this).attr('lock') == 0 )
-			&& ($(this).val() != $(this).attr('mem'))) {
+  'change': function (event) {
+    // DEBUG: console.log("[basic.slider] change '" + this.id + "': " + $(this).val() + " timer: " + $(this).attr('timer') + " lock: " + $(this).attr('lock'));
+    if (( $(this).attr('timer') === undefined || $(this).attr('timer') == 0 && $(this).attr('lock') == 0 )
+      && ($(this).val() != $(this).attr('mem'))) {
 
-			if ($(this).attr('timer') !== undefined) {
-				$(this).trigger('click');
-			}
+      if ($(this).attr('timer') !== undefined) {
+        $(this).trigger('click');
+      }
 
-			$(this).attr('timer', 1);
-			setTimeout("$('#" + this.id + "').attr('timer', 0);", 2000);
-		}
+      $(this).attr('timer', 1);
+      setTimeout("$('#" + this.id + "').attr('timer', 0);", 2000);
+    }
 
-		$(this).attr('lock', 0);
-	},
+    $(this).attr('lock', 0);
+  },
 
-	'click': function (event) {
-		// $('#' + this.id).attr('mem', $(this).val());
-		io.write($(this).attr('data-item'), $(this).val());
-	}
+  'click': function (event) {
+    // $('#' + this.id).attr('mem', $(this).val());
+    io.write($(this).attr('data-item'), $(this).val());
+  }
 });
 
 
