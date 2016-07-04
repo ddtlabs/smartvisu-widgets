@@ -41,7 +41,7 @@ define n_sv_sonosTransportState notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:transpor
 
 **smartVISU:**
 - Copy widget_ddtlabs_sonos.* to your smartVISU pages folder.
-- Copy content of *.css and *.js to your visu.css/visu.js or include it in any other way.
+- Copy content of *.css and *.js to your visu.css/visu.js or [include it](https://github.com/ddtlabs/smartvisu-widgets/wiki/HowTo-Install-Widgets).
 - Copy sonos_empty.jpg to smartvisu_root/pages/base/pics (typically /var/www/smartvisu/pages/base/pics).
 - Copy icons/.* to smartvisu ws icon folder (typically /var/www/smartvisu/icons/ws).
 - Check that permissions of all copied files are correct.
