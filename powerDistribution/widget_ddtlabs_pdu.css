@@ -1,0 +1,102 @@
+/**
+* --- W i d g e t s :  P D U --------------------------------------------------
+*/
+
+.ddtlabs .socketlist {
+}
+
+.ddtlabs .socketlist table {
+	width: 100%;
+	border: 0px solid black;
+	border-collapse: collapse;
+	text-align: left;
+}
+
+.ddtlabs .socketlist td, .ddtlabs .socketlist th {
+	border: 0px solid black;
+	margin: 0;
+	padding: 1px 0 1px 0;
+	overflow: hidden;
+	white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.ddtlabs .socketlist .icon {
+	width: 32px;
+	height: 32px;
+	padding: 0;
+}
+
+.ddtlabs .socketlist hr {
+	margin: 1px 0 1px 0;
+	width: 92%;
+    border: 0;
+    height: 0;
+    box-shadow: 0 0 20px 1px black;
+}
+
+.ddtlabs .socketlist hr:after {
+	content: "\00a0";  /* Prevent margin collapse */
+}
+
+.ddtlabs .socketlist .space {
+	width: 5px;
+}
+
+.ddtlabs .socketlist .delaybutton {
+/**	width: 230px; */
+  text-align: center;
+  padding: 6px 0;
+}
+
+.ddtlabs .socketlist .delayvalue {
+  text-align: center;
+  width: 1px;
+}
+
+#tempsoll {
+	color:silver;
+}
+
+.ddtlabs .socketlist a.ui-btn-inline.ui-micro .icon, 
+.ddtlabs .socketlist a.ui-btn-inline.ui-micro .fx-icon {
+  width: 44px;
+}
+
+.ddtlabs .socketlist a.ui-btn-inline.ui-micro {
+  min-width: 44px;
+}
+
+.ddtlabs .socketlist a.ui-btn-inline.ui-micro[data-iconpos="notext"] .ui-icon {
+    margin: 5px 0 0 13px !important;
+}
+
+.ddtlabs .pdu svg.icon {
+    border: 1px solid;
+    border-radius: 7px;
+    height: 90px;
+    margin: 1px;
+    vertical-align: middle;
+    width: 90px;
+}
+
+.ddtlabs .pdu .meter {
+    margin: 1px;
+    vertical-align: middle;
+    width: 25%;
+}
+
+.ddtlabs .pdu .metertxt {
+    margin: 1px;
+    text-align: left;
+    vertical-align: top;
+    width: 25%;
+}
+
+.ddtlabs .pdu .meterhead {
+    text-align: left;
+}
+
+.ddtlabs .pdu .metertxt td{
+  padding: 0;
+}

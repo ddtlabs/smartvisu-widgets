@@ -1,0 +1,244 @@
+/**
+* Avocent PM20 Widget
+*
+* @param unique id for this widget
+* @param gad
+* @author dev0 / ddtlabs
+*/
+{% macro pdu(id, gad) %}
+	{% import "basic.html" as basic %}
+	{% import "icon.html" as icon %}
+
+<span class="ddtlabs">
+	<span class="pdu">
+
+
+<table style="width: 100%;">
+  <tr>
+    <td class="meter">
+    Current
+    {{ icon.meter(id~gad[0]~'_current', '', gad[0]~'.current.act', 0, 32) }}
+    {{ basic.value(id~gad[0]~'_current1', gad[0]~'.current.act', 'A', '') }}
+    </td>
+
+    <td class="meter">
+    Power
+    <div>{{ icon.meter(id~gad[0]~'_power_meter', '', gad[0]~'.power', 0, 6000) }}</div>
+    <div>{{ basic.value(id~gad[0]~'_power_val', gad[0]~'.power', 'W', '') }}</div> 
+    </td>
+
+    <td class="meter">
+    Voltage
+    <div>{{ icon.meter(id~gad[0]~'_voltage_meter', '', gad[0]~'.voltage', 0, 460) }}</div>
+    <div>{{ basic.value(id~gad[0]~'_voltage_val', gad[0]~'.voltage', 'V', '') }}</div> 
+    </td>
+
+    <td class="meter">
+    Temperature
+    <div class="xxx">{{ icon.meter(id~gad[0]~'_temp', '', gad[0]~'.temp.current', 0, 50) }}</div>
+    <div class="xxx">{{ basic.value(id~gad[0]~'.temp.current', gad[0]~'.temp.current', '°', '') }}</div> 
+    </td>
+  </tr>
+</table>
+
+
+		<table style="width: 100%;">
+
+		<tr>
+
+<td>&nbsp;</td>
+
+      <td>
+        <div class="yyy"> 
+          <span data-role="controlgroup" data-type="horizontal"> 
+            {{ basic.dual(id~gad[0]~'_cycle', gad[0]~'.presence', '', '', 'present', 'absent', 'micro') }}
+          </span>
+        </div>
+      </td>
+
+      <td>
+        <div class="yyy"> 
+          <span data-role="controlgroup" data-type="horizontal"> 
+            {{ basic.dual(id~gad[0]~'_buzzer', gad[0]~'.buzzer', 'audio_volume_mid.svg', 'audio_volume_mute.svg', 'on', 'off', 'micro') }}
+          </span>
+        </div>
+      </td>
+
+<td>&nbsp;</td>
+
+		</tr>
+
+
+		</table>
+	</span>
+</span>
+
+{% endmacro %}
+
+
+
+/**
+* Avocent PM20 Widget
+*
+* @param unique id for this widget
+* @param gad
+* @author dev0 / ddtlabs
+*/
+{% macro socket(id, gad) %}
+	{% import "basic.html" as basic %}
+
+<span class="ddtlabs">
+	<span class="socketlist">
+		<table>
+
+		<tr>
+			<td>{{gad[1]}}</td>
+			<td>
+			  <div class="xxx">{{ basic.value(id~gad[0]~'_alias', gad[0]~'.alias', '', '') }}</div></td><td>&nbsp;
+			</td>
+
+      <td>
+        <div class="yyy"> 
+          <span data-role="controlgroup" data-type="horizontal"> 
+            {{ basic.dual(id~gad[0]~'_state', gad[0]~'.state', '', 'control_standby.svg', 'on', 'off', 'micro') }}
+          </span>
+        </div>
+      </td>
+
+      <td>
+        <div class="yyy"> 
+          <span data-role="controlgroup" data-type="horizontal"> 
+            {{ basic.dual(id~gad[0]~'_cycle', gad[0]~'.cycle', 'control_reset.svg', 'control_reset.svg', 'cycle', 'cycle', 'micro') }}
+          </span>
+        </div>
+      </td>
+
+      <td>
+        <div class="yyy"> 
+          <span data-role="controlgroup" data-type="horizontal"> 
+            {{ basic.dual(id~gad[0]~'_lock', gad[0]~'.lock', 'secur_locked.svg', 'secur_open.svg', 'lock', 'unlock', 'micro') }}
+          </span>
+        </div>
+      </td>
+
+			<td class="delaybutton">
+			<div id="{{ uid(page, id~gad[0]) }}" data-widget="ddtlabs_pdu.socketlist" data-step="{{ step|default(0.1) }}">  
+				<div class="list">
+					<a data-role="button" data-icon="minus" data-inline="true" data-iconpos="notext" class="ui-micro"></a>
+        </div>
+      </div>
+      </td>
+
+      <td class="delayvalue">
+  		  {{ basic.float(id~gad[0]~'delay', gad[0]~'.delay', 's' ) }}
+      </td>
+
+      <td class="delaybutton">
+		    <div id="{{ uid(page, id~gad[0]) }}" data-widget="ddtlabs_pdu.socketlist" data-step="{{ step|default(0.1) }}">  
+  		    <div class="list">
+	          <a data-role="button" data-icon="plus" data-inline="true" data-iconpos="notext" class="ui-micro"></a>
+          </div>
+        </div>
+      </td>
+		</tr>
+
+
+		</table>
+	</span>
+</span>
+
+{% endmacro %}
+
+
+
+/**
+* Avocent PM20 Widget
+*
+* @param unique id for this widget
+* @param array of gads eg. [[PM20_PROD_01,P1],[PM20_PROD_02,P2]]
+* @author dev0 / ddtlabs
+*/
+{% macro socketlist(id, gads) %}
+	{% import "basic.html" as basic %}
+
+<span class="ddtlabs">
+	<span class="socketlist">
+		<table>
+
+		<tr>
+			<th>Socket</th>
+			<th>Alias</th><th>&nbsp;</th>
+			<th>Power</th>
+			<th>Cycle</th>
+			<th>Lock</th>
+			<th class="delaybutton"></th>
+			<th class="">Delay</th>
+			<th class="delaybutton"></th>
+		</tr>
+
+		<tr><td colspan="8" align="center"><hr></td></tr>
+		<tr><td colspan="8" align="center"><hr></td></tr>
+
+		{% for gad in gads %}
+
+		<tr>
+			<td>{{gad[1]}}</td>
+			<td>
+			  <div class="xxx">{{ basic.value(id~gad[0]~'_alias', gad[0]~'.alias', '', '') }}</div></td><td>&nbsp;
+			</td>
+
+      <td>
+        <div class="yyy"> 
+          <span data-role="controlgroup" data-type="horizontal"> 
+            {{ basic.dual(id~gad[0]~'_state', gad[0]~'.state', '', 'control_standby.svg', 'on', 'off', 'micro') }}
+          </span>
+        </div>
+      </td>
+
+      <td>
+        <div class="yyy"> 
+          <span data-role="controlgroup" data-type="horizontal"> 
+            {{ basic.dual(id~gad[0]~'_cycle', gad[0]~'.cycle', 'control_reset.svg', 'control_reset.svg', 'cycle', 'cycle', 'micro') }}
+          </span>
+        </div>
+      </td>
+
+      <td>
+        <div class="yyy"> 
+          <span data-role="controlgroup" data-type="horizontal"> 
+            {{ basic.dual(id~gad[0]~'_lock', gad[0]~'.lock', 'secur_locked.svg', 'secur_open.svg', 'lock', 'unlock', 'micro') }}
+          </span>
+        </div>
+      </td>
+
+			<td class="delaybutton">
+			<div id="{{ uid(page, id~gad[0]) }}" data-widget="ddtlabs_pdu.socketlist" data-step="{{ step|default(0.1) }}">  
+				<div class="list">
+					<a data-role="button" data-icon="minus" data-inline="true" data-iconpos="notext" class="ui-micro"></a>
+        </div>
+      </div>
+      </td>
+
+      <td class="delayvalue">
+  		  {{ basic.float(id~gad[0]~'delay', gad[0]~'.delay', 's' ) }}
+      </td>
+
+      <td class="delaybutton">
+		    <div id="{{ uid(page, id~gad[0]) }}" data-widget="ddtlabs_pdu.socketlist" data-step="{{ step|default(0.1) }}">  
+  		    <div class="list">
+	          <a data-role="button" data-icon="plus" data-inline="true" data-iconpos="notext" class="ui-micro"></a>
+          </div>
+        </div>
+      </td>
+		</tr>
+
+		<tr><td colspan="8" align="center"><hr></td></tr>
+
+		{% endfor %}
+
+		</table>
+	</span>
+</span>
+
+{% endmacro %}
+
