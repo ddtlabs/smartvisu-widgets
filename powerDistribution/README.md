@@ -1,5 +1,5 @@
 ### Power Distribution Unit Widget for smartVISU
-Designed for use with with [Avocent PDUs](https://github.com/ddtlabs/PM20) or [NETIO230 PDUs](https://github.com/ddtlabs/NETIO230). But any other type of ports/sockets can be switched also.
+Designed for use with [Avocent PDUs](https://github.com/ddtlabs/PM20) or [NETIO230 PDUs](https://github.com/ddtlabs/NETIO230). But any other type of ports/sockets can be switched also.
 
 **Version: 0.11**
 
