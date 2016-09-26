@@ -1,6 +1,6 @@
 ### Sonos Widget for smartVISU / FHEM
 
-**Version: 0.90**
+**Version: 0.91**
 
 **Screenshots:**
 
@@ -273,6 +273,8 @@ define n_sv_sonosTransportState notify Sonos_.*[^(_LR|_RR|_LF|_RF|_SW)]:transpor
 - Minor changes and code cleanup
 - Advanced example for Widget call
 - New presence symbol
+- **v0.91**
+- Fixed selectmenu/playlists for newer smartVISU 2.8 versions
 
 **Credits / Copyrights / Trademarks:**
 - My wife!
