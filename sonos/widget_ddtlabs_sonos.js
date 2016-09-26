@@ -34,8 +34,9 @@ $(document).delegate('select[data-widget="ddtlabs_sonos.selectmenu"]', {
       $(this).find('option').remove().end();
       var newOption = "<option value='" + $(this).attr('data-label') + "'>" + $(this).attr('data-label') + "</option>";
       $(this).append(newOption).selectmenu('refresh');
-      var playlists = response[0].split(';;');
-                        playlists.sort();
+      //var playlists = response[0].split(';;');
+      var playlists = response[0].toString().explode(';;');
+      playlists.sort();
       for (var i = 0; i < playlists.length; i++) {
         var newOption = "<option value='" + playlists[i] + "'>" + playlists[i] + "</option>";
         $(this).append(newOption).selectmenu('refresh');
