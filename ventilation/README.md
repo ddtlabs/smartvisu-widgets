@@ -9,8 +9,8 @@ Screenshots:
 
 Installation hints:
 
-- tested only with smartVISU **2.8 pre** !
-  - https://github.com/Martin-Gleiss/smartvisu
+- tested only with smartVISU **2.8** !
+  - http://www.smartvisu.de/
 
 - Copy widget_ventilation.html to your pages folder
 

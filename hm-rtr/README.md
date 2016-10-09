@@ -13,7 +13,7 @@
 
 **Requirements:**
 - Fully functioning FHEM with configured HM rtr devices.
-- SmartVISU 2.8+ (https://github.com/Martin-Gleiss/smartvisu)
+- SmartVISU 2.8+ (http://www.smartvisu.de/)
 
 **Installation advices:**
 

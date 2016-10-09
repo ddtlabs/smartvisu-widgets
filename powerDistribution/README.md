@@ -15,7 +15,7 @@ Designed for use with [Avocent PDUs](https://github.com/ddtlabs/PM20) or [NETIO2
 - Display current, voltage, power, temperature
 
 **Requirements:**
-- SmartVISU **2.8+** (https://github.com/Martin-Gleiss/smartvisu)
+- SmartVISU **2.8+** (http://www.smartvisu.de/)
 
 **Installation advices:**
 - Copy widget_ddtlabs_pdu.* to your smartVISU pages folder.
