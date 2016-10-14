@@ -942,14 +942,24 @@ sub SonosLists(@)
   }
   if ($param->{cmd} eq 'send')
   {
-    my @playlist;
-    my %evt = %{eval( $event )};
-    foreach (keys %evt) { push(@playlist, $evt{$_}{"Title"}) }
-    $param->{gadval} = join(";;",sort @playlist);
-    main::Log3 undef, 4, $cName . "device: $device, reading: $reading, gadval: $param->{gadval}";
-
+    use JSON;
+    my ($j,@a);
+    my %h = %{eval( $event )};
+    foreach (keys %h) {
+      push(@a,%h->{$_});
+    }
+    my %nh->{list} = \@a;
+    eval {$j = encode_json \%nh; 1;};
+    if ($@) {
+      main::Log 2, $cName. "An error occurred while converting to JSON:";
+      main::Log 2, $cName. "device: $device event: $event";
+      main::Log 2, $cName. "$@";
+      return undef;
+    }
+    $param->{gadval} = $j;
     $param->{gad} = $gad;
     $param->{gads} = [];
+    main::Log 5, $cName. "device: $device, reading: $reading, gadval: $param->{gadval}";
     return undef;
   }
   elsif ($param->{cmd} eq 'rcv')
