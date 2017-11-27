@@ -142,7 +142,7 @@ sub sv_setSonosGroupsReadings($$) {
     # sync transportState to slave, sonos module shows always PLAYING if player is a slave.
     # Ask Reinerlein if this is a bug?
     fhem("sleep 0.1; setreading $device svTransportStatePlay "   . ReadingsVal($master, "svTransportStatePlay", ""));
-    fhem("sleep 0.1; setreading $device svTransportStatePlause " . ReadingsVal($master, "svTransportStatePause", ""));
+    fhem("sleep 0.1; setreading $device svTransportStatePause " . ReadingsVal($master, "svTransportStatePause", ""));
     fhem("sleep 0.1; setreading $device svTransportStateStop "   . ReadingsVal($master, "svTransportStateStop", ""));
     # TrackPos sync to salve
     #fhem("sleep 0.1; setreading $device svTrackPosition "        . ReadingsVal($master, "svTrackPosition", ""));
